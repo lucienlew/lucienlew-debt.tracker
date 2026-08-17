@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=5.0">
 <meta name="theme-color" content="#0A0A0A">
 <meta name="color-scheme" content="light dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,205 +11,167 @@
 <meta name="apple-mobile-web-app-title" content="Debt Tracker">
 <meta name="format-detection" content="telephone=no">
 <title>Debt Tracker</title>
+<link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230A0A0A'/><text x='50' y='70' font-size='58' font-family='Helvetica,Arial' font-weight='bold' fill='white' text-anchor='middle'>$</text></svg>">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
+/* Theme tokens: light values here, dark overrides in one block below. */
 :root{
-  --black:#0A0A0A; --gray-700:#3D3D3D; --gray-500:#767676; --gray-300:#C7C7C7;
-  --gray-100:#F0F0F0; --gray-50:#F8F8F8; --white:#FFF; --line:#E4E4E4;
-  --shadow:0 10px 30px rgba(0,0,0,.08);
-  --safe-b:env(safe-area-inset-bottom,0px);
-  --safe-t:env(safe-area-inset-top,0px);
-  color-scheme:light;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{overscroll-behavior-y:none;}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--gray-50);color:#111;-webkit-font-smoothing:antialiased;}
-body.locked{overflow:hidden;}
-.app{max-width:820px;margin:0 auto;padding:calc(22px + var(--safe-t)) 18px calc(120px + var(--safe-b));}
+--bg:#F8F8F8;--card:#FFF;--text:#111;--dim:#767676;--faint:#C7C7C7;--line:#E4E4E4;
+--ink:#0A0A0A;--on-ink:#FFF;--chip:#F0F0F0;--chip-fg:#3D3D3D;--input:#F8F8F8;
+--summary:#0A0A0A;--banner:#111;--on-banner:#FFF;--track:#C7C7C7;--scrim:rgba(0,0,0,.5);
+--shadow:0 10px 30px rgba(0,0,0,.08);--fab-shadow:0 10px 26px rgba(0,0,0,.35);
+--danger:#B00020;--safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
+color-scheme:light}
+body.dark{
+--bg:#000;--card:#1C1C1E;--text:#F2F2F2;--dim:#9A9A9E;--faint:#6E6E72;--line:#303032;
+--ink:#F2F2F2;--on-ink:#000;--chip:#2C2C2E;--chip-fg:#D0D0D2;--input:#2C2C2E;
+--summary:#1C1C1E;--banner:#1C1C1E;--on-banner:#F2F2F2;--track:#3A3A3C;--scrim:rgba(0,0,0,.7);
+--shadow:none;--fab-shadow:0 10px 26px rgba(0,0,0,.6);
+color-scheme:dark}
 
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800;color:#111;}
-.eyebrow{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gray-500);font-weight:700;margin-bottom:2px;}
-.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#111;flex-shrink:0;}
-.icon-btn:active{background:var(--gray-100);}
-.icon-btn.active{background:var(--black);color:#fff;border-color:var(--black);}
-body.dark .icon-btn.active{background:#F2F2F2;color:#000;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{overscroll-behavior-y:none}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+body.locked{overflow:hidden}
+.app{max-width:820px;margin:0 auto;padding:calc(22px + var(--safe-t)) 18px calc(120px + var(--safe-b))}
 
-.banner{background:#111;color:#fff;padding:11px 14px;border-radius:12px;font-size:12.5px;font-weight:600;margin-bottom:14px;line-height:1.45;}
-.banner b{font-weight:800;}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
+.eyebrow{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--dim);font-weight:700;margin-bottom:2px}
+.hdr-btns{display:flex;gap:8px}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);flex-shrink:0;padding:0}
+.icon-btn:active{background:var(--chip)}
+.icon-btn.active{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 
-.summary{background:var(--black);border-radius:18px;padding:24px 20px;color:#fff;box-shadow:var(--shadow);margin-bottom:18px;}
-.summary-label{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:rgba(255,255,255,.5);font-weight:700;}
-.summary-net{font-size:36px;font-weight:800;margin-top:6px;letter-spacing:-.8px;font-variant-numeric:tabular-nums;}
-.summary-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px;}
+.banner{background:var(--banner);color:var(--on-banner);padding:11px 14px;border-radius:12px;font-size:12.5px;font-weight:600;margin-bottom:14px;line-height:1.45}
+.banner b{font-weight:800}
 
-.tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--gray-100);padding:4px;border-radius:12px;}
-.tab{flex:1;text-align:center;padding:9px 4px;font-size:13.5px;font-weight:700;color:var(--gray-500);cursor:pointer;border-radius:9px;user-select:none;-webkit-user-select:none;}
-.tab.active{color:#fff;background:var(--black);}
+.summary{background:var(--summary);border-radius:18px;padding:24px 20px;color:#fff;box-shadow:var(--shadow);margin-bottom:18px}
+.summary-label{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:rgba(255,255,255,.5);font-weight:700}
+.summary-net{font-size:36px;font-weight:800;margin-top:6px;letter-spacing:-.8px;font-variant-numeric:tabular-nums}
+.summary-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px}
 
-.people{display:flex;flex-direction:column;gap:10px;}
-.person-card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:15px 16px;}
-.person-row{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;position:relative;background:var(--white);touch-action:pan-y;transition:transform .18s ease;}
-body.dark .person-row{background:#1C1C1E;}
-.person-name{font-size:15.5px;font-weight:700;}
-.person-meta{font-size:12px;color:var(--gray-500);margin-top:2px;}
-.balance{font-size:16px;font-weight:800;padding:5px 10px;border-radius:8px;white-space:nowrap;font-variant-numeric:tabular-nums;}
-.balance.pos{background:var(--black);color:#fff;}
-.balance.neg{background:var(--white);color:var(--black);border:1.5px solid var(--black);}
-.balance.zero{background:var(--gray-100);color:var(--gray-500);}
-.person-detail{margin-top:13px;border-top:1px dashed var(--line);padding-top:12px;}
+.tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--chip);padding:4px;border-radius:12px}
+.tab{flex:1;text-align:center;padding:9px 4px;font-size:13.5px;font-weight:700;color:var(--dim);cursor:pointer;border-radius:9px;border:none;background:none;font-family:inherit}
+.tab.active{color:var(--on-ink);background:var(--ink)}
 
-.empty{text-align:center;padding:54px 20px;color:var(--gray-500);}
-.empty .big{font-size:15px;font-weight:700;color:var(--black);margin-bottom:4px;}
+.people{display:flex;flex-direction:column;gap:10px}
+.person-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+.person-row{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;background:var(--card);touch-action:pan-y}
+.person-name{font-size:15.5px;font-weight:700}
+.person-meta{font-size:12px;color:var(--dim);margin-top:2px}
+.person-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.mini-btn{width:30px;height:30px;border-radius:8px;border:none;background:none;color:var(--dim);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
+.mini-btn:active{background:var(--chip)}
+.balance{font-size:16px;font-weight:800;padding:5px 10px;border-radius:8px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.balance.pos{background:var(--ink);color:var(--on-ink)}
+.balance.neg{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.balance.zero{background:var(--chip);color:var(--dim)}
+.person-detail{margin-top:13px;border-top:1px dashed var(--line);padding-top:12px}
+.person-profile{font-size:12.5px;color:var(--dim);margin-bottom:8px;line-height:1.5;word-break:break-word}
 
-.swipe-wrap{position:relative;overflow:hidden;}
-.swipe-wrap:last-child .txn{border-bottom:none;}
-.swipe-delete-bg{position:absolute;inset:0;background:#B00020;color:#fff;display:flex;align-items:center;justify-content:flex-end;padding-right:26px;font-weight:700;font-size:12.5px;letter-spacing:.2px;cursor:pointer;border-radius:inherit;}
-.txn{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;position:relative;background:var(--white);touch-action:pan-y;transition:transform .18s ease;}
-body.dark .txn{background:#1C1C1E;}
-.txn-left{display:flex;flex-direction:column;gap:2px;min-width:0;}
-.txn-type{font-size:13px;font-weight:700;}
-.txn-note{font-size:12.5px;color:var(--gray-500);word-break:break-word;}
-.txn-meta{display:flex;gap:6px;align-items:center;margin-top:2px;flex-wrap:wrap;}
-.txn-date{font-size:11px;color:var(--gray-300);}
-.txn-method{font-size:10px;color:var(--gray-700);background:var(--gray-100);padding:2px 7px;border-radius:20px;font-weight:600;}
-.txn-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
-.txn-amt{font-size:14px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;}
-.txn-amt.debit{color:var(--gray-500);}
-.txn-edited{font-size:10px;color:var(--gray-300);font-style:italic;}
-.txn-person{font-size:11px;color:var(--gray-700);font-weight:700;}
+.empty{text-align:center;padding:54px 20px;color:var(--dim)}
+.empty .big{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
 
-.filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
-select.filter{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--white);font-weight:600;font-family:inherit;color:#111;}
+.swipe-wrap{position:relative;overflow:hidden;border-radius:10px}
+.swipe-wrap:last-child .txn{border-bottom:none}
+.swipe-delete-bg{position:absolute;inset:0;background:var(--danger);color:#fff;display:flex;align-items:center;justify-content:flex-end;padding-right:26px;font-weight:700;font-size:12.5px;cursor:pointer;border-radius:inherit}
+.swipe-content{position:relative;transition:transform .18s ease}
+.txn{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;background:var(--card);touch-action:pan-y}
+.txn-left{display:flex;flex-direction:column;gap:2px;min-width:0}
+.txn-type{font-size:13px;font-weight:700}
+.txn-note{font-size:12.5px;color:var(--dim);word-break:break-word}
+.txn-meta{display:flex;gap:6px;align-items:center;margin-top:2px;flex-wrap:wrap}
+.txn-date{font-size:11px;color:var(--faint)}
+.txn-method,.txn-receipt-badge{font-size:10px;color:var(--chip-fg);background:var(--chip);padding:2px 7px;border-radius:20px;font-weight:600}
+.txn-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.txn-amt{font-size:14px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.txn-amt.debit{color:var(--dim)}
+.txn-edited{font-size:10px;color:var(--faint);font-style:italic}
+.txn-person{font-size:11px;color:var(--chip-fg);font-weight:700}
 
-.fab{position:fixed;right:20px;bottom:calc(24px + var(--safe-b));width:58px;height:58px;border-radius:50%;background:var(--black);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(0,0,0,.35);font-size:28px;font-weight:700;border:none;cursor:pointer;z-index:40;line-height:1;padding-bottom:3px;}
-.fab:active{transform:scale(.94);}
+.filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.filter{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--card);font-weight:600;font-family:inherit;color:var(--text)}
 
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:50;}
-.overlay.open{display:flex;}
-.sheet{background:var(--white);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 20px calc(26px + var(--safe-b));max-height:90vh;max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideup .18s ease;}
-@media (min-width:600px){.overlay{align-items:center;}.sheet{border-radius:18px;max-height:82vh;padding-bottom:26px;}}
-@keyframes slideup{from{transform:translateY(24px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-.sheet h2{margin:0 0 16px;font-size:17px;font-weight:800;}
-.field{margin-bottom:14px;}
-.field label{display:block;font-size:11.5px;font-weight:700;color:var(--gray-500);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
-.field input,.field select{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);font-size:16px;background:var(--gray-50);color:#111;font-family:inherit;}
-.field input:focus,.field select:focus{outline:none;border-color:var(--black);}
-.field input:disabled{background:var(--gray-100);color:var(--gray-500);-webkit-text-fill-color:var(--gray-500);opacity:1;}
-.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.type-opt{border:1.5px solid var(--line);border-radius:10px;padding:11px 8px;text-align:center;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--gray-500);user-select:none;-webkit-user-select:none;}
-.type-opt.selected{border-color:var(--black);background:var(--black);color:#fff;}
-.type-grid.locked .type-opt:not(.selected){opacity:.4;}
-.type-grid.locked .type-opt{pointer-events:none;}
-.btn-row{display:flex;gap:10px;margin-top:6px;}
-.btn{flex:1;padding:13px;border-radius:11px;border:none;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;}
-.btn-primary{background:var(--black);color:#fff;}
-.btn-secondary{background:var(--gray-100);color:var(--black);}
-.btn-danger{background:var(--white);color:var(--black);border:1.5px solid var(--gray-300);}
-.lock-note{font-size:11px;color:var(--gray-500);margin-top:6px;}
-.err{color:#B00020;font-size:12.5px;font-weight:700;margin-bottom:10px;min-height:0;}
+.fab{position:fixed;right:20px;bottom:calc(24px + var(--safe-b));width:58px;height:58px;border-radius:50%;background:var(--ink);color:var(--on-ink);display:flex;align-items:center;justify-content:center;box-shadow:var(--fab-shadow);font-size:28px;font-weight:700;border:none;cursor:pointer;z-index:40;line-height:1;padding-bottom:3px}
+.fab:active{transform:scale(.94)}
 
-.field-desc{font-size:13px;color:var(--gray-500);margin-bottom:16px;line-height:1.5;}
-.backup-action{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;}
-.ba-title{font-size:14px;font-weight:700;}
-.ba-sub{font-size:11.5px;color:var(--gray-500);margin-top:2px;}
-.backup-btn{padding:9px 14px;border-radius:9px;border:none;background:var(--black);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;}
-.backup-btn.secondary{background:var(--gray-100);color:var(--black);}
-#importFile{display:none;}
-.toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:#111;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;z-index:70;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;}
-.toast.show{opacity:1;}
-.toast.error{background:#B00020;}
+.overlay{position:fixed;inset:0;background:var(--scrim);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.overlay.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 20px calc(26px + var(--safe-b));max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideup .18s ease}
+@media (min-width:600px){.overlay{align-items:center}.sheet{border-radius:18px;max-height:82vh;padding-bottom:26px}}
+@keyframes slideup{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.sheet h2{margin:0 0 16px;font-size:17px;font-weight:800}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);font-size:16px;background:var(--input);color:var(--text);font-family:inherit}
+.field input:focus,.field select:focus{outline:none;border-color:var(--ink)}
+.field input:disabled,.field select:disabled{background:var(--chip);color:var(--dim);-webkit-text-fill-color:var(--dim);opacity:1}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.type-opt{border:1.5px solid var(--line);border-radius:10px;padding:11px 8px;text-align:center;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--dim);user-select:none;-webkit-user-select:none}
+.type-opt.selected{border-color:var(--ink);background:var(--ink);color:var(--on-ink)}
+.type-grid.locked .type-opt{pointer-events:none}
+.type-grid.locked .type-opt:not(.selected){opacity:.4}
+.btn-row{display:flex;gap:10px;margin-top:6px}
+.btn{flex:1;padding:13px;border-radius:11px;border:none;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-primary{background:var(--ink);color:var(--on-ink)}
+.btn-secondary{background:var(--chip);color:var(--text)}
+.btn-danger{background:var(--card);color:var(--text);border:1.5px solid var(--line)}
+.btn-confirm{background:var(--danger);color:#fff}
+.lock-note,.receipt-status{font-size:11px;color:var(--dim);margin-top:6px}
+.err{color:var(--danger);font-size:12.5px;font-weight:700;margin-bottom:10px}
+.field-desc{font-size:13px;color:var(--dim);margin-bottom:16px;line-height:1.5}
 
-.receipt-row{display:flex;align-items:center;gap:10px;}
-.receipt-thumb{width:52px;height:52px;border-radius:9px;object-fit:cover;border:1.5px solid var(--line);cursor:pointer;flex-shrink:0;}
-.receipt-add-btn{padding:10px 14px;border-radius:9px;border:1.5px dashed var(--gray-300);background:var(--gray-50);font-size:12.5px;font-weight:700;color:var(--gray-700);cursor:pointer;font-family:inherit;}
-.receipt-remove{font-size:11.5px;font-weight:700;color:#B00020;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;}
-.receipt-status{font-size:11.5px;color:var(--gray-500);font-weight:600;}
-#receiptFile{display:none;}
-.txn-receipt-badge{font-size:10px;color:var(--gray-700);background:var(--gray-100);padding:2px 7px;border-radius:20px;font-weight:600;display:inline-flex;align-items:center;gap:3px;}
-.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:80;padding:24px;}
-.lightbox.open{display:flex;}
-.lightbox img{max-width:100%;max-height:100%;border-radius:10px;}
-.lightbox-close{position:fixed;top:calc(18px + var(--safe-t));right:18px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.row-action{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px}
+.ra-title{font-size:14px;font-weight:700}
+.ra-sub{font-size:11.5px;color:var(--dim);margin-top:2px}
+.ra-btn{padding:9px 14px;border-radius:9px;border:none;background:var(--ink);color:var(--on-ink);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.ra-btn.secondary{background:var(--chip);color:var(--text)}
+.ra-btn.danger{background:var(--danger);color:#fff}
+#importFile,#receiptFile{display:none}
 
-.switch{position:relative;display:inline-block;width:46px;height:27px;flex-shrink:0;}
-.switch input{opacity:0;width:0;height:0;position:absolute;}
-.switch-slider{position:absolute;inset:0;background:var(--gray-300);border-radius:27px;transition:.2s;cursor:pointer;}
-.switch-slider:before{content:"";position:absolute;height:21px;width:21px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
-.switch input:checked + .switch-slider{background:var(--black);}
-.switch input:checked + .switch-slider:before{transform:translateX(19px);}
+.toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:var(--on-ink);padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;z-index:70;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}
+.toast.show{opacity:1}
+.toast.error{background:var(--danger);color:#fff}
 
-/* ================= Dark Mode ================= */
-body.dark{background:#000;color:#F2F2F2;color-scheme:dark;}
-body.dark header h1{color:#F2F2F2;}
-body.dark .eyebrow{color:#9A9A9E;}
-body.dark .icon-btn{background:#1C1C1E;border-color:#303032;color:#F2F2F2;}
-body.dark .icon-btn:active{background:#2C2C2E;}
-body.dark .banner{background:#1C1C1E;color:#F2F2F2;}
-body.dark .summary{background:#1C1C1E;box-shadow:none;}
-body.dark .tabs{background:#1C1C1E;}
-body.dark .tab.active{background:#F2F2F2;color:#000;}
-body.dark .person-card{background:#1C1C1E;border-color:#303032;}
-body.dark .person-meta{color:#9A9A9E;}
-body.dark .balance.pos{background:#F2F2F2;color:#000;}
-body.dark .balance.neg{background:transparent;color:#F2F2F2;border-color:#F2F2F2;}
-body.dark .balance.zero{background:#2C2C2E;color:#9A9A9E;}
-body.dark .person-detail{border-top-color:#303032;}
-body.dark .empty{color:#9A9A9E;}
-body.dark .empty .big{color:#F2F2F2;}
-body.dark .txn{border-bottom-color:#303032;}
-body.dark .txn-type{color:#F2F2F2;}
-body.dark .txn-note{color:#9A9A9E;}
-body.dark .txn-date,body.dark .txn-edited{color:#6E6E72;}
-body.dark .txn-method,body.dark .txn-receipt-badge{background:#2C2C2E;color:#D0D0D2;}
-body.dark .txn-amt{color:#F2F2F2;}
-body.dark .txn-amt.debit{color:#9A9A9E;}
-body.dark .txn-person{color:#C7C7CA;}
-body.dark select.filter,body.dark input.filter{background:#1C1C1E;border-color:#303032;color:#F2F2F2;}
-body.dark .fab{background:#F2F2F2;color:#000;box-shadow:0 10px 26px rgba(0,0,0,.6);}
-body.dark .overlay{background:rgba(0,0,0,.7);}
-body.dark .sheet{background:#1C1C1E;}
-body.dark .sheet h2{color:#F2F2F2;}
-body.dark .field label{color:#9A9A9E;}
-body.dark .field input,body.dark .field select{background:#2C2C2E;border-color:#303032;color:#F2F2F2;}
-body.dark .field input:focus,body.dark .field select:focus{border-color:#F2F2F2;}
-body.dark .field input:disabled{background:#1C1C1E;color:#6E6E72;-webkit-text-fill-color:#6E6E72;}
-body.dark .type-opt{border-color:#303032;color:#9A9A9E;}
-body.dark .type-opt.selected{border-color:#F2F2F2;background:#F2F2F2;color:#000;}
-body.dark .btn-primary{background:#F2F2F2;color:#000;}
-body.dark .btn-secondary{background:#2C2C2E;color:#F2F2F2;}
-body.dark .btn-danger{background:#1C1C1E;color:#F2F2F2;border-color:#303032;}
-body.dark .lock-note{color:#9A9A9E;}
-body.dark .field-desc{color:#9A9A9E;}
-body.dark .backup-action{border-color:#303032;}
-body.dark .ba-title{color:#F2F2F2;}
-body.dark .ba-sub{color:#9A9A9E;}
-body.dark .backup-btn{background:#F2F2F2;color:#000;}
-body.dark .backup-btn.secondary{background:#2C2C2E;color:#F2F2F2;}
-body.dark .toast{background:#F2F2F2;color:#000;}
-body.dark .toast.error{background:#B00020;color:#fff;}
-body.dark .receipt-thumb{border-color:#303032;}
-body.dark .receipt-add-btn{background:#1C1C1E;border-color:#3A3A3C;color:#C7C7CA;}
-body.dark .receipt-status{color:#9A9A9E;}
-body.dark .switch-slider{background:#3A3A3C;}
-body.dark .switch input:checked + .switch-slider{background:#F2F2F2;}
-body.dark .switch input:checked + .switch-slider:before{background:#000;}
+.receipt-row{display:flex;align-items:center;gap:10px}
+.receipt-thumb{width:52px;height:52px;border-radius:9px;object-fit:cover;border:1.5px solid var(--line);cursor:pointer;flex-shrink:0}
+.receipt-add-btn{padding:10px 14px;border-radius:9px;border:1.5px dashed var(--line);background:var(--input);font-size:12.5px;font-weight:700;color:var(--chip-fg);cursor:pointer;font-family:inherit}
+.receipt-remove{font-size:11.5px;font-weight:700;color:var(--danger);cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:80;padding:24px}
+.lightbox.open{display:flex}
+.lightbox img{max-width:100%;max-height:100%;border-radius:10px}
+.lightbox-close{position:fixed;top:calc(18px + var(--safe-t));right:18px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+.pt-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.pt-row:last-child{border-bottom:none}
+.pt-name{flex:1;font-size:14px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pt-row input{flex:1;padding:9px 10px;border-radius:9px;border:1.5px solid var(--line);font-size:14px;background:var(--input);color:var(--text);font-family:inherit;min-width:0}
+.pt-icon-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--chip);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
+.pt-icon-btn.danger{color:var(--danger)}
+.switch{position:relative;display:inline-block;width:46px;height:27px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.switch-slider{position:absolute;inset:0;background:var(--track);border-radius:27px;transition:.2s;cursor:pointer}
+.switch-slider:before{content:"";position:absolute;height:21px;width:21px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.switch input:checked + .switch-slider{background:var(--ink)}
+.switch input:checked + .switch-slider:before{transform:translateX(19px);background:var(--on-ink)}
 </style>
 </head>
 <body>
-<div class="app" id="app">
+<div class="app">
 
 <header>
   <div>
     <div class="eyebrow">Personal Ledger</div>
     <h1>Debt Tracker</h1>
   </div>
-  <div style="display:flex;gap:8px;">
+  <div class="hdr-btns">
     <button class="icon-btn" id="settingsBtn" title="Settings" aria-label="Settings">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
     <button class="icon-btn" id="backupBtn" title="Backup &amp; Restore" aria-label="Backup and restore">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </button>
   </div>
 </header>
@@ -223,8 +185,8 @@ body.dark .switch input:checked + .switch-slider:before{background:#000;}
 </div>
 
 <div class="tabs">
-  <div class="tab active" data-tab="overview">By Person</div>
-  <div class="tab" data-tab="history">History</div>
+  <button class="tab active" data-tab="overview">By Person</button>
+  <button class="tab" data-tab="history">History</button>
 </div>
 
 <div id="overviewTab"><div class="people" id="peopleList"></div></div>
@@ -232,7 +194,7 @@ body.dark .switch input:checked + .switch-slider:before{background:#000;}
 <div id="historyTab" hidden>
   <div class="filters">
     <button class="icon-btn" id="searchToggleBtn" aria-label="Search" type="button">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
     <input type="text" class="filter" id="fSearch" placeholder="Search details…" style="display:none;flex:1 1 140px;">
     <select class="filter" id="fPerson"><option value="all">All people</option></select>
@@ -243,8 +205,8 @@ body.dark .switch input:checked + .switch-slider:before{background:#000;}
     </select>
   </div>
   <div class="filters">
-    <input type="date" class="filter" id="fDateFrom" style="flex:1;">
-    <input type="date" class="filter" id="fDateTo" style="flex:1;">
+    <input type="date" class="filter" id="fDateFrom" style="flex:1;" aria-label="From date">
+    <input type="date" class="filter" id="fDateTo" style="flex:1;" aria-label="To date">
   </div>
   <div id="historyList"></div>
 </div>
@@ -253,14 +215,15 @@ body.dark .switch input:checked + .switch-slider:before{background:#000;}
 
 <button class="fab" id="fabBtn" aria-label="Add debt">+</button>
 
+<!-- Add / edit transaction -->
 <div class="overlay" id="overlay">
   <div class="sheet" role="dialog" aria-modal="true">
     <h2 id="sheetTitle">Add Debt</h2>
     <div class="err" id="formErr"></div>
 
-    <div class="field" id="personField">
+    <div class="field">
       <label for="personSelect">Person</label>
-      <select id="personSelect"><option value="__new__">+ Add new person</option></select>
+      <select id="personSelect"></select>
       <input type="text" id="newPersonName" placeholder="Enter name" autocomplete="off" style="margin-top:8px;">
     </div>
 
@@ -280,9 +243,9 @@ body.dark .switch input:checked + .switch-slider:before{background:#000;}
 
     <div class="field">
       <label for="methodSelect">Payment Type</label>
-      <select id="methodSelect"><option value="__none__">Not specified</option></select>
-      <input type="text" id="newMethodName" placeholder="Enter payment type (e.g. GrabPay)" autocomplete="off" style="margin-top:8px;display:none;">
-      <div class="lock-note">How the money was given or received for this debt.</div>
+      <select id="methodSelect"></select>
+      <input type="text" id="newMethodName" placeholder="e.g. GrabPay" autocomplete="off" style="margin-top:8px;display:none;">
+      <div class="lock-note">How the money was given or received.</div>
     </div>
 
     <div class="field">
@@ -298,9 +261,7 @@ body.dark .switch input:checked + .switch-slider:before{background:#000;}
 
     <div class="field">
       <label>Receipt (optional)</label>
-      <div class="receipt-row" id="receiptRow">
-        <button type="button" class="receipt-add-btn" id="receiptAddBtn">+ Attach photo</button>
-      </div>
+      <div class="receipt-row" id="receiptRow"></div>
       <input type="file" id="receiptFile" accept="image/*">
     </div>
 
@@ -312,30 +273,41 @@ body.dark .switch input:checked + .switch-slider:before{background:#000;}
   </div>
 </div>
 
-<div class="overlay" id="settingsOverlay">
+<!-- Add / edit person profile -->
+<div class="overlay" id="personOverlay">
   <div class="sheet" role="dialog" aria-modal="true">
-    <h2>Settings</h2>
-    <div class="backup-action">
-      <div><div class="ba-title">Dark Mode</div><div class="ba-sub">Switch the app to a dark color theme.</div></div>
-      <label class="switch"><input type="checkbox" id="darkModeToggle"><span class="switch-slider"></span></label>
+    <h2 id="personSheetTitle">Edit Person</h2>
+    <div class="err" id="personErr"></div>
+    <div class="field-desc" id="personStats"></div>
+
+    <div class="field">
+      <label for="pName">Name</label>
+      <input type="text" id="pName" placeholder="Full name" autocomplete="off">
     </div>
-    <div class="backup-action" id="deleteAllRow" style="border-color:#B00020;">
-      <div><div class="ba-title" style="color:#B00020;">Delete All Data</div><div class="ba-sub">Erases every person, transaction, and receipt. Cannot be undone.</div></div>
-      <button class="backup-btn" id="deleteAllBtn" style="background:#B00020;color:#fff;">Delete All</button>
+    <div class="field">
+      <label for="pPhone">Phone (optional)</label>
+      <input type="text" id="pPhone" placeholder="e.g. 9123 4567" inputmode="tel" autocomplete="off">
     </div>
-    <div class="btn-row" style="margin-top:6px;">
-      <button class="btn btn-secondary" id="closeSettingsBtn">Close</button>
+    <div class="field">
+      <label for="pNote">Notes (optional)</label>
+      <input type="text" id="pNote" placeholder="e.g. Colleague, splits taxi fares" autocomplete="off">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-danger" id="personDeleteBtn">Delete</button>
+      <button class="btn btn-secondary" id="personCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="personSaveBtn">Save</button>
     </div>
   </div>
 </div>
 
 <div class="overlay" id="confirmOverlay">
   <div class="sheet" role="dialog" aria-modal="true">
-    <h2 id="confirmTitle">Are you sure?</h2>
+    <h2>Are you sure?</h2>
     <div class="field-desc" id="confirmMsg"></div>
     <div class="btn-row">
       <button class="btn btn-secondary" id="confirmNoBtn">Cancel</button>
-      <button class="btn" id="confirmYesBtn" style="background:#B00020;color:#fff;">Delete</button>
+      <button class="btn btn-confirm" id="confirmYesBtn">Delete</button>
     </div>
   </div>
 </div>
@@ -343,23 +315,60 @@ body.dark .switch input:checked + .switch-slider:before{background:#000;}
 <div class="overlay" id="backupOverlay">
   <div class="sheet" role="dialog" aria-modal="true">
     <h2>Backup &amp; Restore</h2>
-    <div class="field-desc" id="storageNote">Data — including receipt photos — is stored in this browser. Export a backup regularly so you never lose the ledger if browser storage is cleared.</div>
-    <div class="backup-action">
-      <div><div class="ba-title">Export Backup</div><div class="ba-sub">Full .json file — restores everything</div></div>
-      <button class="backup-btn" id="exportBtn">Export</button>
+    <div class="field-desc" id="storageNote">Data — including receipt photos — is stored in this browser. Export a backup regularly so you never lose the ledger.</div>
+    <div class="row-action">
+      <div><div class="ra-title">Export Backup</div><div class="ra-sub">Full .json — restores everything</div></div>
+      <button class="ra-btn" id="exportBtn">Export</button>
     </div>
-    <div class="backup-action">
-      <div><div class="ba-title">Export to Excel</div><div class="ba-sub">.csv of every transaction</div></div>
-      <button class="backup-btn secondary" id="csvBtn">CSV</button>
+    <div class="row-action">
+      <div><div class="ra-title">Export to Excel</div><div class="ra-sub">.csv of every transaction</div></div>
+      <button class="ra-btn secondary" id="csvBtn">CSV</button>
     </div>
-    <div class="backup-action">
-      <div><div class="ba-title">Import Backup</div><div class="ba-sub">Replaces current data with the file</div></div>
-      <button class="backup-btn secondary" id="importBtn">Import</button>
+    <div class="row-action">
+      <div><div class="ra-title">Import Backup</div><div class="ra-sub">Replaces current data with the file</div></div>
+      <button class="ra-btn secondary" id="importBtn">Import</button>
     </div>
     <input type="file" id="importFile" accept=".json,application/json">
-    <div class="btn-row" style="margin-top:6px;">
-      <button class="btn btn-secondary" id="closeBackupBtn">Close</button>
+    <div class="btn-row"><button class="btn btn-secondary" id="closeBackupBtn">Close</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="settingsOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2>Settings</h2>
+    <div class="row-action">
+      <div><div class="ra-title">Dark Mode</div><div class="ra-sub">Switch to a dark colour theme.</div></div>
+      <label class="switch"><input type="checkbox" id="darkModeToggle" aria-label="Dark mode"><span class="switch-slider"></span></label>
     </div>
+    <div class="row-action">
+      <div><div class="ra-title">Add Person</div><div class="ra-sub">Create a profile without logging a debt.</div></div>
+      <button class="ra-btn secondary" id="addPersonBtn">Add</button>
+    </div>
+    <div class="row-action">
+      <div><div class="ra-title">Payment Methods</div><div class="ra-sub">Rename or remove payment types.</div></div>
+      <button class="ra-btn secondary" id="paymentTypesBtn">Edit</button>
+    </div>
+    <div class="row-action" style="border-color:#B00020;">
+      <div><div class="ra-title" style="color:#B00020;">Delete All Data</div><div class="ra-sub">Erases every person, transaction, and receipt.</div></div>
+      <button class="ra-btn danger" id="deleteAllBtn">Delete All</button>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" id="closeSettingsBtn">Close</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="paymentTypesOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2>Payment Methods</h2>
+    <div class="err" id="ptErr"></div>
+    <div id="ptList"></div>
+    <div class="field" style="margin-top:4px;">
+      <label for="ptNewInput">Add new</label>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="ptNewInput" placeholder="e.g. GrabPay" autocomplete="off" style="flex:1;">
+        <button class="ra-btn" id="ptAddBtn" type="button" style="flex-shrink:0;">Add</button>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" id="ptCloseBtn">Close</button></div>
   </div>
 </div>
 
@@ -375,180 +384,109 @@ body.dark .switch input:checked + .switch-slider:before{background:#000;}
 "use strict";
 
 /* ================= Config ================= */
-var LS_KEY = "debtTrackerData_v2";
+var LS_KEY = "debtTrackerData_v2", THEME_KEY = "debtTrackerTheme_v1";
 var DEFAULT_METHODS = ["Cash","PayNow","Card"];
 var TYPE_LABELS = {owed_to_me:"Owed to Me", i_owe:"I Owe"};
-var TYPE_HINTS = {
-  owed_to_me:"This person owes you this amount.",
-  i_owe:"You owe this person this amount."
-};
-
-/* Catch-all: any unexpected error surfaces to the user instead of failing silently. */
-window.addEventListener("error", function(e){
-  showError("Something went wrong: " + (e && e.message ? e.message : "unexpected error"));
-});
-window.addEventListener("unhandledrejection", function(e){
-  var m = e && e.reason && e.reason.message ? e.reason.message : "unexpected error";
-  showError("Something went wrong: " + m);
-});
-
+var TYPE_HINTS = {owed_to_me:"This person owes you this amount.", i_owe:"You owe this person this amount."};
+var SWIPE_OPEN = -84;
 
 var $ = function(id){ return document.getElementById(id); };
+function el(t){ return t && t.nodeType === 1 ? t : (t && t.parentElement) || null; }
 
 /* ================= State ================= */
 var state = blank();
-var storageAvailable = false;
-var currentTab = "overview";
-var openPersonId = null;
-var editingTxnId = null;
-var pendingReceipt = null; /* data URL of the compressed receipt image, or null */
-
-var SWIPE_OPEN = -84;
-var swipeState = { el:null, wrap:null, startX:0, startY:0, curX:0, dragging:false, locked:null, openWrap:null };
-function closeSwipe(){
-  if(swipeState.openWrap){
-    var c = swipeState.openWrap.querySelector(".swipe-content");
-    if(c){ c.style.transition = "transform .18s ease"; c.style.transform = "translateX(0)"; }
-    swipeState.openWrap = null;
-  }
-}
-function commitSwipeDelete(wrap){
-  var c = wrap.querySelector(".swipe-content");
-  if(!c) return;
-  var id = parseInt(wrap.dataset.id, 10), kind = wrap.dataset.kind;
-  var dist = -(wrap.offsetWidth + 40);
-  c.style.transition = "transform .22s ease, opacity .22s ease .05s";
-  c.style.transform = "translateX(" + dist + "px)";
-  c.style.opacity = "0";
-  var done = false;
-  function finish(){
-    if(done) return;
-    done = true;
-    if(kind === "person"){
-      var p = state.people.find(function(x){ return x.id === id; });
-      state.people = state.people.filter(function(x){ return x.id !== id; });
-      state.transactions = state.transactions.filter(function(t){ return t.person_id !== id; });
-      if(openPersonId === id) openPersonId = null;
-      toast(p ? (p.name + " deleted.") : "Person deleted.");
-    }else{
-      state.transactions = state.transactions.filter(function(x){ return x.id !== id; });
-      toast("Transaction deleted.");
-    }
-    if(swipeState.openWrap === wrap) swipeState.openWrap = null;
-    persist(); refreshAll();
-  }
-  c.addEventListener("transitionend", finish, {once:true});
-  setTimeout(finish, 320);
-}
-var selectedType = null;
+var storageAvailable = false, currentTab = "overview";
+var openPersonId = null, editingTxnId = null, editingPersonId = null;
+var pendingReceipt = null, selectedType = null;
 
 /* Derived indexes — rebuilt once per data change, not per render. */
-var balanceOf = new Map();   // personId -> balance
-var txnsOf = new Map();      // personId -> sorted txns
-var sortedTxns = [];         // all txns, newest first
-var totals = {owed:0, iowe:0};
+var balanceOf = new Map(), txnsOf = new Map(), nameOf = new Map();
+var sortedTxns = [], totals = {owed:0, iowe:0};
 
 function blank(){
   return {people:[], paymentTypes:DEFAULT_METHODS.slice(), transactions:[], nextPersonId:1, nextTxnId:1};
 }
 
-/* Repairs any legacy/corrupt file instead of trusting it blindly. */
+/* Repairs legacy/corrupt data instead of trusting it blindly. */
 function normalize(raw){
   var s = blank();
   if(!raw || typeof raw !== "object") return s;
 
-  if(Array.isArray(raw.people)){
-    var seen = new Set();
-    raw.people.forEach(function(p){
-      if(!p || p.id == null || !p.name) return;
-      var id = parseInt(p.id, 10);
-      if(isNaN(id) || seen.has(id)) return;
-      seen.add(id);
-      s.people.push({id:id, name:String(p.name)});
-    });
-  }
+  var seenP = new Set();
+  (Array.isArray(raw.people) ? raw.people : []).forEach(function(p){
+    if(!p || p.name == null) return;
+    var id = parseInt(p.id, 10), name = String(p.name).trim();
+    if(isNaN(id) || !name || seenP.has(id)) return;
+    seenP.add(id);
+    s.people.push({id:id, name:name, phone:p.phone ? String(p.phone) : "", note:p.note ? String(p.note) : ""});
+  });
+
   if(Array.isArray(raw.paymentTypes) && raw.paymentTypes.length){
-    s.paymentTypes = Array.from(new Set(raw.paymentTypes.map(String).filter(Boolean)));
+    s.paymentTypes = Array.from(new Set(raw.paymentTypes.map(String).map(function(m){ return m.trim(); }).filter(Boolean)));
   }
-  if(Array.isArray(raw.transactions)){
-    var ids = new Set(s.people.map(function(p){ return p.id; }));
-    raw.transactions.forEach(function(t){
-      if(!t || !TYPE_LABELS[t.type]) return;
-      var pid = parseInt(t.person_id, 10);
-      var amt = round2(parseFloat(t.amount));
-      if(isNaN(pid) || !ids.has(pid) || !(amt > 0)) return;
-      var d = new Date(t.txn_date);
-      s.transactions.push({
-        id: parseInt(t.id, 10) || (s.transactions.length + 1),
-        person_id: pid,
-        type: t.type,
-        amount: amt,
-        payment_type: t.payment_type ? String(t.payment_type) : "",
-        note: t.note ? String(t.note) : "",
-        txn_date: isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString(),
-        created_at: t.created_at || new Date().toISOString(),
-        edited: t.edited ? 1 : 0,
-        receipt: (typeof t.receipt === "string" && t.receipt.indexOf("data:image/") === 0) ? t.receipt : null
-      });
+
+  var seenT = new Set(), fallbackId = 1;
+  (Array.isArray(raw.transactions) ? raw.transactions : []).forEach(function(t){
+    if(!t || !TYPE_LABELS[t.type]) return;
+    var pid = parseInt(t.person_id, 10), amt = round2(parseFloat(t.amount));
+    if(isNaN(pid) || !seenP.has(pid) || !(amt > 0)) return;
+    /* Never reuse an id — duplicate ids broke edit/delete in the old build. */
+    var id = parseInt(t.id, 10);
+    if(isNaN(id) || seenT.has(id)){ while(seenT.has(fallbackId)) fallbackId++; id = fallbackId; }
+    seenT.add(id);
+    var d = new Date(t.txn_date);
+    s.transactions.push({
+      id:id, person_id:pid, type:t.type, amount:amt,
+      payment_type: t.payment_type ? String(t.payment_type) : "",
+      note: t.note ? String(t.note) : "",
+      txn_date: isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString(),
+      created_at: t.created_at || new Date().toISOString(),
+      edited: t.edited ? 1 : 0,
+      edited_at: t.edited_at || null,
+      receipt: (typeof t.receipt === "string" && t.receipt.indexOf("data:image/") === 0) ? t.receipt : null
     });
-  }
-  /* Rebuild counters from the data — never trust a stale/missing counter. */
+  });
+
+  /* Rebuild counters from data — never trust a stale counter. */
   s.nextPersonId = s.people.reduce(function(m,p){ return Math.max(m, p.id + 1); }, 1);
   s.nextTxnId = s.transactions.reduce(function(m,t){ return Math.max(m, t.id + 1); }, 1);
   return s;
 }
 
-var THEME_KEY = "debtTrackerTheme_v1";
+/* ================= Storage ================= */
 function loadTheme(){
-  try{
-    if(localStorage.getItem(THEME_KEY) === "dark") document.body.classList.add("dark");
-  }catch(e){}
+  try{ if(localStorage.getItem(THEME_KEY) === "dark") document.body.classList.add("dark"); }catch(e){}
 }
 function setTheme(dark){
   document.body.classList.toggle("dark", dark);
   try{ localStorage.setItem(THEME_KEY, dark ? "dark" : "light"); }catch(e){}
 }
-
-function probeStorage(){
-  try{
-    var k = "__dt_probe__";
-    localStorage.setItem(k, "1");
-    localStorage.removeItem(k);
-    return true;
-  }catch(e){ return false; }
-}
-
 function loadState(){
-  storageAvailable = probeStorage();
+  try{
+    localStorage.setItem("__dt_probe__","1"); localStorage.removeItem("__dt_probe__");
+    storageAvailable = true;
+  }catch(e){ storageAvailable = false; }
   try{
     var raw = localStorage.getItem(LS_KEY);
     state = normalize(raw ? JSON.parse(raw) : null);
-  }catch(e){
-    state = blank();
-  }
+  }catch(e){ state = blank(); }
 }
-
 function persist(){
   if(!storageAvailable) return;
-  try{
-    localStorage.setItem(LS_KEY, JSON.stringify(state));
-  }catch(e){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+  catch(e){
     if(e && (e.name === "QuotaExceededError" || e.code === 22)){
-      toast("Storage is full — try removing a receipt photo or export a backup and clear old entries.");
-    }else{
-      storageAvailable = false;
-      showBanner();
-    }
+      showError("Storage is full — remove a receipt photo or export and clear old entries.");
+    }else{ storageAvailable = false; showBanner(); }
   }
 }
-
 function showBanner(){
   if($("privateBanner")) return;
-  var msg = location.protocol === "file:"
-    ? "⚠️ Opened as a local file — this browser will not save your data. Host the page or use <b>Export</b> before closing."
-    : "⚠️ Storage is blocked (Private Browsing?) — data will NOT be saved. Use <b>Export</b> before you leave, and <b>Import</b> to restore.";
   var b = document.createElement("div");
-  b.id = "privateBanner"; b.className = "banner"; b.innerHTML = msg;
+  b.id = "privateBanner"; b.className = "banner";
+  b.innerHTML = location.protocol === "file:"
+    ? "⚠️ Opened as a local file — this browser will not save your data. Use <b>Export</b> before closing."
+    : "⚠️ Storage is blocked (Private Browsing?) — data will NOT be saved. Use <b>Export</b> before you leave.";
   $("bannerSlot").appendChild(b);
 }
 
@@ -557,113 +495,56 @@ function round2(n){ return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
 function money(n){ return "S$" + Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function signedAmount(t){ return t.type === "owed_to_me" ? t.amount : -t.amount; }
 
-/* Forces amount entry into whole cents so decimals are always exact (e.g. typing "500" -> "5.00"). */
-function centsToStr(cents){ cents = Math.max(0, cents|0); return (cents/100).toFixed(2); }
-function setAmountCents(cents){
-  var el = $("amountInput");
-  cents = Math.max(0, cents|0);
-  el.dataset.cents = String(cents);
-  el.value = cents === 0 ? "" : centsToStr(cents);
-}
-function amountCentsValue(){ return parseInt($("amountInput").dataset.cents || "0", 10); }
-
-/* ================= Receipt attachments =================
-   Stored as compressed JPEG data URLs directly in the transaction record, so
-   they travel with normal JSON export/import automatically. Images are
-   downscaled client-side to keep localStorage usage reasonable (~30-120KB
-   each rather than multi-MB camera originals). */
-function compressImage(file, cb){
-  var reader = new FileReader();
-  reader.onload = function(e){
-    var img = new Image();
-    img.onload = function(){
-      var maxDim = 1280;
-      var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-      var w = Math.round(img.width * scale), h = Math.round(img.height * scale);
-      var canvas = document.createElement("canvas");
-      canvas.width = w; canvas.height = h;
-      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-      cb(canvas.toDataURL("image/jpeg", 0.72));
-    };
-    img.onerror = function(){ cb(null); };
-    img.src = e.target.result;
-  };
-  reader.onerror = function(){ cb(null); };
-  reader.readAsDataURL(file);
-}
-function setReceipt(dataUrl){
-  pendingReceipt = dataUrl;
-  var row = $("receiptRow");
-  if(dataUrl){
-    row.innerHTML = '<img class="receipt-thumb" id="receiptThumb" src="' + dataUrl + '" alt="Receipt preview">'
-      + '<div><div class="receipt-status">Attached</div>'
-      + '<button type="button" class="receipt-remove" id="receiptRemoveBtn">Remove</button></div>';
-    $("receiptThumb").addEventListener("click", function(){ openLightbox(dataUrl); });
-    $("receiptRemoveBtn").addEventListener("click", function(){ setReceipt(null); });
-  }else{
-    row.innerHTML = '<button type="button" class="receipt-add-btn" id="receiptAddBtn">+ Attach photo</button>';
-    $("receiptAddBtn").addEventListener("click", function(){ $("receiptFile").click(); });
-  }
-}
-function openLightbox(dataUrl){
-  $("lightboxImg").src = dataUrl;
-  $("lightbox").classList.add("open");
-}
-function closeLightbox(){ $("lightbox").classList.remove("open"); $("lightboxImg").src = ""; }
-
 var ESC = {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};
 function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return ESC[c]; }); }
 
-function nowLocal(){
-  var d = new Date(), pad = function(n){ return String(n).padStart(2,"0"); };
-  return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes());
-}
-function isoToLocalInput(iso){
-  var d = new Date(iso), pad = function(n){ return String(n).padStart(2,"0"); };
-  if(isNaN(d.getTime())) return nowLocal();
+var pad = function(n){ return String(n).padStart(2,"0"); };
+function localInput(iso){
+  var d = iso ? new Date(iso) : new Date();
+  if(isNaN(d.getTime())) d = new Date();
   return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes());
 }
 var dFmt = new Intl.DateTimeFormat(undefined,{year:"numeric",month:"short",day:"numeric"});
 var tFmt = new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit"});
-function fmtDateTime(iso){
-  var d = new Date(iso);
-  return dFmt.format(d) + " · " + tFmt.format(d);
-}
+function fmtDateTime(iso){ var d = new Date(iso); return dFmt.format(d) + " · " + tFmt.format(d); }
+
 function toast(msg, isError){
-  var el = $("toast");
-  el.textContent = msg;
-  el.classList.toggle("error", !!isError);
-  el.classList.add("show");
-  clearTimeout(el._t);
-  el._t = setTimeout(function(){ el.classList.remove("show"); }, isError ? 3800 : 2200);
+  var t = $("toast");
+  t.textContent = msg;
+  t.classList.toggle("error", !!isError);
+  t.classList.add("show");
+  clearTimeout(t._t);
+  t._t = setTimeout(function(){ t.classList.remove("show"); }, isError ? 3800 : 2200);
 }
 function showError(msg){ toast(msg, true); }
 
-function peopleSorted(){
-  return state.people.slice().sort(function(a,b){ return a.name.localeCompare(b.name); });
-}
-function methodsSorted(){
-  return state.paymentTypes.slice().sort(function(a,b){ return a.localeCompare(b); });
-}
+/* Any unexpected error surfaces to the user instead of failing silently. */
+window.addEventListener("error", function(e){
+  showError("Something went wrong: " + ((e && e.message) || "unexpected error"));
+});
+window.addEventListener("unhandledrejection", function(e){
+  showError("Something went wrong: " + ((e && e.reason && e.reason.message) || "unexpected error"));
+});
+
+function byName(a,b){ return a.name.localeCompare(b.name); }
+function peopleSorted(){ return state.people.slice().sort(byName); }
+function findPerson(id){ return state.people.find(function(p){ return p.id === id; }); }
+function findTxn(id){ return state.transactions.find(function(t){ return t.id === id; }); }
 
 /* Single pass over transactions builds every number the UI needs. */
 function reindex(){
-  balanceOf = new Map();
-  txnsOf = new Map();
+  balanceOf = new Map(); txnsOf = new Map(); nameOf = new Map();
   totals = {owed:0, iowe:0};
-
-  state.people.forEach(function(p){ balanceOf.set(p.id, 0); txnsOf.set(p.id, []); });
+  state.people.forEach(function(p){ balanceOf.set(p.id, 0); txnsOf.set(p.id, []); nameOf.set(p.id, p.name); });
 
   sortedTxns = state.transactions.slice().sort(function(a,b){
     return a.txn_date < b.txn_date ? 1 : a.txn_date > b.txn_date ? -1 : b.id - a.id;
   });
-
   sortedTxns.forEach(function(t){
     if(!balanceOf.has(t.person_id)) return;
     balanceOf.set(t.person_id, round2(balanceOf.get(t.person_id) + signedAmount(t)));
     txnsOf.get(t.person_id).push(t);
   });
-
   balanceOf.forEach(function(bal){
     if(bal > 0) totals.owed = round2(totals.owed + bal);
     else if(bal < 0) totals.iowe = round2(totals.iowe - bal);
@@ -671,6 +552,8 @@ function reindex(){
 }
 
 /* ================= Render ================= */
+var EDIT_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+
 function renderSummary(){
   var net = round2(totals.owed - totals.iowe);
   $("netBalance").textContent = (net < 0 ? "-" : "") + money(net);
@@ -679,96 +562,82 @@ function renderSummary(){
 
 function renderPeople(){
   var list = $("peopleList");
-  if(state.people.length === 0){
+  if(!state.people.length){
     list.innerHTML = '<div class="empty"><div class="big">No one on the ledger yet</div><div>Tap + to record your first debt.</div></div>';
     return;
   }
   var sorted = state.people.slice().sort(function(a,b){
     var d = Math.abs(balanceOf.get(b.id)) - Math.abs(balanceOf.get(a.id));
-    return d !== 0 ? d : a.name.localeCompare(b.name);
+    return d !== 0 ? d : byName(a,b);
   });
 
-  var out = "";
-  for(var i = 0; i < sorted.length; i++){
-    var p = sorted[i];
-    var bal = balanceOf.get(p.id);
+  list.innerHTML = sorted.map(function(p){
+    var bal = balanceOf.get(p.id), txns = txnsOf.get(p.id);
     var cls = bal > 0 ? "pos" : bal < 0 ? "neg" : "zero";
     var label = bal > 0 ? "Owed to you" : bal < 0 ? "You owe" : "Settled";
-    var txns = txnsOf.get(p.id);
-    var open = openPersonId === p.id;
+    var profile = [p.phone, p.note].filter(Boolean).map(esc).join(" · ");
 
-    out += '<div class="person-card">'
-      + '<div class="swipe-wrap" data-id="' + p.id + '" data-kind="person">'
-        + '<div class="swipe-delete-bg" data-act="swipedelete" data-id="' + p.id + '">Delete</div>'
-        + '<div class="person-row swipe-content" data-act="person" data-id="' + p.id + '">'
-          + '<div><div class="person-name">' + esc(p.name) + '</div>'
-          + '<div class="person-meta">' + txns.length + ' transaction' + (txns.length !== 1 ? "s" : "") + ' · ' + label + '</div></div>'
-          + '<div class="balance ' + cls + '">' + (bal === 0 ? "Settled" : money(bal)) + '</div>'
-        + '</div>'
-      + '</div>';
+    var html = '<div class="person-card"><div class="swipe-wrap" data-id="'+p.id+'" data-kind="person">'
+      + '<div class="swipe-delete-bg" data-act="swipedelete" data-id="'+p.id+'">Delete</div>'
+      + '<div class="person-row swipe-content" data-act="person" data-id="'+p.id+'">'
+        + '<div><div class="person-name">'+esc(p.name)+'</div>'
+        + '<div class="person-meta">'+txns.length+' transaction'+(txns.length !== 1 ? "s" : "")+' · '+label+'</div></div>'
+        + '<div class="person-right"><div class="balance '+cls+'">'+(bal === 0 ? "Settled" : money(bal))+'</div>'
+        + '<button class="mini-btn" data-act="editperson" data-id="'+p.id+'" aria-label="Edit '+esc(p.name)+'">'+EDIT_ICON+'</button>'
+        + '</div></div></div>';
 
-    if(open){
-      out += '<div class="person-detail">'
-        + (txns.length === 0 ? '<div class="txn-note">No transactions yet.</div>' : txns.map(function(t){ return txnRow(t, false); }).join(""))
+    if(openPersonId === p.id){
+      html += '<div class="person-detail">'
+        + (profile ? '<div class="person-profile">'+profile+'</div>' : "")
+        + (txns.length ? txns.map(function(t){ return txnRow(t, false); }).join("") : '<div class="txn-note">No transactions yet.</div>')
         + '</div>';
     }
-    out += '</div>';
-  }
-  list.innerHTML = out;
+    return html + '</div>';
+  }).join("");
 }
 
 function txnRow(t, showPerson){
   var credit = t.type === "owed_to_me";
-  var name = "";
-  if(showPerson){
-    var p = state.people.find(function(x){ return x.id === t.person_id; });
-    name = '<div class="txn-person">' + esc(p ? p.name : "—") + '</div>';
-  }
-  return '<div class="swipe-wrap" data-id="' + t.id + '" data-kind="txn">'
-    + '<div class="swipe-delete-bg" data-act="swipedelete" data-id="' + t.id + '">Delete</div>'
-    + '<div class="txn swipe-content" data-act="txn" data-id="' + t.id + '">'
-    + '<div class="txn-left">'
-      + '<div class="txn-type">' + TYPE_LABELS[t.type] + '</div>'
-      + name
-      + (t.note ? '<div class="txn-note">' + esc(t.note) + '</div>' : "")
-      + '<div class="txn-meta"><div class="txn-date">' + fmtDateTime(t.txn_date) + '</div>'
-      + (t.payment_type ? '<div class="txn-method">' + esc(t.payment_type) + '</div>' : "")
-      + (t.receipt ? '<div class="txn-receipt-badge" data-act="receipt" data-id="' + t.id + '">📎 Receipt</div>' : "")
-      + '</div>'
-    + '</div>'
-    + '<div class="txn-right">'
-      + '<div class="txn-amt ' + (credit ? "" : "debit") + '">' + (credit ? "+" : "-") + money(t.amount) + '</div>'
-      + (t.edited ? '<div class="txn-edited">Edited</div>' : "")
+  return '<div class="swipe-wrap" data-id="'+t.id+'" data-kind="txn">'
+    + '<div class="swipe-delete-bg" data-act="swipedelete" data-id="'+t.id+'">Delete</div>'
+    + '<div class="txn swipe-content" data-act="txn" data-id="'+t.id+'"><div class="txn-left">'
+      + '<div class="txn-type">'+TYPE_LABELS[t.type]+'</div>'
+      + (showPerson ? '<div class="txn-person">'+esc(nameOf.get(t.person_id) || "—")+'</div>' : "")
+      + (t.note ? '<div class="txn-note">'+esc(t.note)+'</div>' : "")
+      + '<div class="txn-meta"><div class="txn-date">'+fmtDateTime(t.txn_date)+'</div>'
+      + (t.payment_type ? '<div class="txn-method">'+esc(t.payment_type)+'</div>' : "")
+      + (t.receipt ? '<div class="txn-receipt-badge" data-act="receipt" data-id="'+t.id+'">📎 Receipt</div>' : "")
+      + '</div></div><div class="txn-right">'
+      + '<div class="txn-amt '+(credit ? "" : "debit")+'">'+(credit ? "+" : "-")+money(t.amount)+'</div>'
+      + (t.edited ? '<div class="txn-edited" title="Edited '+(t.edited_at ? fmtDateTime(t.edited_at) : "")+'">Edited '+(t.edited_at ? fmtDateTime(t.edited_at) : "")+'</div>' : "")
     + '</div></div></div>';
 }
 
 function renderHistory(){
   var sel = $("fPerson"), cur = sel.value;
   sel.innerHTML = '<option value="all">All people</option>' + peopleSorted().map(function(p){
-    return '<option value="' + p.id + '">' + esc(p.name) + '</option>';
+    return '<option value="'+p.id+'">'+esc(p.name)+'</option>';
   }).join("");
-  var match = Array.prototype.some.call(sel.options, function(o){ return o.value === cur; });
-  sel.value = match ? cur : "all";
+  sel.value = Array.prototype.some.call(sel.options, function(o){ return o.value === cur; }) ? cur : "all";
 
-  var names = new Map(state.people.map(function(p){ return [p.id, p.name]; }));
-  var pf = sel.value, tf = $("fType").value;
-  var q = $("fSearch").value.trim().toLowerCase();
-  var dFrom = $("fDateFrom").value ? new Date($("fDateFrom").value + "T00:00:00") : null;
-  var dTo = $("fDateTo").value ? new Date($("fDateTo").value + "T23:59:59") : null;
+  var pf = sel.value, tf = $("fType").value, q = $("fSearch").value.trim().toLowerCase();
+  var from = $("fDateFrom").value ? new Date($("fDateFrom").value + "T00:00:00") : null;
+  var to = $("fDateTo").value ? new Date($("fDateTo").value + "T23:59:59") : null;
+  if(from && to && from > to){ var tmp = from; from = to; to = tmp; }
 
-  var rows = sortedTxns;
-  if(pf !== "all") rows = rows.filter(function(t){ return String(t.person_id) === pf; });
-  if(tf !== "all") rows = rows.filter(function(t){ return t.type === tf; });
-  if(q) rows = rows.filter(function(t){
-    var hay = (t.note + " " + t.payment_type + " " + (names.get(t.person_id) || "")).toLowerCase();
-    return hay.indexOf(q) !== -1;
+  var rows = sortedTxns.filter(function(t){
+    if(pf !== "all" && String(t.person_id) !== pf) return false;
+    if(tf !== "all" && t.type !== tf) return false;
+    if(q && (t.note + " " + t.payment_type + " " + (nameOf.get(t.person_id) || "")).toLowerCase().indexOf(q) === -1) return false;
+    var d = new Date(t.txn_date);
+    if(from && d < from) return false;
+    if(to && d > to) return false;
+    return true;
   });
-  if(dFrom) rows = rows.filter(function(t){ return new Date(t.txn_date) >= dFrom; });
-  if(dTo) rows = rows.filter(function(t){ return new Date(t.txn_date) <= dTo; });
 
-  $("historyList").innerHTML = rows.length === 0
-    ? '<div class="empty"><div class="big">No matching transactions</div><div>Try adjusting your search or filters.</div></div>'
-    : '<div class="person-card">' + rows.map(function(t){ return txnRow(t, true); }).join("") + '</div>';
+  $("historyList").innerHTML = rows.length
+    ? '<div class="person-card">' + rows.map(function(t){ return txnRow(t, true); }).join("") + '</div>'
+    : '<div class="empty"><div class="big">No matching transactions</div><div>Try adjusting your search or filters.</div></div>';
 }
 
 function refreshAll(){
@@ -778,346 +647,185 @@ function refreshAll(){
 }
 
 /* ================= Overlays ================= */
-function openOverlay(el){ el.classList.add("open"); document.body.classList.add("locked"); }
-function closeOverlay(el){ el.classList.remove("open"); document.body.classList.remove("locked"); }
+var overlay = $("overlay"), personOverlay = $("personOverlay"), confirmOverlay = $("confirmOverlay"),
+    backupOverlay = $("backupOverlay"), settingsOverlay = $("settingsOverlay"), paymentTypesOverlay = $("paymentTypesOverlay");
 
-var confirmOverlay = $("confirmOverlay");
-var pendingConfirmAction = null;
+/* Scroll lock is derived from what's actually open — stacked sheets used to unlock the body early. */
+function syncLock(){
+  document.body.classList.toggle("locked", !!document.querySelector(".overlay.open, .lightbox.open"));
+}
+function openOverlay(o){ o.classList.add("open"); syncLock(); }
+function closeOverlay(o){ o.classList.remove("open"); syncLock(); }
+
+var pendingConfirm = null;
 function appConfirm(msg, action, yesLabel){
   $("confirmMsg").textContent = msg;
   $("confirmYesBtn").textContent = yesLabel || "Delete";
-  pendingConfirmAction = action;
+  pendingConfirm = action;
   openOverlay(confirmOverlay);
 }
-$("confirmNoBtn").addEventListener("click", function(){ pendingConfirmAction = null; closeOverlay(confirmOverlay); });
+function cancelConfirm(){ pendingConfirm = null; closeOverlay(confirmOverlay); }
+$("confirmNoBtn").addEventListener("click", cancelConfirm);
 $("confirmYesBtn").addEventListener("click", function(){
-  var a = pendingConfirmAction; pendingConfirmAction = null;
+  var a = pendingConfirm; pendingConfirm = null;
   closeOverlay(confirmOverlay);
   if(a) a();
 });
-confirmOverlay.addEventListener("click", function(e){ if(e.target === confirmOverlay){ pendingConfirmAction = null; closeOverlay(confirmOverlay); } });
 
-var overlay = $("overlay");
-var backupOverlay = $("backupOverlay");
-var personSelect = $("personSelect");
-var newPersonName = $("newPersonName");
-var methodSelect = $("methodSelect");
-var newMethodName = $("newMethodName");
-var dateInput = $("dateInput");
-var typeGrid = $("typeGrid");
+[[overlay, closeSheet], [personOverlay, closePersonSheet], [confirmOverlay, cancelConfirm],
+ [backupOverlay, function(){ closeOverlay(backupOverlay); }],
+ [settingsOverlay, function(){ closeOverlay(settingsOverlay); }],
+ [paymentTypesOverlay, function(){ closeOverlay(paymentTypesOverlay); }]].forEach(function(pair){
+  pair[0].addEventListener("click", function(e){ if(e.target === pair[0]) pair[1](); });
+});
+
+/* ================= Receipts =================
+   Compressed JPEG data URLs live on the transaction, so they travel with JSON export. */
+function compressImage(file, cb){
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      var max = 1100, scale = Math.min(1, max / Math.max(img.width, img.height));
+      var w = Math.round(img.width * scale) || 1, h = Math.round(img.height * scale) || 1;
+      var c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      try{ cb(c.toDataURL("image/jpeg", 0.7)); }catch(err){ cb(null); }
+    };
+    img.onerror = function(){ cb(null); };
+    img.src = e.target.result;
+  };
+  reader.onerror = function(){ cb(null); };
+  reader.readAsDataURL(file);
+}
+function setReceipt(dataUrl){
+  pendingReceipt = dataUrl || null;
+  var row = $("receiptRow");
+  if(pendingReceipt){
+    row.innerHTML = '<img class="receipt-thumb" id="receiptThumb" src="'+pendingReceipt+'" alt="Receipt preview">'
+      + '<div><div class="receipt-status">Attached</div>'
+      + '<button type="button" class="receipt-remove" id="receiptRemoveBtn">Remove</button></div>';
+    $("receiptThumb").addEventListener("click", function(){ openLightbox(pendingReceipt); });
+    $("receiptRemoveBtn").addEventListener("click", function(){ setReceipt(null); });
+  }else{
+    row.innerHTML = '<button type="button" class="receipt-add-btn" id="receiptAddBtn">+ Attach photo</button>';
+    $("receiptAddBtn").addEventListener("click", function(){ $("receiptFile").click(); });
+  }
+}
+function openLightbox(src){ $("lightboxImg").src = src; $("lightbox").classList.add("open"); syncLock(); }
+function closeLightbox(){ $("lightbox").classList.remove("open"); $("lightboxImg").src = ""; syncLock(); }
+
+/* ================= Transaction sheet ================= */
+var personSelect = $("personSelect"), newPersonName = $("newPersonName"),
+    methodSelect = $("methodSelect"), newMethodName = $("newMethodName"),
+    dateInput = $("dateInput"), typeGrid = $("typeGrid"), amountInput = $("amountInput");
 
 function setErr(msg){ $("formErr").textContent = msg || ""; }
 
-function populatePersonSelect(){
-  personSelect.innerHTML = '<option value="__new__">+ Add new person</option>' + peopleSorted().map(function(p){
-    return '<option value="' + p.id + '">' + esc(p.name) + '</option>';
-  }).join("");
+function centsToStr(c){ return (Math.max(0, c|0)/100).toFixed(2); }
+function setAmountCents(c){
+  c = Math.max(0, c|0);
+  amountInput.dataset.cents = String(c);
+  amountInput.value = c === 0 ? "" : centsToStr(c);
+}
+function amountCents(){ return parseInt(amountInput.dataset.cents || "0", 10) || 0; }
+
+function populatePersonSelect(selectedId){
+  var opts = state.people.length ? '<option value="">Select person…</option>' : "";
+  personSelect.innerHTML = opts + peopleSorted().map(function(p){
+    return '<option value="'+p.id+'">'+esc(p.name)+'</option>';
+  }).join("") + '<option value="__new__">+ Add new person</option>';
+  personSelect.value = selectedId != null ? String(selectedId) : (state.people.length ? "" : "__new__");
+  newPersonName.style.display = personSelect.value === "__new__" ? "block" : "none";
 }
 function populateMethodSelect(selected){
-  var methods = methodsSorted();
+  var methods = state.paymentTypes.slice().sort(function(a,b){ return a.localeCompare(b); });
   if(selected && methods.indexOf(selected) === -1) methods.push(selected);
   methodSelect.innerHTML = '<option value="__none__">Not specified</option>'
-    + methods.map(function(m){ return '<option value="' + esc(m) + '">' + esc(m) + '</option>'; }).join("")
+    + methods.map(function(m){ return '<option value="'+esc(m)+'">'+esc(m)+'</option>'; }).join("")
     + '<option value="__new__">+ Add new payment type</option>';
   methodSelect.value = selected || "__none__";
   newMethodName.style.display = "none";
+  newMethodName.value = "";
+}
+function setTypeUI(type, locked){
+  selectedType = type || null;
+  typeGrid.classList.toggle("locked", !!locked);
+  Array.prototype.forEach.call(typeGrid.children, function(o){
+    o.classList.toggle("selected", !!type && o.dataset.type === type);
+  });
+  $("typeHint").textContent = type ? (TYPE_HINTS[type] || "") : "";
 }
 
 function openAdd(){
-  editingTxnId = null; selectedType = null;
+  editingTxnId = null;
   setErr("");
   $("sheetTitle").textContent = "Add Debt";
   $("deleteBtn").style.display = "none";
-  $("personField").style.display = "block";
-  populatePersonSelect();
-  personSelect.value = "__new__";
-  newPersonName.style.display = "block"; newPersonName.value = "";
+  personSelect.disabled = false;
+  newPersonName.value = "";
+  populatePersonSelect(null);
+  setTypeUI(null, false);
   setAmountCents(0);
   $("noteInput").value = "";
   setReceipt(null);
-  dateInput.value = nowLocal();
+  dateInput.value = localInput();
   dateInput.disabled = false;
   $("dateLockNote").textContent = "Set once — locked after the debt is created.";
-  $("typeHint").textContent = "";
-  populateMethodSelect(null); newMethodName.value = "";
-  typeGrid.classList.remove("locked");
-  Array.prototype.forEach.call(typeGrid.children, function(o){ o.classList.remove("selected"); });
+  populateMethodSelect(null);
   openOverlay(overlay);
 }
 
-function openEdit(txnId){
-  var t = state.transactions.find(function(x){ return x.id === txnId; });
-  if(!t) return;
-  editingTxnId = txnId; selectedType = t.type;
+function openEdit(id){
+  var t = findTxn(id);
+  if(!t) return showError("That transaction no longer exists.");
+  editingTxnId = id;
   setErr("");
   $("sheetTitle").textContent = "Edit Debt";
   $("deleteBtn").style.display = "block";
-  $("personField").style.display = "none";
+  /* Person now stays visible (disabled) — the old build hid it entirely. */
+  populatePersonSelect(t.person_id);
+  personSelect.disabled = true;
+  newPersonName.style.display = "none";
+  setTypeUI(t.type, true);
   setAmountCents(Math.round(t.amount * 100));
   $("noteInput").value = t.note || "";
   setReceipt(t.receipt || null);
-  dateInput.value = isoToLocalInput(t.txn_date);
+  dateInput.value = localInput(t.txn_date);
   dateInput.disabled = true;
   $("dateLockNote").textContent = "Locked — date and time cannot be changed.";
-  $("typeHint").textContent = TYPE_HINTS[t.type] || "";
-  populateMethodSelect(t.payment_type || null); newMethodName.value = "";
-  typeGrid.classList.add("locked");
-  Array.prototype.forEach.call(typeGrid.children, function(o){
-    o.classList.toggle("selected", o.dataset.type === t.type);
-  });
+  populateMethodSelect(t.payment_type || null);
   openOverlay(overlay);
 }
-
 function closeSheet(){ closeOverlay(overlay); editingTxnId = null; setErr(""); }
 
 function resolveMethod(){
   if(methodSelect.value === "__none__") return "";
   if(methodSelect.value === "__new__"){
     var name = newMethodName.value.trim();
-    if(name && !state.paymentTypes.some(function(m){ return m.toLowerCase() === name.toLowerCase(); })){
-      state.paymentTypes.push(name);
-    }
+    if(name && !state.paymentTypes.some(function(m){ return m.toLowerCase() === name.toLowerCase(); })) state.paymentTypes.push(name);
     return name;
   }
   return methodSelect.value;
 }
 
-function addTxn(personId, type, amount, method, note, isoDate, receipt){
-  state.transactions.push({
-    id: state.nextTxnId++,
-    person_id: personId,
-    type: type,
-    amount: round2(amount),
-    payment_type: method || "",
-    note: note || "",
-    txn_date: isoDate,
-    created_at: new Date().toISOString(),
-    edited: 0,
-    receipt: receipt || null
-  });
-}
-
-/* ================= Events ================= */
-/* One delegated listener replaces every inline onclick. */
-document.addEventListener("click", function(e){
-  var el = e.target.closest("[data-act]");
-  var isDeleteBtn = el && el.dataset.act === "swipedelete";
-
-  if(swipeState.openWrap){
-    var withinOpen = swipeState.openWrap.contains(e.target);
-    closeSwipe();
-    if(withinOpen && !isDeleteBtn){
-      e.preventDefault(); e.stopImmediatePropagation();
-      return;
-    }
-  }
-
-  if(!el) return;
-  var id = parseInt(el.dataset.id, 10);
-
-  switch(el.dataset.act){
-    case "person":
-      openPersonId = (openPersonId === id) ? null : id;
-      renderPeople();
-      break;
-    case "swipedelete": {
-      e.stopPropagation();
-      var delWrap = el.closest(".swipe-wrap");
-      if(delWrap) commitSwipeDelete(delWrap);
-      break;
-    }
-    case "txn":
-      e.stopPropagation();
-      openEdit(id);
-      break;
-    case "receipt": {
-      e.stopPropagation();
-      var rt = state.transactions.find(function(x){ return x.id === id; });
-      if(rt && rt.receipt) openLightbox(rt.receipt);
-      break;
-    }
-  }
-});
-
-/* Swipe-to-delete on transaction rows: drag all the way off-screen to delete — no popup, the swipe itself is the confirmation. */
-document.addEventListener("touchstart", function(e){
-  var wrap = e.target.closest(".swipe-wrap");
-  if(!wrap){ closeSwipe(); return; }
-  if(swipeState.openWrap && swipeState.openWrap !== wrap) closeSwipe();
-  var c = wrap.querySelector(".swipe-content");
-  c.style.transition = "none";
-  swipeState.el = c;
-  swipeState.wrap = wrap;
-  swipeState.startX = e.touches[0].clientX;
-  swipeState.startY = e.touches[0].clientY;
-  swipeState.curX = (swipeState.openWrap === wrap) ? SWIPE_OPEN : 0;
-  swipeState.dragging = false;
-  swipeState.locked = null;
-}, {passive:true});
-
-document.addEventListener("touchmove", function(e){
-  if(!swipeState.el) return;
-  var dx = e.touches[0].clientX - swipeState.startX;
-  var dy = e.touches[0].clientY - swipeState.startY;
-  if(swipeState.locked === null){
-    if(Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
-    swipeState.locked = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-  }
-  if(swipeState.locked === "y") return;
-  e.preventDefault();
-  swipeState.dragging = true;
-  var maxOff = -(swipeState.wrap.offsetWidth + 40);
-  var next = swipeState.curX + dx;
-  if(next > 0) next = 0;
-  if(next < maxOff) next = maxOff;
-  swipeState.el.style.transform = "translateX(" + next + "px)";
-  swipeState.el.dataset.tx = next;
-}, {passive:false});
-
-document.addEventListener("touchend", function(){
-  if(!swipeState.el) return;
-  var finalX = parseFloat(swipeState.el.dataset.tx || "0");
-  var rowWidth = swipeState.wrap.offsetWidth;
-  swipeState.el.style.transition = "transform .18s ease";
-  if(swipeState.dragging){
-    if(finalX <= -rowWidth * 0.6){
-      /* swiped all the way off — this is the confirmation, delete immediately */
-      commitSwipeDelete(swipeState.wrap);
-    }else if(finalX <= SWIPE_OPEN / 2){
-      swipeState.el.style.transform = "translateX(" + SWIPE_OPEN + "px)";
-      swipeState.openWrap = swipeState.wrap;
-    }else{
-      swipeState.el.style.transform = "translateX(0)";
-      swipeState.openWrap = null;
-    }
-  }
-  swipeState.el = null; swipeState.wrap = null; swipeState.dragging = false; swipeState.locked = null;
-}, {passive:true});
-
-Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(tab){
-  tab.addEventListener("click", function(){
-    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(t){ t.classList.remove("active"); });
-    tab.classList.add("active");
-    currentTab = tab.dataset.tab;
-    $("overviewTab").hidden = currentTab !== "overview";
-    $("historyTab").hidden = currentTab !== "history";
-    if(currentTab === "history") renderHistory(); else renderPeople();
-  });
-});
-$("fPerson").addEventListener("change", renderHistory);
-$("fType").addEventListener("change", renderHistory);
-$("fSearch").addEventListener("input", renderHistory);
-$("fDateFrom").addEventListener("change", renderHistory);
-$("fDateTo").addEventListener("change", renderHistory);
-
-var searchToggleBtn = $("searchToggleBtn"), fSearchInput = $("fSearch");
-searchToggleBtn.addEventListener("click", function(){
-  var isOpen = fSearchInput.style.display !== "none";
-  if(isOpen){
-    fSearchInput.style.display = "none";
-    searchToggleBtn.classList.remove("active");
-    if(fSearchInput.value){ fSearchInput.value = ""; renderHistory(); }
-  }else{
-    fSearchInput.style.display = "block";
-    searchToggleBtn.classList.add("active");
-    fSearchInput.focus();
-  }
-});
-
-personSelect.addEventListener("change", function(){
-  newPersonName.style.display = personSelect.value === "__new__" ? "block" : "none";
-});
-methodSelect.addEventListener("change", function(){
-  newMethodName.style.display = methodSelect.value === "__new__" ? "block" : "none";
-  if(methodSelect.value === "__new__") newMethodName.focus();
-});
-
-typeGrid.addEventListener("click", function(e){
-  var opt = e.target.closest(".type-opt");
-  if(!opt || editingTxnId) return;
-  Array.prototype.forEach.call(typeGrid.children, function(o){ o.classList.remove("selected"); });
-  opt.classList.add("selected");
-  selectedType = opt.dataset.type;
-  $("typeHint").textContent = TYPE_HINTS[selectedType] || "";
-  setErr("");
-});
-
-$("amountInput").addEventListener("input", function(){
-  var digits = this.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
-  setAmountCents(digits ? parseInt(digits, 10) : 0);
-  var len = this.value.length;
-  this.setSelectionRange(len, len);
-});
-$("amountInput").addEventListener("keydown", function(e){
-  if(e.key === "Backspace"){
-    e.preventDefault();
-    setAmountCents(Math.floor(amountCentsValue() / 10));
-  }
-});
-
-$("receiptFile").addEventListener("change", function(e){
-  var file = e.target.files[0];
-  e.target.value = "";
-  if(!file) return;
-  if(!file.type.startsWith("image/")) return setErr("Please choose an image file.");
-  compressImage(file, function(dataUrl){
-    if(!dataUrl) return setErr("Couldn't read that image.");
-    setReceipt(dataUrl);
-  });
-});
-$("lightboxClose").addEventListener("click", closeLightbox);
-$("lightbox").addEventListener("click", function(e){ if(e.target === this) closeLightbox(); });
-
-$("fabBtn").addEventListener("click", openAdd);
-$("cancelBtn").addEventListener("click", closeSheet);
-overlay.addEventListener("click", function(e){ if(e.target === overlay) closeSheet(); });
-backupOverlay.addEventListener("click", function(e){ if(e.target === backupOverlay) closeOverlay(backupOverlay); });
-$("backupBtn").addEventListener("click", function(){ openOverlay(backupOverlay); });
-$("closeBackupBtn").addEventListener("click", function(){ closeOverlay(backupOverlay); });
-
-var settingsOverlay = $("settingsOverlay");
-$("settingsBtn").addEventListener("click", function(){
-  $("darkModeToggle").checked = document.body.classList.contains("dark");
-  openOverlay(settingsOverlay);
-});
-$("closeSettingsBtn").addEventListener("click", function(){ closeOverlay(settingsOverlay); });
-settingsOverlay.addEventListener("click", function(e){ if(e.target === settingsOverlay) closeOverlay(settingsOverlay); });
-$("darkModeToggle").addEventListener("change", function(){ setTheme(this.checked); });
-
-$("deleteAllBtn").addEventListener("click", function(){
-  appConfirm("Delete ALL people, transactions, and receipts? This cannot be undone.", function(){
-    state = blank();
-    persist();
-    openPersonId = null;
-    editingTxnId = null;
-    closeOverlay(settingsOverlay);
-    refreshAll();
-    toast("All data deleted.");
-  });
-});
-
-document.addEventListener("keydown", function(e){
-  if(e.key !== "Escape") return;
-  if($("lightbox").classList.contains("open")) closeLightbox();
-  else if(overlay.classList.contains("open")) closeSheet();
-  else if(confirmOverlay.classList.contains("open")){ pendingConfirmAction = null; closeOverlay(confirmOverlay); }
-  else if(backupOverlay.classList.contains("open")) closeOverlay(backupOverlay);
-  else if(settingsOverlay.classList.contains("open")) closeOverlay(settingsOverlay);
-});
-
 $("saveBtn").addEventListener("click", function(){
-  var amount = round2(amountCentsValue() / 100);
+  var amount = round2(amountCents() / 100);
   var note = $("noteInput").value.trim();
-
   if(!selectedType) return setErr("Choose a transaction type.");
-  if(!(amount > 0)) return setErr("Enter a valid amount greater than zero.");
+  if(!(amount > 0)) return setErr("Enter an amount greater than zero.");
   if(methodSelect.value === "__new__" && !newMethodName.value.trim()) return setErr("Enter the new payment type name.");
-
   var method = resolveMethod();
 
   if(editingTxnId){
-    var t = state.transactions.find(function(x){ return x.id === editingTxnId; });
-    if(t){ t.amount = amount; t.note = note; t.payment_type = method; t.edited = 1; t.receipt = pendingReceipt || null; }
+    var t = findTxn(editingTxnId);
+    if(!t){ closeSheet(); refreshAll(); return showError("That transaction no longer exists."); }
+    /* Only flag as edited when something actually changed. */
+    if(t.amount !== amount || t.note !== note || t.payment_type !== method || (t.receipt || null) !== pendingReceipt){
+      t.edited = 1; t.edited_at = new Date().toISOString();
+    }
+    t.amount = amount; t.note = note; t.payment_type = method; t.receipt = pendingReceipt;
     persist(); closeSheet(); refreshAll(); toast("Saved.");
     return;
   }
@@ -1130,18 +838,22 @@ $("saveBtn").addEventListener("click", function(){
   if(personSelect.value === "__new__"){
     var name = newPersonName.value.trim();
     if(!name) return setErr("Enter a name for the new person.");
-    var existing = state.people.find(function(p){ return p.name.toLowerCase() === name.toLowerCase(); });
-    if(existing){ personId = existing.id; }
+    var dupe = state.people.find(function(p){ return p.name.toLowerCase() === name.toLowerCase(); });
+    if(dupe) personId = dupe.id;
     else{
       personId = state.nextPersonId++;
-      state.people.push({id:personId, name:name});
+      state.people.push({id:personId, name:name, phone:"", note:""});
     }
   }else{
     personId = parseInt(personSelect.value, 10);
-    if(isNaN(personId)) return setErr("Choose a person.");
+    if(isNaN(personId) || !findPerson(personId)) return setErr("Choose a person.");
   }
 
-  addTxn(personId, selectedType, amount, method, note, d.toISOString(), pendingReceipt);
+  state.transactions.push({
+    id: state.nextTxnId++, person_id: personId, type: selectedType, amount: amount,
+    payment_type: method, note: note, txn_date: d.toISOString(),
+    created_at: new Date().toISOString(), edited: 0, edited_at: null, receipt: pendingReceipt
+  });
   persist(); closeSheet(); refreshAll(); toast("Debt added.");
 });
 
@@ -1154,33 +866,418 @@ $("deleteBtn").addEventListener("click", function(){
   });
 });
 
+/* ================= Person profile sheet ================= */
+function setPersonErr(msg){ $("personErr").textContent = msg || ""; }
+
+function openPersonSheet(id){
+  editingPersonId = null;
+  setPersonErr("");
+  var p = id != null ? findPerson(id) : null;
+  if(id != null && !p) return showError("That person no longer exists.");
+
+  if(p){
+    editingPersonId = p.id;
+    var bal = balanceOf.get(p.id) || 0, n = (txnsOf.get(p.id) || []).length;
+    $("personSheetTitle").textContent = "Edit Person";
+    $("personStats").textContent = n + " transaction" + (n !== 1 ? "s" : "") + " · "
+      + (bal > 0 ? money(bal) + " owed to you" : bal < 0 ? "you owe " + money(bal) : "settled");
+    $("personDeleteBtn").style.display = "block";
+    $("pName").value = p.name;
+    $("pPhone").value = p.phone || "";
+    $("pNote").value = p.note || "";
+  }else{
+    $("personSheetTitle").textContent = "Add Person";
+    $("personStats").textContent = "Create a profile now and log debts against it later.";
+    $("personDeleteBtn").style.display = "none";
+    $("pName").value = ""; $("pPhone").value = ""; $("pNote").value = "";
+  }
+  openOverlay(personOverlay);
+}
+function closePersonSheet(){ closeOverlay(personOverlay); editingPersonId = null; setPersonErr(""); }
+
+$("personSaveBtn").addEventListener("click", function(){
+  var name = $("pName").value.trim();
+  if(!name) return setPersonErr("Enter a name.");
+  var clash = state.people.some(function(p){
+    return p.id !== editingPersonId && p.name.toLowerCase() === name.toLowerCase();
+  });
+  if(clash) return setPersonErr("Someone with that name already exists.");
+
+  var phone = $("pPhone").value.trim(), note = $("pNote").value.trim();
+  if(editingPersonId){
+    var p = findPerson(editingPersonId);
+    if(!p){ closePersonSheet(); refreshAll(); return showError("That person no longer exists."); }
+    p.name = name; p.phone = phone; p.note = note;
+  }else{
+    var id = state.nextPersonId++;
+    state.people.push({id:id, name:name, phone:phone, note:note});
+    openPersonId = id;
+  }
+  persist(); closePersonSheet(); refreshAll(); toast("Profile saved.");
+});
+
+function removePerson(id){
+  var p = findPerson(id);
+  state.people = state.people.filter(function(x){ return x.id !== id; });
+  state.transactions = state.transactions.filter(function(t){ return t.person_id !== id; });
+  if(openPersonId === id) openPersonId = null;
+  persist(); refreshAll();
+  toast(p ? p.name + " deleted." : "Person deleted.");
+}
+
+$("personDeleteBtn").addEventListener("click", function(){
+  var id = editingPersonId;
+  if(id == null) return;
+  var n = (txnsOf.get(id) || []).length;
+  appConfirm("Delete this person and " + n + " transaction" + (n !== 1 ? "s" : "") + "? This cannot be undone.", function(){
+    closePersonSheet();
+    removePerson(id);
+  });
+});
+$("personCancelBtn").addEventListener("click", closePersonSheet);
+$("addPersonBtn").addEventListener("click", function(){
+  closeOverlay(settingsOverlay);
+  openPersonSheet(null);
+});
+
+/* ================= Swipe to delete ================= */
+var swipe = {content:null, wrap:null, startX:0, startY:0, baseX:0, dragging:false, axis:null, openWrap:null, tx:0};
+
+function closeSwipe(){
+  if(!swipe.openWrap) return;
+  var c = swipe.openWrap.querySelector(".swipe-content");
+  if(c){ c.style.transition = "transform .18s ease"; c.style.transform = "translateX(0)"; }
+  swipe.openWrap = null;
+}
+function slideOffAndDelete(wrap, done){
+  var c = wrap.querySelector(".swipe-content");
+  if(!c) return done();
+  c.style.transition = "transform .22s ease, opacity .22s ease .05s";
+  c.style.transform = "translateX(" + -(wrap.offsetWidth + 40) + "px)";
+  c.style.opacity = "0";
+  var fired = false;
+  var fire = function(){ if(fired) return; fired = true; if(swipe.openWrap === wrap) swipe.openWrap = null; done(); };
+  c.addEventListener("transitionend", fire, {once:true});
+  setTimeout(fire, 320);
+}
+function commitSwipeDelete(wrap){
+  var id = parseInt(wrap.dataset.id, 10);
+  if(isNaN(id)) return;
+  if(wrap.dataset.kind === "person"){
+    var n = (txnsOf.get(id) || []).length;
+    /* Wiping a person wipes their history — that always asks first. */
+    if(n){
+      closeSwipe();
+      var c = wrap.querySelector(".swipe-content");
+      if(c){ c.style.transition = "transform .18s ease"; c.style.transform = "translateX(0)"; }
+      appConfirm("Delete this person and " + n + " transaction" + (n !== 1 ? "s" : "") + "? This cannot be undone.", function(){ removePerson(id); });
+      return;
+    }
+    slideOffAndDelete(wrap, function(){ removePerson(id); });
+    return;
+  }
+  slideOffAndDelete(wrap, function(){
+    state.transactions = state.transactions.filter(function(t){ return t.id !== id; });
+    persist(); refreshAll(); toast("Transaction deleted.");
+  });
+}
+
+document.addEventListener("touchstart", function(e){
+  var target = el(e.target);
+  var wrap = target && target.closest(".swipe-wrap");
+  if(!wrap){ closeSwipe(); swipe.content = null; return; }
+  if(swipe.openWrap && swipe.openWrap !== wrap) closeSwipe();
+  var c = wrap.querySelector(".swipe-content");
+  if(!c){ swipe.content = null; return; }
+  c.style.transition = "none";
+  swipe.content = c; swipe.wrap = wrap;
+  swipe.startX = e.touches[0].clientX;
+  swipe.startY = e.touches[0].clientY;
+  swipe.baseX = (swipe.openWrap === wrap) ? SWIPE_OPEN : 0;
+  swipe.tx = swipe.baseX;
+  swipe.dragging = false; swipe.axis = null;
+}, {passive:true});
+
+document.addEventListener("touchmove", function(e){
+  if(!swipe.content) return;
+  var dx = e.touches[0].clientX - swipe.startX, dy = e.touches[0].clientY - swipe.startY;
+  if(swipe.axis === null){
+    if(Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+    swipe.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+  }
+  if(swipe.axis === "y") return;
+  e.preventDefault();
+  swipe.dragging = true;
+  var min = -(swipe.wrap.offsetWidth + 40);
+  swipe.tx = Math.max(min, Math.min(0, swipe.baseX + dx));
+  swipe.content.style.transform = "translateX(" + swipe.tx + "px)";
+}, {passive:false});
+
+document.addEventListener("touchend", function(){
+  if(!swipe.content) return;
+  swipe.content.style.transition = "transform .18s ease";
+  if(swipe.dragging){
+    if(swipe.tx <= -swipe.wrap.offsetWidth * 0.6){
+      commitSwipeDelete(swipe.wrap);
+    }else if(swipe.tx <= SWIPE_OPEN / 2){
+      swipe.content.style.transform = "translateX(" + SWIPE_OPEN + "px)";
+      swipe.openWrap = swipe.wrap;
+    }else{
+      swipe.content.style.transform = "translateX(0)";
+      swipe.openWrap = null;
+    }
+  }
+  swipe.content = null; swipe.wrap = null; swipe.dragging = false; swipe.axis = null;
+}, {passive:true});
+
+/* ================= Delegated clicks ================= */
+document.addEventListener("click", function(e){
+  var target = el(e.target);
+  var node = target && target.closest("[data-act]");
+  var act = node && node.dataset.act;
+
+  /* First tap while a row is swiped open only closes it. */
+  if(swipe.openWrap){
+    var inside = swipe.openWrap.contains(target);
+    closeSwipe();
+    if(inside && act !== "swipedelete"){ e.preventDefault(); e.stopImmediatePropagation(); return; }
+  }
+  if(!act) return;
+  var id = parseInt(node.dataset.id, 10);
+  if(isNaN(id)) return;
+
+  if(act === "person"){
+    openPersonId = (openPersonId === id) ? null : id;
+    renderPeople();
+  }else if(act === "editperson"){
+    e.stopPropagation();
+    openPersonSheet(id);
+  }else if(act === "txn"){
+    e.stopPropagation();
+    openEdit(id);
+  }else if(act === "receipt"){
+    e.stopPropagation();
+    var t = findTxn(id);
+    if(t && t.receipt) openLightbox(t.receipt);
+  }else if(act === "swipedelete"){
+    e.stopPropagation();
+    var wrap = node.closest(".swipe-wrap");
+    if(wrap) commitSwipeDelete(wrap);
+  }
+});
+
+/* ================= Inputs & tabs ================= */
+Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(tab){
+  tab.addEventListener("click", function(){
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(t){ t.classList.remove("active"); });
+    tab.classList.add("active");
+    currentTab = tab.dataset.tab;
+    $("overviewTab").hidden = currentTab !== "overview";
+    $("historyTab").hidden = currentTab !== "history";
+    if(currentTab === "history") renderHistory(); else renderPeople();
+  });
+});
+["fPerson","fType","fDateFrom","fDateTo"].forEach(function(id){ $(id).addEventListener("change", renderHistory); });
+$("fSearch").addEventListener("input", renderHistory);
+
+$("searchToggleBtn").addEventListener("click", function(){
+  var input = $("fSearch"), open = input.style.display !== "none";
+  input.style.display = open ? "none" : "block";
+  this.classList.toggle("active", !open);
+  if(open){ if(input.value){ input.value = ""; renderHistory(); } }
+  else input.focus();
+});
+
+personSelect.addEventListener("change", function(){
+  newPersonName.style.display = this.value === "__new__" ? "block" : "none";
+  if(this.value === "__new__") newPersonName.focus();
+  setErr("");
+});
+methodSelect.addEventListener("change", function(){
+  newMethodName.style.display = this.value === "__new__" ? "block" : "none";
+  if(this.value === "__new__") newMethodName.focus();
+});
+
+typeGrid.addEventListener("click", function(e){
+  var target = el(e.target), opt = target && target.closest(".type-opt");
+  if(!opt || editingTxnId) return;
+  setTypeUI(opt.dataset.type, false);
+  setErr("");
+});
+
+/* Cents-first entry keeps decimals exact: typing "500" gives 5.00. */
+amountInput.addEventListener("input", function(){
+  var digits = this.value.replace(/\D/g, "").slice(0, 12).replace(/^0+(?=\d)/, "");
+  setAmountCents(digits ? parseInt(digits, 10) : 0);
+  var len = this.value.length;
+  try{ this.setSelectionRange(len, len); }catch(err){}
+});
+amountInput.addEventListener("keydown", function(e){
+  if(e.key === "Backspace"){ e.preventDefault(); setAmountCents(Math.floor(amountCents() / 10)); }
+});
+
+$("receiptFile").addEventListener("change", function(e){
+  var file = e.target.files[0];
+  e.target.value = "";
+  if(!file) return;
+  if(!/^image\//.test(file.type)) return setErr("Please choose an image file.");
+  compressImage(file, function(dataUrl){
+    if(!dataUrl) return setErr("Couldn't read that image.");
+    setReceipt(dataUrl);
+    setErr("");
+  });
+});
+$("lightboxClose").addEventListener("click", closeLightbox);
+$("lightbox").addEventListener("click", function(e){ if(e.target === this) closeLightbox(); });
+
+$("fabBtn").addEventListener("click", openAdd);
+$("cancelBtn").addEventListener("click", closeSheet);
+$("backupBtn").addEventListener("click", function(){ openOverlay(backupOverlay); });
+$("closeBackupBtn").addEventListener("click", function(){ closeOverlay(backupOverlay); });
+$("settingsBtn").addEventListener("click", function(){
+  $("darkModeToggle").checked = document.body.classList.contains("dark");
+  openOverlay(settingsOverlay);
+});
+$("closeSettingsBtn").addEventListener("click", function(){ closeOverlay(settingsOverlay); });
+
+/* ================= Payment methods editor ================= */
+function setPtErr(msg){ $("ptErr").textContent = msg || ""; }
+
+function renderPtList(){
+  var methods = state.paymentTypes.slice().sort(function(a,b){ return a.localeCompare(b); });
+  var list = $("ptList");
+  if(!methods.length){ list.innerHTML = '<div class="txn-note">No payment methods yet.</div>'; return; }
+  list.innerHTML = methods.map(function(m){
+    var count = state.transactions.filter(function(t){ return t.payment_type === m; }).length;
+    return '<div class="pt-row" data-name="'+esc(m)+'">'
+      + '<div class="pt-name">'+esc(m)+(count ? ' <span style="color:var(--dim);font-weight:400;">('+count+')</span>' : '')+'</div>'
+      + '<button type="button" class="pt-icon-btn" data-act="ptRename" title="Rename">'
+      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>'
+      + '<button type="button" class="pt-icon-btn danger" data-act="ptDelete" title="Delete">'
+      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>'
+      + '</div>';
+  }).join("");
+}
+
+$("ptList").addEventListener("click", function(e){
+  var btn = e.target.closest("button[data-act]");
+  if(!btn) return;
+  var row = btn.closest(".pt-row"), oldName = row.dataset.name;
+
+  if(btn.dataset.act === "ptRename"){
+    row.innerHTML = '<input type="text" value="'+esc(oldName)+'" id="ptRenameInput" autocomplete="off">'
+      + '<button type="button" class="pt-icon-btn" data-act="ptRenameSave" title="Save">'
+      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>'
+      + '<button type="button" class="pt-icon-btn" data-act="ptRenameCancel" title="Cancel">'
+      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+    var input = $("ptRenameInput");
+    input.focus(); input.select();
+    input.addEventListener("keydown", function(e2){
+      if(e2.key === "Enter") $("ptRenameInput").closest(".pt-row").querySelector('[data-act="ptRenameSave"]').click();
+      if(e2.key === "Escape") renderPtList();
+    });
+    return;
+  }
+
+  if(btn.dataset.act === "ptRenameSave"){
+    var newName = $("ptRenameInput").value.trim();
+    setPtErr("");
+    if(!newName) return setPtErr("Enter a name.");
+    var clash = state.paymentTypes.some(function(m){ return m.toLowerCase() === newName.toLowerCase() && m !== oldName; });
+    if(clash) return setPtErr("That payment method already exists.");
+    if(newName !== oldName){
+      var idx = state.paymentTypes.indexOf(oldName);
+      if(idx !== -1) state.paymentTypes[idx] = newName;
+      state.transactions.forEach(function(t){ if(t.payment_type === oldName) t.payment_type = newName; });
+      persist(); refreshAll();
+      toast("Renamed to \u201c" + newName + "\u201d.");
+    }
+    renderPtList();
+    return;
+  }
+
+  if(btn.dataset.act === "ptRenameCancel"){ renderPtList(); return; }
+
+  if(btn.dataset.act === "ptDelete"){
+    var count = state.transactions.filter(function(t){ return t.payment_type === oldName; }).length;
+    var msg = count
+      ? "Delete \u201c" + oldName + "\u201d? " + count + " transaction" + (count === 1 ? "" : "s") + " using it will be marked \u201cNot specified.\u201d"
+      : "Delete \u201c" + oldName + "\u201d?";
+    appConfirm(msg, function(){
+      state.paymentTypes = state.paymentTypes.filter(function(m){ return m !== oldName; });
+      state.transactions.forEach(function(t){ if(t.payment_type === oldName) t.payment_type = ""; });
+      persist(); refreshAll(); renderPtList();
+      toast("Payment method deleted.");
+    }, "Delete");
+    return;
+  }
+});
+
+$("ptAddBtn").addEventListener("click", function(){
+  var name = $("ptNewInput").value.trim();
+  setPtErr("");
+  if(!name) return setPtErr("Enter a name.");
+  if(state.paymentTypes.some(function(m){ return m.toLowerCase() === name.toLowerCase(); })) return setPtErr("That payment method already exists.");
+  state.paymentTypes.push(name);
+  persist(); $("ptNewInput").value = ""; renderPtList();
+  toast("Payment method added.");
+});
+$("ptNewInput").addEventListener("keydown", function(e){ if(e.key === "Enter") $("ptAddBtn").click(); });
+
+$("paymentTypesBtn").addEventListener("click", function(){
+  setPtErr(""); $("ptNewInput").value = "";
+  renderPtList();
+  closeOverlay(settingsOverlay);
+  openOverlay(paymentTypesOverlay);
+});
+$("ptCloseBtn").addEventListener("click", function(){ closeOverlay(paymentTypesOverlay); });
+$("darkModeToggle").addEventListener("change", function(){ setTheme(this.checked); });
+
+$("deleteAllBtn").addEventListener("click", function(){
+  appConfirm("Delete ALL people, transactions, and receipts? This cannot be undone.", function(){
+    state = blank(); openPersonId = null; editingTxnId = null; editingPersonId = null;
+    persist(); closeOverlay(settingsOverlay); refreshAll(); toast("All data deleted.");
+  });
+});
+
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Escape") return;
+  if($("lightbox").classList.contains("open")) closeLightbox();
+  else if(confirmOverlay.classList.contains("open")) cancelConfirm();
+  else if(overlay.classList.contains("open")) closeSheet();
+  else if(personOverlay.classList.contains("open")) closePersonSheet();
+  else if(backupOverlay.classList.contains("open")) closeOverlay(backupOverlay);
+  else if(settingsOverlay.classList.contains("open")) closeOverlay(settingsOverlay);
+  else if(paymentTypesOverlay.classList.contains("open")) closeOverlay(paymentTypesOverlay);
+});
+
 /* ================= Backup ================= */
 function download(filename, text, mime){
-  var blob = new Blob([text], {type: mime});
-  var url = URL.createObjectURL(blob);
+  var url = URL.createObjectURL(new Blob([text], {type:mime}));
   var a = document.createElement("a");
   a.href = url; a.download = filename; a.rel = "noopener";
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  document.body.appendChild(a); a.click(); a.remove();
   setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
 }
 function stamp(){ return new Date().toISOString().slice(0,10); }
 
 $("exportBtn").addEventListener("click", function(){
-  download("debt-tracker-backup-" + stamp() + ".json", JSON.stringify(state, null, 2), "application/json");
+  download("debt-tracker-backup-" + stamp() + ".json", JSON.stringify(state), "application/json");
   toast("Backup exported.");
 });
 
 $("csvBtn").addEventListener("click", function(){
-  var names = new Map(state.people.map(function(p){ return [p.id, p.name]; }));
+  var phoneOf = new Map(state.people.map(function(p){ return [p.id, p.phone || ""]; }));
   var q = function(v){ return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; };
-  var rows = [["Date","Time","Person","Direction","Signed Amount (SGD)","Amount (SGD)","Payment Type","Description","Edited","Has Receipt"].join(",")];
+  var rows = [["Date","Time","Person","Phone","Direction","Signed Amount (SGD)","Amount (SGD)","Payment Type","Description","Edited","Edited At","Has Receipt"].join(",")];
   sortedTxns.forEach(function(t){
     var d = new Date(t.txn_date);
     rows.push([
       q(d.toLocaleDateString("en-GB")), q(d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})),
-      q(names.get(t.person_id) || ""), q(TYPE_LABELS[t.type]),
+      q(nameOf.get(t.person_id) || ""), q(phoneOf.get(t.person_id) || ""), q(TYPE_LABELS[t.type]),
       signedAmount(t).toFixed(2), t.amount.toFixed(2),
-      q(t.payment_type), q(t.note), t.edited ? "Yes" : "No", t.receipt ? "Yes" : "No"
+      q(t.payment_type), q(t.note), t.edited ? "Yes" : "No",
+      q(t.edited_at ? new Date(t.edited_at).toLocaleString("en-GB") : ""), t.receipt ? "Yes" : "No"
     ].join(","));
   });
   /* BOM keeps Excel happy with UTF-8 names. */
@@ -1195,21 +1292,20 @@ $("importFile").addEventListener("change", function(e){
   if(!file) return;
   var reader = new FileReader();
   reader.onload = function(evt){
+    var parsed;
     try{
-      var parsed = JSON.parse(evt.target.result);
-      if(!Array.isArray(parsed.people) || !Array.isArray(parsed.transactions)) throw new Error("bad");
-      appConfirm("Import will replace all current data with this backup. Continue?", function(){
-        state = normalize(parsed);
-        persist();
-        closeOverlay(backupOverlay);
-        openPersonId = null;
-        refreshAll();
-        toast("Backup imported.");
-      }, "Import");
+      parsed = JSON.parse(evt.target.result);
+      if(!Array.isArray(parsed.people) || !Array.isArray(parsed.transactions)) throw new Error("bad shape");
     }catch(err){
-      toast("Couldn't read that file. Make sure it's a Debt Tracker .json backup.");
+      return showError("Couldn't read that file. Make sure it's a Debt Tracker .json backup.");
     }
+    appConfirm("Import will replace all current data with this backup. Continue?", function(){
+      state = normalize(parsed);
+      openPersonId = null;
+      persist(); closeOverlay(backupOverlay); refreshAll(); toast("Backup imported.");
+    }, "Import");
   };
+  reader.onerror = function(){ showError("Couldn't read that file."); };
   reader.readAsText(file);
 });
 
@@ -1217,13 +1313,20 @@ $("importFile").addEventListener("change", function(e){
 try{
   loadTheme();
   loadState();
-  if(!storageAvailable) showBanner();
   if(!storageAvailable){
-    $("storageNote").textContent = "Storage is unavailable in this context, so nothing is being saved automatically. Export before you close the page and import to restore.";
+    showBanner();
+    $("storageNote").textContent = "Storage is unavailable here, so nothing saves automatically. Export before you close the page, and import to restore.";
   }
+  setReceipt(null);
   refreshAll();
 }catch(err){
   $("bannerSlot").innerHTML = '<div class="banner">Something went wrong loading the ledger: ' + esc(err.message) + '</div>';
+}
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  });
 }
 })();
 </script>
