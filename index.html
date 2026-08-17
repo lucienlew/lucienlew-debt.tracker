@@ -17,12 +17,13 @@
   --gray-100:#F0F0F0; --gray-50:#F8F8F8; --white:#FFF; --line:#E4E4E4;
   --shadow:0 10px 30px rgba(0,0,0,.08);
   --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{overscroll-behavior-y:none;}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--gray-50);color:#111;-webkit-font-smoothing:antialiased;}
 body.locked{overflow:hidden;}
-.app{max-width:820px;margin:0 auto;padding:22px 18px calc(120px + var(--safe-b));}
+.app{max-width:820px;margin:0 auto;padding:calc(22px + var(--safe-t)) 18px calc(120px + var(--safe-b));}
 
 header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800;}
@@ -116,6 +117,18 @@ select.filter{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid
 #importFile{display:none;}
 .toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:#111;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;z-index:70;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;}
 .toast.show{opacity:1;}
+
+.receipt-row{display:flex;align-items:center;gap:10px;}
+.receipt-thumb{width:52px;height:52px;border-radius:9px;object-fit:cover;border:1.5px solid var(--line);cursor:pointer;flex-shrink:0;}
+.receipt-add-btn{padding:10px 14px;border-radius:9px;border:1.5px dashed var(--gray-300);background:var(--gray-50);font-size:12.5px;font-weight:700;color:var(--gray-700);cursor:pointer;font-family:inherit;}
+.receipt-remove{font-size:11.5px;font-weight:700;color:#B00020;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;}
+.receipt-status{font-size:11.5px;color:var(--gray-500);font-weight:600;}
+#receiptFile{display:none;}
+.txn-receipt-badge{font-size:10px;color:var(--gray-700);background:var(--gray-100);padding:2px 7px;border-radius:20px;font-weight:600;display:inline-flex;align-items:center;gap:3px;}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:80;padding:24px;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:100%;max-height:100%;border-radius:10px;}
+.lightbox-close{position:fixed;top:calc(18px + var(--safe-t));right:18px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 </style>
 </head>
 <body>
@@ -188,7 +201,7 @@ select.filter{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid
 
     <div class="field">
       <label for="amountInput">Amount (SGD)</label>
-      <input type="number" id="amountInput" placeholder="0.00" min="0" step="0.01" inputmode="decimal" autocomplete="off">
+      <input type="text" id="amountInput" placeholder="0.00" inputmode="numeric" autocomplete="off" data-cents="0">
     </div>
 
     <div class="field">
@@ -209,6 +222,14 @@ select.filter{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid
       <div class="lock-note" id="dateLockNote">Set once — locked after the debt is created.</div>
     </div>
 
+    <div class="field">
+      <label>Receipt (optional)</label>
+      <div class="receipt-row" id="receiptRow">
+        <button type="button" class="receipt-add-btn" id="receiptAddBtn">+ Attach photo</button>
+      </div>
+      <input type="file" id="receiptFile" accept="image/*">
+    </div>
+
     <div class="btn-row">
       <button class="btn btn-danger" id="deleteBtn" style="display:none;">Delete</button>
       <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
@@ -220,7 +241,7 @@ select.filter{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid
 <div class="overlay" id="backupOverlay">
   <div class="sheet" role="dialog" aria-modal="true">
     <h2>Backup &amp; Restore</h2>
-    <div class="field-desc" id="storageNote">Data is stored in this browser. Export a backup regularly so you never lose the ledger if browser storage is cleared.</div>
+    <div class="field-desc" id="storageNote">Data — including receipt photos — is stored in this browser. Export a backup regularly so you never lose the ledger if browser storage is cleared.</div>
     <div class="backup-action">
       <div><div class="ba-title">Export Backup</div><div class="ba-sub">Full .json file — restores everything</div></div>
       <button class="backup-btn" id="exportBtn">Export</button>
@@ -242,13 +263,18 @@ select.filter{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid
 
 <div class="toast" id="toast"></div>
 
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
+  <img id="lightboxImg" src="" alt="Receipt">
+</div>
+
 <script>
 (function(){
 "use strict";
 
 /* ================= Config ================= */
 var LS_KEY = "debtTrackerData_v2";
-var DEFAULT_METHODS = ["Cash","Bank Transfer","PayNow","Card","Cheque"];
+var DEFAULT_METHODS = ["Cash","PayNow","Card"];
 var TYPE_LABELS = {owed_to_me:"Owed to Me", i_owe:"I Owe"};
 var TYPE_HINTS = {
   owed_to_me:"This person owes you this amount.",
@@ -263,6 +289,7 @@ var storageAvailable = false;
 var currentTab = "overview";
 var openPersonId = null;
 var editingTxnId = null;
+var pendingReceipt = null; /* data URL of the compressed receipt image, or null */
 var selectedType = null;
 
 /* Derived indexes — rebuilt once per data change, not per render. */
@@ -310,7 +337,8 @@ function normalize(raw){
         note: t.note ? String(t.note) : "",
         txn_date: isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString(),
         created_at: t.created_at || new Date().toISOString(),
-        edited: t.edited ? 1 : 0
+        edited: t.edited ? 1 : 0,
+        receipt: (typeof t.receipt === "string" && t.receipt.indexOf("data:image/") === 0) ? t.receipt : null
       });
     });
   }
@@ -344,8 +372,12 @@ function persist(){
   try{
     localStorage.setItem(LS_KEY, JSON.stringify(state));
   }catch(e){
-    storageAvailable = false;
-    showBanner();
+    if(e && (e.name === "QuotaExceededError" || e.code === 22)){
+      toast("Storage is full — try removing a receipt photo or export a backup and clear old entries.");
+    }else{
+      storageAvailable = false;
+      showBanner();
+    }
   }
 }
 
@@ -363,6 +395,60 @@ function showBanner(){
 function round2(n){ return Math.round((Number(n) + Number.EPSILON) * 100) / 100; }
 function money(n){ return "S$" + Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function signedAmount(t){ return t.type === "owed_to_me" ? t.amount : -t.amount; }
+
+/* Forces amount entry into whole cents so decimals are always exact (e.g. typing "500" -> "5.00"). */
+function centsToStr(cents){ cents = Math.max(0, cents|0); return (cents/100).toFixed(2); }
+function setAmountCents(cents){
+  var el = $("amountInput");
+  cents = Math.max(0, cents|0);
+  el.dataset.cents = String(cents);
+  el.value = cents === 0 ? "" : centsToStr(cents);
+}
+function amountCentsValue(){ return parseInt($("amountInput").dataset.cents || "0", 10); }
+
+/* ================= Receipt attachments =================
+   Stored as compressed JPEG data URLs directly in the transaction record, so
+   they travel with normal JSON export/import automatically. Images are
+   downscaled client-side to keep localStorage usage reasonable (~30-120KB
+   each rather than multi-MB camera originals). */
+function compressImage(file, cb){
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      var maxDim = 1280;
+      var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      var w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      var canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      cb(canvas.toDataURL("image/jpeg", 0.72));
+    };
+    img.onerror = function(){ cb(null); };
+    img.src = e.target.result;
+  };
+  reader.onerror = function(){ cb(null); };
+  reader.readAsDataURL(file);
+}
+function setReceipt(dataUrl){
+  pendingReceipt = dataUrl;
+  var row = $("receiptRow");
+  if(dataUrl){
+    row.innerHTML = '<img class="receipt-thumb" id="receiptThumb" src="' + dataUrl + '" alt="Receipt preview">'
+      + '<div><div class="receipt-status">Attached</div>'
+      + '<button type="button" class="receipt-remove" id="receiptRemoveBtn">Remove</button></div>';
+    $("receiptThumb").addEventListener("click", function(){ openLightbox(dataUrl); });
+    $("receiptRemoveBtn").addEventListener("click", function(){ setReceipt(null); });
+  }else{
+    row.innerHTML = '<button type="button" class="receipt-add-btn" id="receiptAddBtn">+ Attach photo</button>';
+    $("receiptAddBtn").addEventListener("click", function(){ $("receiptFile").click(); });
+  }
+}
+function openLightbox(dataUrl){
+  $("lightboxImg").src = dataUrl;
+  $("lightbox").classList.add("open");
+}
+function closeLightbox(){ $("lightbox").classList.remove("open"); $("lightboxImg").src = ""; }
 
 var ESC = {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};
 function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return ESC[c]; }); }
@@ -483,6 +569,7 @@ function txnRow(t, showPerson){
       + (t.note ? '<div class="txn-note">' + esc(t.note) + '</div>' : "")
       + '<div class="txn-meta"><div class="txn-date">' + fmtDateTime(t.txn_date) + '</div>'
       + (t.payment_type ? '<div class="txn-method">' + esc(t.payment_type) + '</div>' : "")
+      + (t.receipt ? '<div class="txn-receipt-badge" data-act="receipt" data-id="' + t.id + '">📎 Receipt</div>' : "")
       + '</div>'
     + '</div>'
     + '<div class="txn-right">'
@@ -554,8 +641,9 @@ function openAdd(){
   populatePersonSelect();
   personSelect.value = "__new__";
   newPersonName.style.display = "block"; newPersonName.value = "";
-  $("amountInput").value = "";
+  setAmountCents(0);
   $("noteInput").value = "";
+  setReceipt(null);
   dateInput.value = nowLocal();
   dateInput.disabled = false;
   $("dateLockNote").textContent = "Set once — locked after the debt is created.";
@@ -574,8 +662,9 @@ function openEdit(txnId){
   $("sheetTitle").textContent = "Edit Debt";
   $("deleteBtn").style.display = "block";
   $("personField").style.display = "none";
-  $("amountInput").value = t.amount;
+  setAmountCents(Math.round(t.amount * 100));
   $("noteInput").value = t.note || "";
+  setReceipt(t.receipt || null);
   dateInput.value = isoToLocalInput(t.txn_date);
   dateInput.disabled = true;
   $("dateLockNote").textContent = "Locked — date and time cannot be changed.";
@@ -602,7 +691,7 @@ function resolveMethod(){
   return methodSelect.value;
 }
 
-function addTxn(personId, type, amount, method, note, isoDate){
+function addTxn(personId, type, amount, method, note, isoDate, receipt){
   state.transactions.push({
     id: state.nextTxnId++,
     person_id: personId,
@@ -612,7 +701,8 @@ function addTxn(personId, type, amount, method, note, isoDate){
     note: note || "",
     txn_date: isoDate,
     created_at: new Date().toISOString(),
-    edited: 0
+    edited: 0,
+    receipt: receipt || null
   });
 }
 
@@ -632,6 +722,12 @@ document.addEventListener("click", function(e){
       e.stopPropagation();
       openEdit(id);
       break;
+    case "receipt": {
+      e.stopPropagation();
+      var rt = state.transactions.find(function(x){ return x.id === id; });
+      if(rt && rt.receipt) openLightbox(rt.receipt);
+      break;
+    }
     case "settle": {
       e.stopPropagation();
       var bal = balanceOf.get(id) || 0;
@@ -687,6 +783,32 @@ typeGrid.addEventListener("click", function(e){
   setErr("");
 });
 
+$("amountInput").addEventListener("input", function(){
+  var digits = this.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+  setAmountCents(digits ? parseInt(digits, 10) : 0);
+  var len = this.value.length;
+  this.setSelectionRange(len, len);
+});
+$("amountInput").addEventListener("keydown", function(e){
+  if(e.key === "Backspace"){
+    e.preventDefault();
+    setAmountCents(Math.floor(amountCentsValue() / 10));
+  }
+});
+
+$("receiptFile").addEventListener("change", function(e){
+  var file = e.target.files[0];
+  e.target.value = "";
+  if(!file) return;
+  if(!file.type.startsWith("image/")) return setErr("Please choose an image file.");
+  compressImage(file, function(dataUrl){
+    if(!dataUrl) return setErr("Couldn't read that image.");
+    setReceipt(dataUrl);
+  });
+});
+$("lightboxClose").addEventListener("click", closeLightbox);
+$("lightbox").addEventListener("click", function(e){ if(e.target === this) closeLightbox(); });
+
 $("fabBtn").addEventListener("click", openAdd);
 $("cancelBtn").addEventListener("click", closeSheet);
 overlay.addEventListener("click", function(e){ if(e.target === overlay) closeSheet(); });
@@ -695,12 +817,13 @@ $("backupBtn").addEventListener("click", function(){ openOverlay(backupOverlay);
 $("closeBackupBtn").addEventListener("click", function(){ closeOverlay(backupOverlay); });
 document.addEventListener("keydown", function(e){
   if(e.key !== "Escape") return;
-  if(overlay.classList.contains("open")) closeSheet();
+  if($("lightbox").classList.contains("open")) closeLightbox();
+  else if(overlay.classList.contains("open")) closeSheet();
   else if(backupOverlay.classList.contains("open")) closeOverlay(backupOverlay);
 });
 
 $("saveBtn").addEventListener("click", function(){
-  var amount = round2(parseFloat($("amountInput").value));
+  var amount = round2(amountCentsValue() / 100);
   var note = $("noteInput").value.trim();
 
   if(!selectedType) return setErr("Choose a transaction type.");
@@ -711,7 +834,7 @@ $("saveBtn").addEventListener("click", function(){
 
   if(editingTxnId){
     var t = state.transactions.find(function(x){ return x.id === editingTxnId; });
-    if(t){ t.amount = amount; t.note = note; t.payment_type = method; t.edited = 1; }
+    if(t){ t.amount = amount; t.note = note; t.payment_type = method; t.edited = 1; t.receipt = pendingReceipt || null; }
     persist(); closeSheet(); refreshAll(); toast("Saved.");
     return;
   }
@@ -735,7 +858,7 @@ $("saveBtn").addEventListener("click", function(){
     if(isNaN(personId)) return setErr("Choose a person.");
   }
 
-  addTxn(personId, selectedType, amount, method, note, d.toISOString());
+  addTxn(personId, selectedType, amount, method, note, d.toISOString(), pendingReceipt);
   persist(); closeSheet(); refreshAll(); toast("Debt added.");
 });
 
@@ -765,14 +888,14 @@ $("exportBtn").addEventListener("click", function(){
 $("csvBtn").addEventListener("click", function(){
   var names = new Map(state.people.map(function(p){ return [p.id, p.name]; }));
   var q = function(v){ return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; };
-  var rows = [["Date","Time","Person","Direction","Signed Amount (SGD)","Amount (SGD)","Payment Type","Description","Edited"].join(",")];
+  var rows = [["Date","Time","Person","Direction","Signed Amount (SGD)","Amount (SGD)","Payment Type","Description","Edited","Has Receipt"].join(",")];
   sortedTxns.forEach(function(t){
     var d = new Date(t.txn_date);
     rows.push([
       q(d.toLocaleDateString("en-GB")), q(d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})),
       q(names.get(t.person_id) || ""), q(TYPE_LABELS[t.type]),
       signedAmount(t).toFixed(2), t.amount.toFixed(2),
-      q(t.payment_type), q(t.note), t.edited ? "Yes" : "No"
+      q(t.payment_type), q(t.note), t.edited ? "Yes" : "No", t.receipt ? "Yes" : "No"
     ].join(","));
   });
   /* BOM keeps Excel happy with UTF-8 names. */
