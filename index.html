@@ -15,7 +15,6 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230A0A0A'/><text x='50' y='70' font-size='58' font-family='Helvetica,Arial' font-weight='bold' fill='white' text-anchor='middle'>$</text></svg>">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-/* Theme tokens: light values here, dark overrides in one block below. */
 :root{
 --bg:#F8F8F8;--card:#FFF;--text:#111;--dim:#767676;--faint:#C7C7C7;--line:#E4E4E4;
 --ink:#0A0A0A;--on-ink:#FFF;--chip:#F0F0F0;--chip-fg:#3D3D3D;--input:#F8F8F8;
@@ -58,13 +57,10 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 
 .people{display:flex;flex-direction:column;gap:10px}
 .person-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
-.person-row{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;background:var(--card);touch-action:pan-y}
+.person-row{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;background:var(--card)}
 .person-name{font-size:15.5px;font-weight:700}
 .person-meta{font-size:12px;color:var(--dim);margin-top:2px}
-.person-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.mini-btn{width:30px;height:30px;border-radius:8px;border:none;background:none;color:var(--dim);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
-.mini-btn:active{background:var(--chip)}
-.balance{font-size:16px;font-weight:800;padding:5px 10px;border-radius:8px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.balance{font-size:16px;font-weight:800;padding:5px 10px;border-radius:8px;white-space:nowrap;font-variant-numeric:tabular-nums;flex-shrink:0}
 .balance.pos{background:var(--ink);color:var(--on-ink)}
 .balance.neg{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
 .balance.zero{background:var(--chip);color:var(--dim)}
@@ -93,21 +89,27 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 
 .filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .filter{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--card);font-weight:600;font-family:inherit;color:var(--text)}
+.filter.date-btn{flex:1;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filter.date-btn.set{border-color:var(--ink)}
 
 .fab{position:fixed;right:20px;bottom:calc(24px + var(--safe-b));width:58px;height:58px;border-radius:50%;background:var(--ink);color:var(--on-ink);display:flex;align-items:center;justify-content:center;box-shadow:var(--fab-shadow);font-size:28px;font-weight:700;border:none;cursor:pointer;z-index:40;line-height:1;padding-bottom:3px}
 .fab:active{transform:scale(.94)}
 
 .overlay{position:fixed;inset:0;background:var(--scrim);display:none;align-items:flex-end;justify-content:center;z-index:50}
 .overlay.open{display:flex}
+/* Layer order: sheets 50 < wheel 55 < confirm 60 < lightbox 80 < fatal 95 < toast 100 */
+#wheelOverlay{z-index:55}
+#confirmOverlay{z-index:60}
 .sheet{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 20px calc(26px + var(--safe-b));max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideup .18s ease}
 @media (min-width:600px){.overlay{align-items:center}.sheet{border-radius:18px;max-height:82vh;padding-bottom:26px}}
 @keyframes slideup{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
 .sheet h2{margin:0 0 16px;font-size:17px;font-weight:800}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:11.5px;font-weight:700;color:var(--dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-.field input,.field select{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);font-size:16px;background:var(--input);color:var(--text);font-family:inherit}
-.field input:focus,.field select:focus{outline:none;border-color:var(--ink)}
-.field input:disabled,.field select:disabled{background:var(--chip);color:var(--dim);-webkit-text-fill-color:var(--dim);opacity:1}
+.field input,.field select,.field-btn{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);font-size:16px;background:var(--input);color:var(--text);font-family:inherit}
+.field input:focus,.field select:focus,.field-btn:focus{outline:none;border-color:var(--ink)}
+.field-btn{text-align:left;font-weight:600;cursor:pointer}
+.field input:disabled,.field select:disabled,.field-btn:disabled{background:var(--chip);color:var(--dim);-webkit-text-fill-color:var(--dim);opacity:1;cursor:default}
 .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .type-opt{border:1.5px solid var(--line);border-radius:10px;padding:11px 8px;text-align:center;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--dim);user-select:none;-webkit-user-select:none}
 .type-opt.selected{border-color:var(--ink);background:var(--ink);color:var(--on-ink)}
@@ -121,7 +123,22 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .btn-confirm{background:var(--danger);color:#fff}
 .lock-note,.receipt-status{font-size:11px;color:var(--dim);margin-top:6px}
 .err{color:var(--danger);font-size:12.5px;font-weight:700;margin-bottom:10px}
+.err:empty{display:none}
 .field-desc{font-size:13px;color:var(--dim);margin-bottom:16px;line-height:1.5}
+
+/* ---- Scrolling wheel date picker ---- */
+.wheel{position:relative;display:flex;gap:1px;height:180px;margin:2px 0 18px;
+  -webkit-mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent);
+  mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent)}
+.wheel-band{position:absolute;left:0;right:0;top:72px;height:36px;background:var(--chip);border-radius:10px;pointer-events:none}
+.wcol{flex:1;min-width:0;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;text-align:center;position:relative;z-index:1}
+.wcol::-webkit-scrollbar{display:none}
+.wcol.w-wide{flex:1.15}
+.wcol.w-tight{flex:.72}
+.witem{height:36px;line-height:36px;font-size:15px;font-weight:600;color:var(--dim);scroll-snap-align:center;font-variant-numeric:tabular-nums;white-space:nowrap;transition:color .12s,font-size .12s}
+.witem.on{color:var(--text);font-size:17px;font-weight:800}
+.witem.off{opacity:.25}
+.wpad{height:72px}
 
 .row-action{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px}
 .ra-title{font-size:14px;font-weight:700}
@@ -129,10 +146,15 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .ra-btn{padding:9px 14px;border-radius:9px;border:none;background:var(--ink);color:var(--on-ink);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
 .ra-btn.secondary{background:var(--chip);color:var(--text)}
 .ra-btn.danger{background:var(--danger);color:#fff}
-#importFile,#importCsvFile,#receiptFile{display:none}
+#importFile,#receiptFile{display:none}
 
-.toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:var(--on-ink);padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;z-index:70;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}
-.toast.show{opacity:1}
+.toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translate(-50%,10px);background:var(--ink);color:var(--on-ink);padding:11px 15px;border-radius:11px;font-size:13px;font-weight:600;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90%;text-align:left;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.with-action{pointer-events:auto}
+.toast svg{flex-shrink:0}
+.toast button{background:none;border:none;color:inherit;font-family:inherit;font-size:13px;font-weight:800;text-decoration:underline;cursor:pointer;padding:2px 0;margin-left:4px;flex-shrink:0}
+.toast.success{background:#12703C;color:#fff}
+body.dark .toast.success{background:#1C8B4D}
 .toast.error{background:var(--danger);color:#fff}
 
 .receipt-row{display:flex;align-items:center;gap:10px}
@@ -144,10 +166,24 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .lightbox img{max-width:100%;max-height:100%;border-radius:10px}
 .lightbox-close{position:fixed;top:calc(18px + var(--safe-t));right:18px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
+/* Full-screen stop for a failed boot — deliberately above every other layer. */
+.fatal{position:fixed;inset:0;background:var(--bg);z-index:95;display:none;align-items:center;justify-content:center;padding:26px}
+.fatal.open{display:flex}
+.fatal-card{max-width:420px;width:100%;text-align:center}
+.fatal-icon{width:56px;height:56px;border-radius:50%;background:var(--danger);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.fatal h2{font-size:19px;font-weight:800;margin:0 0 8px;letter-spacing:-.2px}
+.fatal p{font-size:13.5px;color:var(--dim);line-height:1.6;margin:0 0 18px}
+.fatal details{text-align:left;background:var(--chip);border-radius:10px;padding:11px 13px;margin-bottom:18px;font-size:12px;color:var(--chip-fg)}
+.fatal summary{cursor:pointer;font-weight:700;list-style:none}
+.fatal summary::-webkit-details-marker{display:none}
+.fatal summary:after{content:" ▾"}
+.fatal pre{white-space:pre-wrap;word-break:break-word;margin:9px 0 0;font-size:11.5px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.fatal .btn-row{flex-direction:column;gap:9px}
+
 .pt-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
 .pt-row:last-child{border-bottom:none}
 .pt-name{flex:1;font-size:14px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pt-row input{flex:1;padding:9px 10px;border-radius:9px;border:1.5px solid var(--line);font-size:14px;background:var(--input);color:var(--text);font-family:inherit;min-width:0}
+.pt-row input{flex:1;padding:9px 10px;border-radius:9px;border:1.5px solid var(--line);font-size:16px;background:var(--input);color:var(--text);font-family:inherit;min-width:0}
 .pt-icon-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--chip);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
 .pt-icon-btn.danger{color:var(--danger)}
 .switch{position:relative;display:inline-block;width:46px;height:27px;flex-shrink:0}
@@ -167,10 +203,10 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
     <h1>Debt Tracker</h1>
   </div>
   <div class="hdr-btns">
-    <button class="icon-btn" id="settingsBtn" title="Settings" aria-label="Settings">
+    <button class="icon-btn" id="settingsBtn" aria-label="Settings">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
-    <button class="icon-btn" id="backupBtn" title="Backup &amp; Restore" aria-label="Backup and restore">
+    <button class="icon-btn" id="backupBtn" aria-label="Backup and restore">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </button>
   </div>
@@ -180,7 +216,7 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 
 <div class="summary">
   <div class="summary-label">Net Balance</div>
-  <div class="summary-net" id="netBalance">S$0.00</div>
+  <div class="summary-net" id="netBalance">$0.00</div>
   <div class="summary-sub" id="netSub">All accounts settled</div>
 </div>
 
@@ -196,7 +232,7 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
     <button class="icon-btn" id="searchToggleBtn" aria-label="Search" type="button">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
-    <input type="text" class="filter" id="fSearch" placeholder="Search details…" style="display:none;flex:1 1 140px;font-size:16px;">
+    <input type="text" class="filter" id="fSearch" placeholder="Search name, note or amount…" style="display:none;flex:1 1 140px;font-size:16px;">
     <button class="icon-btn" id="dateToggleBtn" aria-label="Date range" type="button">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     </button>
@@ -208,8 +244,8 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
     </select>
   </div>
   <div class="filters" id="dateFilterRow" style="display:none;">
-    <input type="date" class="filter" id="fDateFrom" style="flex:1;" aria-label="From date">
-    <input type="date" class="filter" id="fDateTo" style="flex:1;" aria-label="To date">
+    <button type="button" class="filter date-btn" id="fFromBtn">From: Any</button>
+    <button type="button" class="filter date-btn" id="fToBtn">To: Any</button>
   </div>
   <div id="historyList"></div>
 </div>
@@ -241,7 +277,7 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 
     <div class="field">
       <label for="amountInput">Amount (SGD)</label>
-      <input type="text" id="amountInput" placeholder="0.00" inputmode="numeric" autocomplete="off" data-cents="0">
+      <input type="text" id="amountInput" placeholder="0.00" inputmode="numeric" autocomplete="off">
     </div>
 
     <div class="field">
@@ -257,8 +293,8 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
     </div>
 
     <div class="field">
-      <label for="dateInput">Date &amp; Time</label>
-      <input type="datetime-local" id="dateInput">
+      <label for="dateBtn">Date &amp; Time</label>
+      <button type="button" class="field-btn" id="dateBtn"></button>
       <div class="lock-note" id="dateLockNote">Set once — locked after the debt is created.</div>
     </div>
 
@@ -304,17 +340,6 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
   </div>
 </div>
 
-<div class="overlay" id="confirmOverlay">
-  <div class="sheet" role="dialog" aria-modal="true">
-    <h2>Are you sure?</h2>
-    <div class="field-desc" id="confirmMsg"></div>
-    <div class="btn-row">
-      <button class="btn btn-secondary" id="confirmNoBtn">Cancel</button>
-      <button class="btn btn-confirm" id="confirmYesBtn">Delete</button>
-    </div>
-  </div>
-</div>
-
 <div class="overlay" id="backupOverlay">
   <div class="sheet" role="dialog" aria-modal="true">
     <h2>Backup &amp; Restore</h2>
@@ -324,19 +349,10 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
       <button class="ra-btn" id="exportBtn">Export</button>
     </div>
     <div class="row-action">
-      <div><div class="ra-title">Export to Excel</div><div class="ra-sub">.csv of every transaction</div></div>
-      <button class="ra-btn secondary" id="csvBtn">CSV</button>
-    </div>
-    <div class="row-action">
-      <div><div class="ra-title">Import Backup</div><div class="ra-sub">Replaces current data with the file</div></div>
+      <div><div class="ra-title">Import Backup</div><div class="ra-sub">Merge with, or replace, your ledger</div></div>
       <button class="ra-btn secondary" id="importBtn">Import</button>
     </div>
-    <div class="row-action">
-      <div><div class="ra-title">Import from Excel</div><div class="ra-sub">Adds transactions from a .csv file</div></div>
-      <button class="ra-btn secondary" id="importCsvBtn">CSV</button>
-    </div>
     <input type="file" id="importFile" accept=".json,application/json">
-    <input type="file" id="importCsvFile" accept=".csv,text/csv">
     <div class="btn-row"><button class="btn btn-secondary" id="closeBackupBtn">Close</button></div>
   </div>
 </div>
@@ -356,8 +372,11 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
       <div><div class="ra-title">Payment Methods</div><div class="ra-sub">Rename or remove payment types.</div></div>
       <button class="ra-btn secondary" id="paymentTypesBtn">Edit</button>
     </div>
-    <div class="row-action" style="border-color:#B00020;">
-      <div><div class="ra-title" style="color:#B00020;">Delete All Data</div><div class="ra-sub">Erases every person, transaction, and receipt.</div></div>
+    <div class="row-action">
+      <div><div class="ra-title">Storage</div><div class="ra-sub" id="storageStat">Checking…</div></div>
+    </div>
+    <div class="row-action" style="border-color:var(--danger);">
+      <div><div class="ra-title" style="color:var(--danger);">Delete All Data</div><div class="ra-sub">Erases every person, transaction, and receipt.</div></div>
       <button class="ra-btn danger" id="deleteAllBtn">Delete All</button>
     </div>
     <div class="btn-row"><button class="btn btn-secondary" id="closeSettingsBtn">Close</button></div>
@@ -392,7 +411,48 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
   </div>
 </div>
 
+<!-- Wheel picker: above every sheet, below confirm -->
+<div class="overlay" id="wheelOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2 id="wheelTitle">Date &amp; Time</h2>
+    <div class="wheel" id="wheelBox"><div class="wheel-band"></div></div>
+    <div class="btn-row">
+      <button class="btn btn-danger" id="wheelClearBtn">Clear</button>
+      <button class="btn btn-secondary" id="wheelCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="wheelDoneBtn">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm is last in the DOM and highest z-index so it never hides behind a sheet -->
+<div class="overlay" id="confirmOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2>Are you sure?</h2>
+    <div class="field-desc" id="confirmMsg"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="confirmNoBtn">Cancel</button>
+      <button class="btn btn-secondary" id="confirmAltBtn" style="display:none;"></button>
+      <button class="btn btn-confirm" id="confirmYesBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
+
+<div class="fatal" id="fatal">
+  <div class="fatal-card">
+    <div class="fatal-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <h2>The ledger didn't load</h2>
+    <p id="fatalMsg">Your data hasn't been touched — the app has stopped before it could write anything over it.</p>
+    <details><summary>Technical details</summary><pre id="fatalDetail"></pre></details>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="fatalReload">Reload the app</button>
+      <button class="btn btn-danger" id="fatalExport">Export raw data</button>
+    </div>
+  </div>
+</div>
 
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
@@ -400,234 +460,388 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 </div>
 
 <script>
-(function(){
+(() => {
 "use strict";
 
 /* ================= Config ================= */
-var LS_KEY = "debtTrackerData_v2", THEME_KEY = "debtTrackerTheme_v1";
-var DEFAULT_METHODS = ["Cash","PayNow","Card"];
-var TYPE_LABELS = {owed_to_me:"Owed to Me", i_owe:"I Owe"};
-var TYPE_HINTS = {owed_to_me:"This person owes you this amount.", i_owe:"You owe this person this amount."};
-var SWIPE_OPEN = -84;
+const DB_NAME = "debtTracker", DB_VER = 1, S_META = "meta", S_RCPT = "receipts", LEDGER_KEY = "ledger";
+const LS_KEY = "debtTrackerData_v2";                 // legacy v2 store, migrated once
+const LS_LEDGER = "debtTrackerLedger_v3", LS_RCPT = "debtTrackerReceipts_v3";
+const MIGRATED_KEY = "debtTrackerMigrated_v3", THEME_KEY = "debtTrackerTheme_v1";
+const DEFAULT_METHODS = ["Cash", "PayNow", "Card"];
+const TYPE_LABELS = {owed_to_me:"Owed to Me", i_owe:"I Owe"};
+const TYPE_HINTS = {owed_to_me:"This person owes you this amount.", i_owe:"You owe this person this amount."};
+const SWIPE_OPEN = -84, MAX_CENTS = 99999999999, UNDO_MS = 6000;
 
-var $ = function(id){ return document.getElementById(id); };
-function el(t){ return t && t.nodeType === 1 ? t : (t && t.parentElement) || null; }
+const $ = id => document.getElementById(id);
+const elOf = t => t && (t.nodeType === 1 ? t : t.parentElement);
+const on = (node, ev, fn, opts) => node.addEventListener(ev, fn, opts);
+const clamp = (v, lo, hi) => v < lo ? lo : v > hi ? hi : v;
 
 /* ================= State ================= */
-var state = blank();
-var storageAvailable = false, currentTab = "overview";
-var openPersonId = null, editingTxnId = null, editingPersonId = null;
-var pendingReceipt = null, selectedType = null;
+const blank = () => ({people:[], paymentTypes:[...DEFAULT_METHODS], transactions:[], nextPersonId:1, nextTxnId:1});
+
+let state = blank();
+let currentTab = "overview";
+let openPersonId = null, editingTxnId = null, editingPersonId = null;
+let selectedType = null, txnDate = new Date(), amountCents = 0;
+let filterFrom = null, filterTo = null;
 
 /* Derived indexes — rebuilt once per data change, not per render. */
-var balanceOf = new Map(), txnsOf = new Map(), nameOf = new Map();
-var sortedTxns = [], totals = {owed:0, iowe:0};
+let balanceOf = new Map(), txnsOf = new Map(), nameOf = new Map();
+let sortedTxns = [], totals = {owed:0, iowe:0};
 
-function blank(){
-  return {people:[], paymentTypes:DEFAULT_METHODS.slice(), transactions:[], nextPersonId:1, nextTxnId:1};
-}
+const round2 = n => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+const money = n => "$" + Math.abs(n).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+const signedAmount = t => t.type === "owed_to_me" ? t.amount : -t.amount;
 
-/* Repairs legacy/corrupt data instead of trusting it blindly. */
-function normalize(raw){
-  var s = blank();
+const ESC = {"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"};
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ESC[c]);
+
+const dFmt = new Intl.DateTimeFormat(undefined, {year:"numeric", month:"short", day:"numeric"});
+const tFmt = new Intl.DateTimeFormat(undefined, {hour:"numeric", minute:"2-digit", hour12:true});
+const fmtDate = d => dFmt.format(d instanceof Date ? d : new Date(d));
+const fmtDateTime = d => { const x = d instanceof Date ? d : new Date(d); return dFmt.format(x) + " · " + tFmt.format(x); };
+const validDate = d => d instanceof Date && !isNaN(d.getTime());
+const pad2 = n => String(n).padStart(2, "0");
+
+/* Repairs legacy/corrupt data instead of trusting it blindly.
+   Legacy rows carry `receipt` as a data URL; those are pulled out into outReceipts
+   and the field is reduced to a 0/1 flag (photos live in their own store now). */
+function normalize(raw, outReceipts){
+  const s = blank();
   if(!raw || typeof raw !== "object") return s;
 
-  var seenP = new Set();
-  (Array.isArray(raw.people) ? raw.people : []).forEach(function(p){
+  const seenP = new Set();
+  (Array.isArray(raw.people) ? raw.people : []).forEach(p => {
     if(!p || p.name == null) return;
-    var id = parseInt(p.id, 10), name = String(p.name).trim();
+    const id = parseInt(p.id, 10), name = String(p.name).trim();
     if(isNaN(id) || !name || seenP.has(id)) return;
     seenP.add(id);
-    s.people.push({id:id, name:name, phone:p.phone ? String(p.phone) : "", note:p.note ? String(p.note) : ""});
+    s.people.push({id, name, phone:p.phone ? String(p.phone) : "", note:p.note ? String(p.note) : ""});
   });
 
   if(Array.isArray(raw.paymentTypes) && raw.paymentTypes.length){
-    s.paymentTypes = Array.from(new Set(raw.paymentTypes.map(String).map(function(m){ return m.trim(); }).filter(Boolean)));
+    s.paymentTypes = [...new Set(raw.paymentTypes.map(m => String(m).trim()).filter(Boolean))];
   }
 
-  var seenT = new Set(), fallbackId = 1;
-  (Array.isArray(raw.transactions) ? raw.transactions : []).forEach(function(t){
-    if(!t || !TYPE_LABELS[t.type]) return;
-    var pid = parseInt(t.person_id, 10), amt = round2(parseFloat(t.amount));
-    if(isNaN(pid) || !seenP.has(pid) || !(amt > 0)) return;
-    /* Never reuse an id — duplicate ids broke edit/delete in the old build. */
-    var id = parseInt(t.id, 10);
-    if(isNaN(id) || seenT.has(id)){ while(seenT.has(fallbackId)) fallbackId++; id = fallbackId; }
-    seenT.add(id);
-    var d = new Date(t.txn_date);
+  const rawTxns = (Array.isArray(raw.transactions) ? raw.transactions : []).filter(
+    t => t && TYPE_LABELS[t.type] && seenP.has(parseInt(t.person_id, 10)) && round2(parseFloat(t.amount)) > 0
+  );
+  /* Reserve every valid existing id first, so a repaired id can never steal one. */
+  const taken = new Set(), used = new Set();
+  rawTxns.forEach(t => { const id = parseInt(t.id, 10); if(!isNaN(id)) taken.add(id); });
+  let nextFree = 1;
+
+  rawTxns.forEach(t => {
+    let id = parseInt(t.id, 10);
+    if(isNaN(id) || used.has(id)){
+      while(taken.has(nextFree) || used.has(nextFree)) nextFree++;
+      id = nextFree;
+    }
+    used.add(id);
+    const d = new Date(t.txn_date);
+    const legacy = typeof t.receipt === "string" && t.receipt.startsWith("data:image/");
+    if(legacy && outReceipts) outReceipts.set(id, t.receipt);
     s.transactions.push({
-      id:id, person_id:pid, type:t.type, amount:amt,
+      id,
+      person_id: parseInt(t.person_id, 10),
+      type: t.type,
+      amount: round2(parseFloat(t.amount)),
       payment_type: t.payment_type ? String(t.payment_type) : "",
       note: t.note ? String(t.note) : "",
-      txn_date: isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString(),
+      txn_date: validDate(d) ? d.toISOString() : new Date().toISOString(),
       created_at: t.created_at || new Date().toISOString(),
       edited: t.edited ? 1 : 0,
       edited_at: t.edited_at || null,
-      receipt: (typeof t.receipt === "string" && t.receipt.indexOf("data:image/") === 0) ? t.receipt : null
+      receipt: (legacy || t.receipt === 1 || t.receipt === true) ? 1 : 0
     });
   });
 
   /* Rebuild counters from data — never trust a stale counter. */
-  s.nextPersonId = s.people.reduce(function(m,p){ return Math.max(m, p.id + 1); }, 1);
-  s.nextTxnId = s.transactions.reduce(function(m,t){ return Math.max(m, t.id + 1); }, 1);
+  s.nextPersonId = s.people.reduce((m, p) => Math.max(m, p.id + 1), 1);
+  s.nextTxnId = s.transactions.reduce((m, t) => Math.max(m, t.id + 1), 1);
   return s;
 }
 
-/* ================= Storage ================= */
-function loadTheme(){
-  var saved = null;
-  try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
-  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-  var dark = saved ? saved === "dark" : !!(mq && mq.matches);
-  document.body.classList.toggle("dark", dark);
-  /* No manual choice saved yet — keep following the system theme live. */
-  if(!saved && mq){
+/* ================= Storage =================
+   IndexedDB is the primary store: quota is disk-based rather than localStorage's ~5 MB,
+   writes are async (no main-thread stall on photos), and receipts are kept as Blobs in
+   their own object store — so editing a note no longer rewrites megabytes of base64.
+   Falls back to localStorage, then to memory-only, without the UI caring which. */
+const Store = {
+  mode: "memory",                 // "idb" | "local" | "memory"
+  db: null,
+  memLedger: null,
+  memRcpt: new Map(),
+
+  async init(){
     try{
-      mq.addEventListener("change", function(e){
-        var s = null;
-        try{ s = localStorage.getItem(THEME_KEY); }catch(err){}
-        if(!s) document.body.classList.toggle("dark", e.matches);
-      });
-    }catch(e){}
+      this.db = await this.openDB();
+      this.mode = "idb";
+    }catch(e){
+      this.db = null;
+      try{
+        localStorage.setItem("__probe__", "1");
+        localStorage.removeItem("__probe__");
+        this.mode = "local";
+      }catch(e2){ this.mode = "memory"; }
+    }
+    return this.mode;
+  },
+  openDB(){
+    return new Promise((res, rej) => {
+      if(!self.indexedDB) return rej(new Error("no idb"));
+      let req;
+      try{ req = indexedDB.open(DB_NAME, DB_VER); }catch(e){ return rej(e); }
+      req.onupgradeneeded = () => {
+        const d = req.result;
+        if(!d.objectStoreNames.contains(S_META)) d.createObjectStore(S_META);
+        if(!d.objectStoreNames.contains(S_RCPT)) d.createObjectStore(S_RCPT);
+      };
+      req.onsuccess = () => res(req.result);
+      req.onerror = req.onblocked = () => rej(req.error || new Error("idb blocked"));
+      setTimeout(() => rej(new Error("idb timeout")), 4000);
+    });
+  },
+  tx(store, mode, fn){
+    return new Promise((res, rej) => {
+      let t;
+      try{ t = this.db.transaction(store, mode); }catch(e){ return rej(e); }
+      const req = fn(t.objectStore(store));
+      t.oncomplete = () => res(req ? req.result : undefined);
+      t.onerror = t.onabort = () => rej(t.error || new Error("tx failed"));
+    });
+  },
+
+  async loadLedger(){
+    if(this.mode === "idb") return this.tx(S_META, "readonly", s => s.get(LEDGER_KEY));
+    if(this.mode === "local"){
+      const raw = lsGet(LS_LEDGER);
+      return raw ? JSON.parse(raw) : null;
+    }
+    return this.memLedger;
+  },
+  async saveLedger(data){
+    if(this.mode === "idb") return this.tx(S_META, "readwrite", s => s.put(data, LEDGER_KEY));
+    if(this.mode === "local") return localStorage.setItem(LS_LEDGER, JSON.stringify(data));
+    this.memLedger = data;
+  },
+
+  /* Receipts: Blob under IDB, data URL under localStorage. Callers treat both via receiptURL(). */
+  async getReceipt(id){
+    if(this.mode === "idb") return (await this.tx(S_RCPT, "readonly", s => s.get(id))) || null;
+    if(this.mode === "local") return this.lsRcpt()[id] || null;
+    return this.memRcpt.get(id) || null;
+  },
+  async putReceipt(id, blob){
+    if(this.mode === "idb") return this.tx(S_RCPT, "readwrite", s => s.put(blob, id));
+    if(this.mode === "local"){
+      const map = this.lsRcpt();
+      map[id] = await blobToDataURL(blob);
+      return localStorage.setItem(LS_RCPT, JSON.stringify(map));
+    }
+    this.memRcpt.set(id, blob);
+  },
+  async delReceipt(ids){
+    const list = Array.isArray(ids) ? ids : [ids];
+    if(this.mode === "idb") return this.tx(S_RCPT, "readwrite", s => { list.forEach(i => s.delete(i)); });
+    if(this.mode === "local"){
+      const map = this.lsRcpt();
+      list.forEach(i => delete map[i]);
+      return localStorage.setItem(LS_RCPT, JSON.stringify(map));
+    }
+    list.forEach(i => this.memRcpt.delete(i));
+  },
+  async clear(){
+    if(this.mode === "idb") return Promise.all([
+      this.tx(S_META, "readwrite", s => s.clear()),
+      this.tx(S_RCPT, "readwrite", s => s.clear())
+    ]);
+    if(this.mode === "local"){
+      localStorage.removeItem(LS_LEDGER);
+      localStorage.removeItem(LS_RCPT);
+      return;
+    }
+    this.memLedger = null;
+    this.memRcpt.clear();
+  },
+  async receiptIds(){
+    if(this.mode === "idb") return (await this.tx(S_RCPT, "readonly", s => s.getAllKeys())) || [];
+    if(this.mode === "local") return Object.keys(this.lsRcpt()).map(Number);
+    return [...this.memRcpt.keys()];
+  },
+  lsRcpt(){
+    try{ return JSON.parse(lsGet(LS_RCPT) || "{}"); }catch(e){ return {}; }
   }
+};
+
+const lsGet = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const blobToDataURL = b => new Promise(res => {
+  const r = new FileReader();
+  r.onload = () => res(r.result);
+  r.onerror = () => res(null);
+  r.readAsDataURL(b);
+});
+function dataURLtoBlob(url){
+  const [head, b64] = String(url).split(",");
+  const mime = (head.match(/:(.*?);/) || [])[1] || "image/jpeg";
+  const bin = atob(b64 || "");
+  const arr = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], {type:mime});
 }
-function setTheme(dark){
-  document.body.classList.toggle("dark", dark);
-  try{ localStorage.setItem(THEME_KEY, dark ? "dark" : "light"); }catch(e){}
-}
-function loadState(){
-  try{
-    localStorage.setItem("__dt_probe__","1"); localStorage.removeItem("__dt_probe__");
-    storageAvailable = true;
-  }catch(e){ storageAvailable = false; }
-  try{
-    var raw = localStorage.getItem(LS_KEY);
-    state = normalize(raw ? JSON.parse(raw) : null);
-  }catch(e){ state = blank(); }
-}
+
+/* Writes are debounced and flushed when the page is hidden — a rapid edit
+   burst becomes one write instead of one per keystroke-driven save. */
+let saveTimer = null, saveDirty = false, bootOk = false;
+/* Until the boot load succeeds, `state` is an empty ledger — writing it out would
+   overwrite real data with nothing. Every write path funnels through here. */
 function persist(){
-  if(!storageAvailable) return;
-  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-  catch(e){
-    if(e && (e.name === "QuotaExceededError" || e.code === 22)){
-      showError("Storage is full — remove a receipt photo or export and clear old entries.");
-    }else{ storageAvailable = false; showBanner(); }
-  }
+  if(!bootOk) return;
+  saveDirty = true;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(flush, 200);
 }
+async function flush(){
+  if(!saveDirty || !bootOk) return;
+  saveDirty = false;
+  clearTimeout(saveTimer);
+  try{ await Store.saveLedger(state); }
+  catch(e){ onStorageError(e); }
+}
+function onStorageError(e){
+  const full = e && (e.name === "QuotaExceededError" || e.code === 22);
+  showError(full ? "Storage is full — remove a receipt photo, or export and clear old entries."
+                 : "Couldn't save your change. Export a backup now.",
+    {label:"Export", fn:() => openOverlay(backupOverlay)});
+}
+on(window, "pagehide", () => { commitTrash(); flush(); });
+on(document, "visibilitychange", () => { if(document.hidden) flush(); });
+
 function showBanner(){
   if($("privateBanner")) return;
-  var b = document.createElement("div");
-  b.id = "privateBanner"; b.className = "banner";
+  const b = document.createElement("div");
+  b.id = "privateBanner";
+  b.className = "banner";
   b.innerHTML = location.protocol === "file:"
     ? "⚠️ Opened as a local file — this browser will not save your data. Use <b>Export</b> before closing."
     : "⚠️ Storage is blocked (Private Browsing?) — data will NOT be saved. Use <b>Export</b> before you leave.";
   $("bannerSlot").appendChild(b);
 }
 
-/* ================= Helpers ================= */
-function round2(n){ return Math.round((Number(n) + Number.EPSILON) * 100) / 100; }
-function money(n){ return "S$" + Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function signedAmount(t){ return t.type === "owed_to_me" ? t.amount : -t.amount; }
-
-var ESC = {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};
-function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return ESC[c]; }); }
-
-var pad = function(n){ return String(n).padStart(2,"0"); };
-function localInput(iso){
-  var d = iso ? new Date(iso) : new Date();
-  if(isNaN(d.getTime())) d = new Date();
-  return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes());
+/* ================= Theme ================= */
+function loadTheme(){
+  const saved = lsGet(THEME_KEY);
+  const mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  document.body.classList.toggle("dark", saved ? saved === "dark" : !!(mq && mq.matches));
+  /* No manual choice saved yet — keep following the system theme live. */
+  if(!saved && mq && mq.addEventListener){
+    mq.addEventListener("change", e => { if(!lsGet(THEME_KEY)) document.body.classList.toggle("dark", e.matches); });
+  }
 }
-var dFmt = new Intl.DateTimeFormat(undefined,{year:"numeric",month:"short",day:"numeric"});
-var tFmt = new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit"});
-function fmtDateTime(iso){ var d = new Date(iso); return dFmt.format(d) + " · " + tFmt.format(d); }
+function setTheme(dark){
+  document.body.classList.toggle("dark", dark);
+  try{ localStorage.setItem(THEME_KEY, dark ? "dark" : "light"); }catch(e){}
+}
 
-function toast(msg, isError){
-  var t = $("toast");
-  t.textContent = msg;
-  t.classList.toggle("error", !!isError);
-  t.classList.add("show");
+/* ================= Toast ================= */
+const TOAST_ICON = {
+  success: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  error: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg>'
+};
+const hideToast = () => $("toast").classList.remove("show");
+
+/* One renderer for all three kinds. `action` is optional {label, fn}. */
+function renderToast(msg, kind, action, ms){
+  const t = $("toast");
+  t.className = "toast" + (kind ? " " + kind : "") + (action ? " with-action" : "");
+  t.innerHTML = (TOAST_ICON[kind] || "") + '<span id="toastMsg"></span>'
+    + (action ? '<button type="button" id="toastActionBtn"></button>' : "");
+  $("toastMsg").textContent = msg;
+  if(action){
+    const b = $("toastActionBtn");
+    b.textContent = action.label;
+    b.onclick = () => { hideToast(); action.fn(); };
+  }
+  /* className was just reset, so re-adding .show on the next frame replays the slide-in. */
+  requestAnimationFrame(() => t.classList.add("show"));
   clearTimeout(t._t);
-  t._t = setTimeout(function(){ t.classList.remove("show"); }, isError ? 3800 : 2200);
+  t._t = setTimeout(hideToast, ms);
 }
-function showError(msg){ toast(msg, true); }
+const toast = (msg, kind) => renderToast(msg, kind, null, kind === "error" ? 3800 : 2200);
+const showError = (msg, action) => renderToast(msg, "error", action, action ? 6000 : 3800);
+const showOk = msg => toast(msg, "success");
+const toastUndo = (msg, undo) => renderToast(msg, null, {label:"Undo", fn:undo}, UNDO_MS);
 
-/* Any unexpected error surfaces to the user instead of failing silently. */
-window.addEventListener("error", function(e){
-  showError("Something went wrong: " + ((e && e.message) || "unexpected error"));
-});
-window.addEventListener("unhandledrejection", function(e){
-  showError("Something went wrong: " + ((e && e.reason && e.reason.message) || "unexpected error"));
-});
+on(window, "error", e => showError("Something went wrong: " + ((e && e.message) || "unexpected error")));
+on(window, "unhandledrejection", e => showError("Something went wrong: " + ((e && e.reason && e.reason.message) || "unexpected error")));
 
-function byName(a,b){ return a.name.localeCompare(b.name); }
-function peopleSorted(){ return state.people.slice().sort(byName); }
-function findPerson(id){ return state.people.find(function(p){ return p.id === id; }); }
-function findTxn(id){ return state.transactions.find(function(t){ return t.id === id; }); }
+/* ================= Lookups ================= */
+const byName = (a, b) => a.name.localeCompare(b.name);
+const peopleSorted = () => [...state.people].sort(byName);
+const findPerson = id => state.people.find(p => p.id === id);
+const findTxn = id => state.transactions.find(t => t.id === id);
 
 /* Single pass over transactions builds every number the UI needs. */
 function reindex(){
   balanceOf = new Map(); txnsOf = new Map(); nameOf = new Map();
   totals = {owed:0, iowe:0};
-  state.people.forEach(function(p){ balanceOf.set(p.id, 0); txnsOf.set(p.id, []); nameOf.set(p.id, p.name); });
+  state.people.forEach(p => { balanceOf.set(p.id, 0); txnsOf.set(p.id, []); nameOf.set(p.id, p.name); });
 
-  sortedTxns = state.transactions.slice().sort(function(a,b){
-    return a.txn_date < b.txn_date ? 1 : a.txn_date > b.txn_date ? -1 : b.id - a.id;
-  });
-  sortedTxns.forEach(function(t){
+  sortedTxns = [...state.transactions].sort((a, b) =>
+    a.txn_date < b.txn_date ? 1 : a.txn_date > b.txn_date ? -1 : b.id - a.id);
+
+  sortedTxns.forEach(t => {
     if(!balanceOf.has(t.person_id)) return;
     balanceOf.set(t.person_id, round2(balanceOf.get(t.person_id) + signedAmount(t)));
     txnsOf.get(t.person_id).push(t);
   });
-  balanceOf.forEach(function(bal){
+  balanceOf.forEach(bal => {
     if(bal > 0) totals.owed = round2(totals.owed + bal);
     else if(bal < 0) totals.iowe = round2(totals.iowe - bal);
   });
 }
 
 /* ================= Render ================= */
-var EDIT_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+const EDIT_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+const TRASH_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
 
 function renderSummary(){
-  var net = round2(totals.owed - totals.iowe);
+  const net = round2(totals.owed - totals.iowe);
   $("netBalance").textContent = (net < 0 ? "-" : "") + money(net);
   $("netSub").textContent = net > 0 ? "Net amount owed to you" : net < 0 ? "Net amount you owe" : "All accounts settled";
 }
 
 function renderPeople(){
-  var list = $("peopleList");
+  const list = $("peopleList");
   if(!state.people.length){
     list.innerHTML = '<div class="empty"><div class="big">No one on the ledger yet</div><div>Tap + to record your first debt.</div></div>';
     return;
   }
   /* A settled person (net zero, with history) drops off this list — Settings > Manage People still shows everyone. */
-  var visible = state.people.filter(function(p){
-    var bal = balanceOf.get(p.id), txns = txnsOf.get(p.id);
-    return bal !== 0 || !txns.length;
-  });
+  const visible = state.people.filter(p => balanceOf.get(p.id) !== 0 || !txnsOf.get(p.id).length);
   if(!visible.length){
     list.innerHTML = '<div class="empty"><div class="big">All settled up</div><div>Everyone on your ledger is at net zero.</div></div>';
     return;
   }
-  var sorted = visible.slice().sort(function(a,b){
-    var d = Math.abs(balanceOf.get(b.id)) - Math.abs(balanceOf.get(a.id));
-    return d !== 0 ? d : byName(a,b);
-  });
+  const sorted = visible.sort((a, b) =>
+    (Math.abs(balanceOf.get(b.id)) - Math.abs(balanceOf.get(a.id))) || byName(a, b));
 
-  list.innerHTML = sorted.map(function(p){
-    var bal = balanceOf.get(p.id), txns = txnsOf.get(p.id);
-    var cls = bal > 0 ? "pos" : bal < 0 ? "neg" : "zero";
-    var profile = [p.phone, p.note].filter(Boolean).map(esc).join(" · ");
+  list.innerHTML = sorted.map(p => {
+    const bal = balanceOf.get(p.id), txns = txnsOf.get(p.id), n = txns.length;
+    const cls = bal > 0 ? "pos" : bal < 0 ? "neg" : "zero";
+    const profile = [p.phone, p.note].filter(Boolean).map(esc).join(" · ");
 
-    var html = '<div class="person-card"><div class="person-row" data-act="person" data-id="'+p.id+'">'
-        + '<div class="person-name">'+esc(p.name)+'</div>'
-        + '<div class="person-right"><div class="balance '+cls+'">'+(bal === 0 ? "Settled" : money(bal))+'</div></div>'
-      + '</div>';
+    let html = `<div class="person-card"><div class="person-row" data-act="person" data-id="${p.id}">`
+      + `<div><div class="person-name">${esc(p.name)}</div>`
+      + `<div class="person-meta">${n} transaction${n === 1 ? "" : "s"}</div></div>`
+      + `<div class="balance ${cls}">${bal === 0 ? "Settled" : money(bal)}</div></div>`;
 
     if(openPersonId === p.id){
       html += '<div class="person-detail">'
-        + (profile ? '<div class="person-profile">'+profile+'</div>' : "")
-        + (txns.length ? txns.map(function(t){ return txnRow(t, false); }).join("") : '<div class="txn-note">No transactions yet.</div>')
+        + (profile ? `<div class="person-profile">${profile}</div>` : "")
+        + (n ? txns.map(t => txnRow(t, false)).join("") : '<div class="txn-note">No transactions yet.</div>')
         + '</div>';
     }
     return html + '</div>';
@@ -635,46 +849,52 @@ function renderPeople(){
 }
 
 function txnRow(t, showPerson){
-  var credit = t.type === "owed_to_me";
-  return '<div class="swipe-wrap" data-id="'+t.id+'" data-kind="txn">'
-    + '<div class="swipe-delete-bg" data-act="swipedelete" data-id="'+t.id+'">Delete</div>'
-    + '<div class="txn swipe-content" data-act="txn" data-id="'+t.id+'"><div class="txn-left">'
-      + '<div class="txn-type">'+TYPE_LABELS[t.type]+'</div>'
-      + (showPerson ? '<div class="txn-person">'+esc(nameOf.get(t.person_id) || "—")+'</div>' : "")
-      + (t.note ? '<div class="txn-note">'+esc(t.note)+'</div>' : "")
-      + '<div class="txn-meta"><div class="txn-date">'+fmtDateTime(t.txn_date)+'</div>'
-      + (t.payment_type ? '<div class="txn-method">'+esc(t.payment_type)+'</div>' : "")
-      + (t.receipt ? '<div class="txn-receipt-badge" data-act="receipt" data-id="'+t.id+'">📎 Receipt</div>' : "")
-      + '</div></div><div class="txn-right">'
-      + '<div class="txn-amt '+(credit ? "" : "debit")+'">'+(credit ? "+" : "-")+money(t.amount)+'</div>'
-      + (t.edited ? '<div class="txn-edited" title="Edited '+(t.edited_at ? fmtDateTime(t.edited_at) : "")+'">Edited '+(t.edited_at ? fmtDateTime(t.edited_at) : "")+'</div>' : "")
-    + '</div></div></div>';
+  const credit = t.type === "owed_to_me";
+  return `<div class="swipe-wrap" data-id="${t.id}">`
+    + `<div class="swipe-delete-bg" data-act="swipedelete" data-id="${t.id}">Delete</div>`
+    + `<div class="txn swipe-content" data-act="txn" data-id="${t.id}"><div class="txn-left">`
+      + `<div class="txn-type">${TYPE_LABELS[t.type]}</div>`
+      + (showPerson ? `<div class="txn-person">${esc(nameOf.get(t.person_id) || "—")}</div>` : "")
+      + (t.note ? `<div class="txn-note">${esc(t.note)}</div>` : "")
+      + `<div class="txn-meta"><div class="txn-date">${fmtDateTime(t.txn_date)}</div>`
+      + (t.payment_type ? `<div class="txn-method">${esc(t.payment_type)}</div>` : "")
+      + (t.receipt ? `<div class="txn-receipt-badge" data-act="receipt" data-id="${t.id}">📎 Receipt</div>` : "")
+      + `</div></div><div class="txn-right">`
+      + `<div class="txn-amt ${credit ? "" : "debit"}">${credit ? "+" : "-"}${money(t.amount)}</div>`
+      + (t.edited ? `<div class="txn-edited">Edited ${t.edited_at ? fmtDateTime(t.edited_at) : ""}</div>` : "")
+    + `</div></div></div>`;
 }
 
+/* The person dropdown only needs rebuilding when the roster actually changes. */
+let personOptSig = "";
 function renderHistory(){
-  var sel = $("fPerson"), cur = sel.value;
-  sel.innerHTML = '<option value="all">All people</option>' + peopleSorted().map(function(p){
-    return '<option value="'+p.id+'">'+esc(p.name)+'</option>';
-  }).join("");
-  sel.value = Array.prototype.some.call(sel.options, function(o){ return o.value === cur; }) ? cur : "all";
+  const sel = $("fPerson");
+  const sig = state.people.map(p => p.id + ":" + p.name).join("|");
+  if(sig !== personOptSig){
+    const cur = sel.value;
+    personOptSig = sig;
+    sel.innerHTML = '<option value="all">All people</option>'
+      + peopleSorted().map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join("");
+    sel.value = [...sel.options].some(o => o.value === cur) ? cur : "all";
+  }
 
-  var pf = sel.value, tf = $("fType").value, q = $("fSearch").value.trim().toLowerCase();
-  var from = $("fDateFrom").value ? new Date($("fDateFrom").value + "T00:00:00") : null;
-  var to = $("fDateTo").value ? new Date($("fDateTo").value + "T23:59:59") : null;
-  if(from && to && from > to){ var tmp = from; from = to; to = tmp; }
+  const pf = sel.value, tf = $("fType").value;
+  /* Amounts are searchable too: drop a leading $/S$ and digit-grouping commas, but never bare
+     letters — stripping every "s" turned a search for "cash" into "cah". */
+  const q = $("fSearch").value.trim().toLowerCase().replace(/s?\$/g, "").replace(/(\d),(\d)/g, "$1$2");
+  let from = filterFrom, to = filterTo;
+  if(from && to && from > to) [from, to] = [to, from];
 
-  var rows = sortedTxns.filter(function(t){
+  const rows = sortedTxns.filter(t => {
     if(pf !== "all" && String(t.person_id) !== pf) return false;
     if(tf !== "all" && t.type !== tf) return false;
-    if(q && (t.note + " " + t.payment_type + " " + (nameOf.get(t.person_id) || "")).toLowerCase().indexOf(q) === -1) return false;
-    var d = new Date(t.txn_date);
-    if(from && d < from) return false;
-    if(to && d > to) return false;
-    return true;
+    if(q && !`${t.note} ${t.payment_type} ${nameOf.get(t.person_id) || ""} ${t.amount.toFixed(2)}`.toLowerCase().includes(q)) return false;
+    const d = new Date(t.txn_date);
+    return !(from && d < from) && !(to && d > to);
   });
 
   $("historyList").innerHTML = rows.length
-    ? '<div class="person-card">' + rows.map(function(t){ return txnRow(t, true); }).join("") + '</div>'
+    ? '<div class="person-card">' + rows.map(t => txnRow(t, true)).join("") + '</div>'
     : '<div class="empty"><div class="big">No matching transactions</div><div>Try adjusting your search or filters.</div></div>';
 }
 
@@ -685,104 +905,233 @@ function refreshAll(){
 }
 
 /* ================= Overlays ================= */
-var overlay = $("overlay"), personOverlay = $("personOverlay"), confirmOverlay = $("confirmOverlay"),
-    backupOverlay = $("backupOverlay"), settingsOverlay = $("settingsOverlay"), paymentTypesOverlay = $("paymentTypesOverlay"),
-    managePeopleOverlay = $("managePeopleOverlay");
+const overlay = $("overlay"), personOverlay = $("personOverlay"), confirmOverlay = $("confirmOverlay"),
+      backupOverlay = $("backupOverlay"), settingsOverlay = $("settingsOverlay"),
+      paymentTypesOverlay = $("paymentTypesOverlay"), managePeopleOverlay = $("managePeopleOverlay"),
+      wheelOverlay = $("wheelOverlay"), lightbox = $("lightbox");
 
 /* Scroll lock is derived from what's actually open — stacked sheets used to unlock the body early. */
-function syncLock(){
-  document.body.classList.toggle("locked", !!document.querySelector(".overlay.open, .lightbox.open"));
-}
-function openOverlay(o){ o.classList.add("open"); syncLock(); }
-function closeOverlay(o){ o.classList.remove("open"); syncLock(); }
+const syncLock = () => document.body.classList.toggle("locked", !!document.querySelector(".overlay.open, .lightbox.open"));
+const openOverlay = o => { o.classList.add("open"); syncLock(); };
+const closeOverlay = o => { o.classList.remove("open"); syncLock(); };
+const isOpen = o => o.classList.contains("open");
 
-var pendingConfirm = null;
-function appConfirm(msg, action, yesLabel){
+let pendingConfirm = null, pendingAlt = null;
+/* alt = {label, fn} renders a second, non-destructive choice beside the primary one. */
+function appConfirm(msg, action, yesLabel, alt){
   $("confirmMsg").textContent = msg;
   $("confirmYesBtn").textContent = yesLabel || "Delete";
+  $("confirmAltBtn").textContent = alt ? alt.label : "";
+  $("confirmAltBtn").style.display = alt ? "block" : "none";
   pendingConfirm = action;
+  pendingAlt = alt ? alt.fn : null;
   openOverlay(confirmOverlay);
 }
-function cancelConfirm(){ pendingConfirm = null; closeOverlay(confirmOverlay); }
-$("confirmNoBtn").addEventListener("click", cancelConfirm);
-$("confirmYesBtn").addEventListener("click", function(){
-  var a = pendingConfirm; pendingConfirm = null;
+function cancelConfirm(){ pendingConfirm = pendingAlt = null; closeOverlay(confirmOverlay); }
+
+on($("confirmNoBtn"), "click", cancelConfirm);
+on($("confirmYesBtn"), "click", () => {
+  const a = pendingConfirm;
+  pendingConfirm = pendingAlt = null;
+  closeOverlay(confirmOverlay);
+  if(a) a();
+});
+on($("confirmAltBtn"), "click", () => {
+  const a = pendingAlt;
+  pendingConfirm = pendingAlt = null;
   closeOverlay(confirmOverlay);
   if(a) a();
 });
 
+/* Tapping the backdrop closes that layer. */
 [[overlay, closeSheet], [personOverlay, closePersonSheet], [confirmOverlay, cancelConfirm],
- [backupOverlay, function(){ closeOverlay(backupOverlay); }],
- [settingsOverlay, function(){ closeOverlay(settingsOverlay); }],
- [paymentTypesOverlay, function(){ closeOverlay(paymentTypesOverlay); }]].forEach(function(pair){
-  pair[0].addEventListener("click", function(e){ if(e.target === pair[0]) pair[1](); });
+ [wheelOverlay, closeWheel], [backupOverlay, () => closeOverlay(backupOverlay)],
+ [settingsOverlay, () => closeOverlay(settingsOverlay)],
+ [paymentTypesOverlay, () => closeOverlay(paymentTypesOverlay)],
+ [managePeopleOverlay, () => closeOverlay(managePeopleOverlay)]
+].forEach(([o, close]) => on(o, "click", e => { if(e.target === o) close(); }));
+
+/* ================= Scrolling wheel date picker =================
+   Columns: Day · Month · Year · Hour(1-12) · Minute · AM/PM */
+const WH = 36;                                   // must match .witem height
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MERIDIEM = ["AM", "PM"];
+const daysIn = (y, m) => new Date(y, m + 1, 0).getDate();
+
+const wheelBox = $("wheelBox");
+let wheelCb = null, wheelCols = null, wheelYears = [], wheelReady = false;
+
+function makeCol(values, idx, cls, onChange){
+  const c = document.createElement("div");
+  c.className = "wcol" + (cls ? " " + cls : "");
+  c.innerHTML = '<div class="wpad"></div>'
+    + values.map(v => `<div class="witem">${v}</div>`).join("")
+    + '<div class="wpad"></div>';
+  c.items = [...c.querySelectorAll(".witem")];
+  c.i = clamp(idx, 0, values.length - 1);
+  c.mark = () => c.items.forEach((it, i) => it.classList.toggle("on", i === c.i));
+  c.mark();
+  on(c, "scroll", () => {
+    const i = clamp(Math.round(c.scrollTop / WH), 0, c.items.length - 1);
+    if(i !== c.i){ c.i = i; c.mark(); }
+    if(!onChange) return;
+    clearTimeout(c.t);
+    c.t = setTimeout(() => { if(wheelReady) onChange(); }, 110);
+  }, {passive:true});
+  return c;
+}
+const setCol = (c, i) => { c.i = clamp(i, 0, c.items.length - 1); c.mark(); c.scrollTop = c.i * WH; };
+
+/* Greys out (and clamps) days that don't exist in the chosen month. */
+function syncDays(){
+  const {day, mon, yr} = wheelCols;
+  const dim = daysIn(wheelYears[yr.i], mon.i);
+  day.items.forEach((it, i) => it.classList.toggle("off", i >= dim));
+  if(day.i >= dim) setCol(day, dim - 1);
+}
+
+function openWheel({value, withTime = true, title = "Date & Time", allowClear = false, onPick}){
+  wheelCb = onPick;
+  wheelReady = false;
+  $("wheelTitle").textContent = title;
+  $("wheelClearBtn").style.display = allowClear ? "block" : "none";
+
+  const d = validDate(value) ? new Date(value) : new Date();
+  const nowY = new Date().getFullYear();
+  wheelYears = [];
+  for(let y = Math.min(nowY - 30, d.getFullYear()); y <= Math.max(nowY + 5, d.getFullYear()); y++) wheelYears.push(y);
+
+  const rng = (n, start = 0, fmt = String) => Array.from({length:n}, (_, i) => fmt(i + start));
+  const cols = wheelCols = {
+    withTime,
+    day: makeCol(rng(31, 1), d.getDate() - 1, "w-tight", syncDays),
+    mon: makeCol(MONTHS, d.getMonth(), "w-wide", syncDays),
+    yr:  makeCol(wheelYears, wheelYears.indexOf(d.getFullYear()), "w-wide", syncDays)
+  };
+  wheelBox.innerHTML = '<div class="wheel-band"></div>';
+  wheelBox.append(cols.day, cols.mon, cols.yr);
+
+  if(withTime){
+    const h = d.getHours();
+    cols.hr = makeCol(rng(12, 1), (h + 11) % 12, "w-tight", null);   // 0h and 12h both show "12"
+    cols.min = makeCol(rng(60, 0, pad2), d.getMinutes(), "w-tight", null);
+    cols.ap = makeCol(MERIDIEM, h >= 12 ? 1 : 0, null, null);
+    wheelBox.append(cols.hr, cols.min, cols.ap);
+  }
+
+  openOverlay(wheelOverlay);
+  /* Scroll positions only stick once the sheet has been laid out. */
+  requestAnimationFrame(() => {
+    Object.values(cols).forEach(c => { if(c && c.items) c.scrollTop = c.i * WH; });
+    syncDays();
+    wheelReady = true;
+  });
+}
+function closeWheel(){ closeOverlay(wheelOverlay); wheelCb = null; wheelCols = null; wheelReady = false; }
+
+on($("wheelCancelBtn"), "click", closeWheel);
+on($("wheelClearBtn"), "click", () => { const cb = wheelCb; closeWheel(); if(cb) cb(null); });
+on($("wheelDoneBtn"), "click", () => {
+  const c = wheelCols, cb = wheelCb;
+  if(!c || !cb) return closeWheel();
+  const y = wheelYears[c.yr.i], m = c.mon.i;
+  const day = Math.min(c.day.i + 1, daysIn(y, m));
+  const hour24 = c.withTime ? ((c.hr.i + 1) % 12) + (c.ap.i ? 12 : 0) : 0;
+  const picked = new Date(y, m, day, hour24, c.withTime ? c.min.i : 0, 0, 0);
+  closeWheel();
+  cb(picked);
 });
 
 /* ================= Receipts =================
-   Compressed JPEG data URLs live on the transaction, so they travel with JSON export. */
-function compressImage(file, cb){
-  var reader = new FileReader();
-  reader.onload = function(e){
-    var img = new Image();
-    img.onload = function(){
-      var max = 1100, scale = Math.min(1, max / Math.max(img.width, img.height));
-      var w = Math.round(img.width * scale) || 1, h = Math.round(img.height * scale) || 1;
-      var c = document.createElement("canvas");
-      c.width = w; c.height = h;
-      c.getContext("2d").drawImage(img, 0, 0, w, h);
-      try{ cb(c.toDataURL("image/jpeg", 0.7)); }catch(err){ cb(null); }
-    };
-    img.onerror = function(){ cb(null); };
-    img.src = e.target.result;
-  };
-  reader.onerror = function(){ cb(null); };
-  reader.readAsDataURL(file);
+   Photos are Blobs in their own store. The UI only ever sees a URL, resolved lazily
+   and cached, so lists render without touching the database. */
+const urlCache = new Map();                       // txn id -> object URL (or data URL in fallback mode)
+let rcpt = {mode:"none", blob:null, url:null, temp:false};   // receipt state for the open sheet
+
+async function receiptURL(id){
+  if(urlCache.has(id)) return urlCache.get(id);
+  const v = await Store.getReceipt(id);
+  if(!v) return null;
+  const url = typeof v === "string" ? v : URL.createObjectURL(v);
+  urlCache.set(id, url);
+  return url;
 }
-function setReceipt(dataUrl){
-  pendingReceipt = dataUrl || null;
-  var row = $("receiptRow");
-  if(pendingReceipt){
-    row.innerHTML = '<img class="receipt-thumb" id="receiptThumb" src="'+pendingReceipt+'" alt="Receipt preview">'
+function dropReceiptURL(id){
+  const u = urlCache.get(id);
+  if(u && u.startsWith("blob:")) URL.revokeObjectURL(u);
+  urlCache.delete(id);
+}
+function releaseTemp(){
+  if(rcpt.temp && rcpt.url) URL.revokeObjectURL(rcpt.url);
+}
+function setRcpt(next){
+  releaseTemp();
+  rcpt = Object.assign({mode:"none", blob:null, url:null, temp:false}, next);
+  const row = $("receiptRow");
+  if(rcpt.url){
+    row.innerHTML = `<img class="receipt-thumb" id="receiptThumb" src="${rcpt.url}" alt="Receipt preview">`
       + '<div><div class="receipt-status">Attached</div>'
       + '<button type="button" class="receipt-remove" id="receiptRemoveBtn">Remove</button></div>';
-    $("receiptThumb").addEventListener("click", function(){ openLightbox(pendingReceipt); });
-    $("receiptRemoveBtn").addEventListener("click", function(){ setReceipt(null); });
+    on($("receiptThumb"), "click", () => openLightbox(rcpt.url));
+    on($("receiptRemoveBtn"), "click", () => setRcpt(null));
   }else{
     row.innerHTML = '<button type="button" class="receipt-add-btn" id="receiptAddBtn">+ Attach photo</button>';
-    $("receiptAddBtn").addEventListener("click", function(){ $("receiptFile").click(); });
+    on($("receiptAddBtn"), "click", () => $("receiptFile").click());
   }
 }
-function openLightbox(src){ $("lightboxImg").src = src; $("lightbox").classList.add("open"); syncLock(); }
-function closeLightbox(){ $("lightbox").classList.remove("open"); $("lightboxImg").src = ""; syncLock(); }
+
+/* Canvas -> Blob keeps the photo binary; base64 was 33% bigger for no reason. */
+function compressImage(file, cb){
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 1100, scale = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * scale) || 1;
+      c.height = Math.round(img.height * scale) || 1;
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      try{ c.toBlob(b => cb(b || null), "image/jpeg", 0.72); }catch(err){ cb(null); }
+    };
+    img.onerror = () => cb(null);
+    img.src = e.target.result;
+  };
+  reader.onerror = () => cb(null);
+  reader.readAsDataURL(file);
+}
+
+const openLightbox = src => { $("lightboxImg").src = src; lightbox.classList.add("open"); syncLock(); };
+const closeLightbox = () => { lightbox.classList.remove("open"); $("lightboxImg").src = ""; syncLock(); };
 
 /* ================= Transaction sheet ================= */
-var personSelect = $("personSelect"), newPersonName = $("newPersonName"),
-    methodSelect = $("methodSelect"), newMethodName = $("newMethodName"),
-    dateInput = $("dateInput"), typeGrid = $("typeGrid"), amountInput = $("amountInput");
+const personSelect = $("personSelect"), newPersonName = $("newPersonName"),
+      methodSelect = $("methodSelect"), newMethodName = $("newMethodName"),
+      dateBtn = $("dateBtn"), typeGrid = $("typeGrid"), amountInput = $("amountInput");
 
-function setErr(msg){ $("formErr").textContent = msg || ""; }
+const setErr = msg => { $("formErr").textContent = msg || ""; };
 
-function centsToStr(c){ return (Math.max(0, c|0)/100).toFixed(2); }
+/* Cents-first entry keeps decimals exact: typing "500" gives 5.00. */
 function setAmountCents(c){
-  c = Math.max(0, c|0);
-  amountInput.dataset.cents = String(c);
-  amountInput.value = c === 0 ? "" : centsToStr(c);
+  amountCents = clamp(Math.floor(Number(c) || 0), 0, MAX_CENTS);
+  amountInput.value = amountCents === 0 ? "" : (amountCents / 100).toFixed(2);
 }
-function amountCents(){ return parseInt(amountInput.dataset.cents || "0", 10) || 0; }
+function setTxnDate(d){
+  txnDate = validDate(d) ? d : new Date();
+  dateBtn.textContent = fmtDateTime(txnDate);
+}
 
 function populatePersonSelect(selectedId){
-  var opts = state.people.length ? '<option value="">Select person…</option>' : "";
-  personSelect.innerHTML = opts + peopleSorted().map(function(p){
-    return '<option value="'+p.id+'">'+esc(p.name)+'</option>';
-  }).join("") + '<option value="__new__">+ Add new person</option>';
+  personSelect.innerHTML = (state.people.length ? '<option value="">Select person…</option>' : "")
+    + peopleSorted().map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join("")
+    + '<option value="__new__">+ Add new person</option>';
   personSelect.value = selectedId != null ? String(selectedId) : (state.people.length ? "" : "__new__");
   newPersonName.style.display = personSelect.value === "__new__" ? "block" : "none";
 }
 function populateMethodSelect(selected){
-  var methods = state.paymentTypes.slice().sort(function(a,b){ return a.localeCompare(b); });
-  if(selected && methods.indexOf(selected) === -1) methods.push(selected);
+  const methods = [...state.paymentTypes].sort((a, b) => a.localeCompare(b));
+  if(selected && !methods.includes(selected)) methods.push(selected);
   methodSelect.innerHTML = '<option value="__none__">Not specified</option>'
-    + methods.map(function(m){ return '<option value="'+esc(m)+'">'+esc(m)+'</option>'; }).join("")
+    + methods.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join("")
     + '<option value="__new__">+ Add new payment type</option>';
   methodSelect.value = selected || "__none__";
   newMethodName.style.display = "none";
@@ -791,9 +1140,7 @@ function populateMethodSelect(selected){
 function setTypeUI(type, locked){
   selectedType = type || null;
   typeGrid.classList.toggle("locked", !!locked);
-  Array.prototype.forEach.call(typeGrid.children, function(o){
-    o.classList.toggle("selected", !!type && o.dataset.type === type);
-  });
+  [...typeGrid.children].forEach(o => o.classList.toggle("selected", !!type && o.dataset.type === type));
   $("typeHint").textContent = type ? (TYPE_HINTS[type] || "") : "";
 }
 
@@ -808,117 +1155,190 @@ function openAdd(){
   setTypeUI(null, false);
   setAmountCents(0);
   $("noteInput").value = "";
-  setReceipt(null);
-  dateInput.value = localInput();
-  dateInput.disabled = false;
+  setRcpt(null);
+  setTxnDate(new Date());
+  dateBtn.disabled = false;
   $("dateLockNote").textContent = "Set once — locked after the debt is created.";
   populateMethodSelect(null);
   openOverlay(overlay);
 }
 
 function openEdit(id){
-  var t = findTxn(id);
+  const t = findTxn(id);
   if(!t) return showError("That transaction no longer exists.");
   editingTxnId = id;
   setErr("");
   $("sheetTitle").textContent = "Edit Debt";
   $("deleteBtn").style.display = "block";
-  /* Person now stays visible (disabled) — the old build hid it entirely. */
   populatePersonSelect(t.person_id);
   personSelect.disabled = true;
   newPersonName.style.display = "none";
   setTypeUI(t.type, true);
   setAmountCents(Math.round(t.amount * 100));
   $("noteInput").value = t.note || "";
-  setReceipt(t.receipt || null);
-  dateInput.value = localInput(t.txn_date);
-  dateInput.disabled = true;
+  setRcpt(null);
+  setTxnDate(new Date(t.txn_date));
+  dateBtn.disabled = true;
   $("dateLockNote").textContent = "Locked — date and time cannot be changed.";
   populateMethodSelect(t.payment_type || null);
   openOverlay(overlay);
+  /* Photo loads after the sheet is up; the sheet must not wait on the database. */
+  if(t.receipt){
+    receiptURL(id).then(url => {
+      if(url && editingTxnId === id) setRcpt({mode:"keep", url});
+    });
+  }
 }
-function closeSheet(){ closeOverlay(overlay); editingTxnId = null; setErr(""); }
+function closeSheet(){ releaseTemp(); rcpt = {mode:"none", blob:null, url:null, temp:false}; closeOverlay(overlay); editingTxnId = null; setErr(""); }
 
+/* Only commits a brand-new payment type once the rest of the form has validated. */
 function resolveMethod(){
   if(methodSelect.value === "__none__") return "";
-  if(methodSelect.value === "__new__"){
-    var name = newMethodName.value.trim();
-    if(name && !state.paymentTypes.some(function(m){ return m.toLowerCase() === name.toLowerCase(); })) state.paymentTypes.push(name);
-    return name;
-  }
-  return methodSelect.value;
+  if(methodSelect.value !== "__new__") return methodSelect.value;
+  const name = newMethodName.value.trim();
+  if(name && !state.paymentTypes.some(m => m.toLowerCase() === name.toLowerCase())) state.paymentTypes.push(name);
+  return name;
 }
 
-$("saveBtn").addEventListener("click", function(){
-  var amount = round2(amountCents() / 100);
-  var note = $("noteInput").value.trim();
+/* Writes the sheet's receipt state onto a saved transaction. Returns true if it changed. */
+async function commitReceipt(t){
+  const had = !!t.receipt;
+  if(rcpt.mode === "new"){
+    await Store.putReceipt(t.id, rcpt.blob);
+    dropReceiptURL(t.id);
+    t.receipt = 1;
+    return true;
+  }
+  if(rcpt.mode === "none" && had){
+    await Store.delReceipt(t.id);
+    dropReceiptURL(t.id);
+    t.receipt = 0;
+    return true;
+  }
+  return false;
+}
+
+on($("saveBtn"), "click", async () => {
+  const amount = round2(amountCents / 100);
+  const note = $("noteInput").value.trim();
   if(!selectedType) return setErr("Choose a transaction type.");
   if(!(amount > 0)) return setErr("Enter an amount greater than zero.");
   if(methodSelect.value === "__new__" && !newMethodName.value.trim()) return setErr("Enter the new payment type name.");
-  var method = resolveMethod();
 
-  if(editingTxnId){
-    var t = findTxn(editingTxnId);
-    if(!t){ closeSheet(); refreshAll(); return showError("That transaction no longer exists."); }
-    /* Only flag as edited when something actually changed. */
-    if(t.amount !== amount || t.note !== note || t.payment_type !== method || (t.receipt || null) !== pendingReceipt){
-      t.edited = 1; t.edited_at = new Date().toISOString();
+  try{
+    if(editingTxnId){
+      const t = findTxn(editingTxnId);
+      if(!t){ closeSheet(); refreshAll(); return showError("That transaction no longer exists."); }
+      const method = resolveMethod();
+      const changed = t.amount !== amount || t.note !== note || t.payment_type !== method;
+      const rcptChanged = await commitReceipt(t);
+      /* Only flag as edited when something actually changed. */
+      if(changed || rcptChanged){
+        t.edited = 1;
+        t.edited_at = new Date().toISOString();
+      }
+      Object.assign(t, {amount, note, payment_type:method});
+      persist(); closeSheet(); refreshAll(); showOk("Saved.");
+      return;
     }
-    t.amount = amount; t.note = note; t.payment_type = method; t.receipt = pendingReceipt;
-    persist(); closeSheet(); refreshAll(); toast("Saved.");
-    return;
-  }
 
-  if(!dateInput.value) return setErr("Choose a date and time.");
-  var d = new Date(dateInput.value);
-  if(isNaN(d.getTime())) return setErr("That date and time isn't valid.");
+    if(!validDate(txnDate)) return setErr("Choose a date and time.");
 
-  var personId;
-  if(personSelect.value === "__new__"){
-    var name = newPersonName.value.trim();
-    if(!name) return setErr("Enter a name for the new person.");
-    var dupe = state.people.find(function(p){ return p.name.toLowerCase() === name.toLowerCase(); });
-    if(dupe) personId = dupe.id;
-    else{
-      personId = state.nextPersonId++;
-      state.people.push({id:personId, name:name, phone:"", note:""});
+    let personId;
+    if(personSelect.value === "__new__"){
+      const name = newPersonName.value.trim();
+      if(!name) return setErr("Enter a name for the new person.");
+      const dupe = state.people.find(p => p.name.toLowerCase() === name.toLowerCase());
+      if(dupe) personId = dupe.id;
+      else{
+        personId = state.nextPersonId++;
+        state.people.push({id:personId, name, phone:"", note:""});
+      }
+    }else{
+      personId = parseInt(personSelect.value, 10);
+      if(isNaN(personId) || !findPerson(personId)) return setErr("Choose a person.");
     }
-  }else{
-    personId = parseInt(personSelect.value, 10);
-    if(isNaN(personId) || !findPerson(personId)) return setErr("Choose a person.");
-  }
 
-  state.transactions.push({
-    id: state.nextTxnId++, person_id: personId, type: selectedType, amount: amount,
-    payment_type: method, note: note, txn_date: d.toISOString(),
-    created_at: new Date().toISOString(), edited: 0, edited_at: null, receipt: pendingReceipt
-  });
-  persist(); closeSheet(); refreshAll(); toast("Debt added.");
+    const t = {
+      id: state.nextTxnId++, person_id: personId, type: selectedType, amount,
+      payment_type: resolveMethod(), note, txn_date: txnDate.toISOString(),
+      created_at: new Date().toISOString(), edited: 0, edited_at: null, receipt: 0
+    };
+    state.transactions.push(t);
+    await commitReceipt(t);
+    persist(); closeSheet(); refreshAll(); showOk("Debt added.");
+  }catch(e){ onStorageError(e); }
 });
 
-$("deleteBtn").addEventListener("click", function(){
-  if(!editingTxnId) return;
-  var gone = editingTxnId;
-  appConfirm("Delete this transaction? This cannot be undone.", function(){
-    state.transactions = state.transactions.filter(function(t){ return t.id !== gone; });
-    persist(); closeSheet(); refreshAll(); toast("Transaction deleted.");
+/* ===== Deletion with undo =====
+   A deleted transaction leaves `state` at once, but its photo is held back until the
+   undo window closes — otherwise Undo would restore a row with a missing receipt.
+   Anything still pending is committed on the next delete, on page hide, and swept at boot. */
+function purgeReceipts(txns){
+  const ids = txns.filter(t => t.receipt).map(t => t.id);
+  if(!ids.length) return;
+  ids.forEach(dropReceiptURL);
+  Store.delReceipt(ids).catch(() => {});
+}
+function removeTxns(ids){
+  const set = new Set(ids);
+  const removed = state.transactions.filter(t => set.has(t.id));
+  state.transactions = state.transactions.filter(t => !set.has(t.id));
+  persist();
+  return removed;
+}
+
+let trash = null;
+function commitTrash(){
+  if(!trash) return;
+  clearTimeout(trash.timer);
+  purgeReceipts(trash.txns);
+  trash = null;
+}
+function deleteWithUndo(ids, msg){
+  commitTrash();
+  const removed = removeTxns(ids);
+  if(!removed.length) return;
+  trash = {txns:removed, timer:setTimeout(commitTrash, UNDO_MS + 500)};
+  refreshAll();
+  toastUndo(msg, () => {
+    if(!trash) return;
+    clearTimeout(trash.timer);
+    state.transactions.push(...trash.txns);
+    trash = null;
+    persist(); refreshAll();
+    showOk("Restored.");
   });
+}
+
+on($("deleteBtn"), "click", () => {
+  const gone = editingTxnId;
+  if(!gone) return;
+  appConfirm("Delete this transaction?", () => {
+    closeSheet();
+    deleteWithUndo([gone], "Transaction deleted.");
+  });
+});
+
+on(dateBtn, "click", () => {
+  if(dateBtn.disabled) return;
+  openWheel({value:txnDate, title:"Date & Time", onPick:d => { if(d) setTxnDate(d); }});
 });
 
 /* ================= Person profile sheet ================= */
-function setPersonErr(msg){ $("personErr").textContent = msg || ""; }
+const setPersonErr = msg => { $("personErr").textContent = msg || ""; };
 
 function openPersonSheet(id){
   editingPersonId = null;
   setPersonErr("");
-  var p = id != null ? findPerson(id) : null;
+  const p = id != null ? findPerson(id) : null;
   if(id != null && !p) return showError("That person no longer exists.");
 
   if(p){
     editingPersonId = p.id;
-    var bal = balanceOf.get(p.id) || 0, n = (txnsOf.get(p.id) || []).length;
+    const bal = balanceOf.get(p.id) || 0, n = (txnsOf.get(p.id) || []).length;
     $("personSheetTitle").textContent = "Edit Person";
-    $("personStats").textContent = n + " transaction" + (n !== 1 ? "s" : "") + " · "
+    $("personStats").textContent = `${n} transaction${n === 1 ? "" : "s"} · `
       + (bal > 0 ? money(bal) + " owed to you" : bal < 0 ? "you owe " + money(bal) : "settled");
     $("personDeleteBtn").style.display = "block";
     $("pName").value = p.name;
@@ -928,161 +1348,141 @@ function openPersonSheet(id){
     $("personSheetTitle").textContent = "Add Person";
     $("personStats").textContent = "Create a profile now and log debts against it later.";
     $("personDeleteBtn").style.display = "none";
-    $("pName").value = ""; $("pPhone").value = ""; $("pNote").value = "";
+    $("pName").value = $("pPhone").value = $("pNote").value = "";
   }
   openOverlay(personOverlay);
 }
 function closePersonSheet(){ closeOverlay(personOverlay); editingPersonId = null; setPersonErr(""); }
 
-$("personSaveBtn").addEventListener("click", function(){
-  var name = $("pName").value.trim();
+on($("personSaveBtn"), "click", () => {
+  const name = $("pName").value.trim();
   if(!name) return setPersonErr("Enter a name.");
-  var clash = state.people.some(function(p){
-    return p.id !== editingPersonId && p.name.toLowerCase() === name.toLowerCase();
-  });
-  if(clash) return setPersonErr("Someone with that name already exists.");
+  if(state.people.some(p => p.id !== editingPersonId && p.name.toLowerCase() === name.toLowerCase()))
+    return setPersonErr("Someone with that name already exists.");
 
-  var phone = $("pPhone").value.trim(), note = $("pNote").value.trim();
+  const phone = $("pPhone").value.trim(), note = $("pNote").value.trim();
   if(editingPersonId){
-    var p = findPerson(editingPersonId);
+    const p = findPerson(editingPersonId);
     if(!p){ closePersonSheet(); refreshAll(); return showError("That person no longer exists."); }
-    p.name = name; p.phone = phone; p.note = note;
+    Object.assign(p, {name, phone, note});
   }else{
-    var id = state.nextPersonId++;
-    state.people.push({id:id, name:name, phone:phone, note:note});
+    const id = state.nextPersonId++;
+    state.people.push({id, name, phone, note});
     openPersonId = id;
   }
-  persist(); closePersonSheet(); refreshAll(); toast("Profile saved.");
+  persist(); closePersonSheet(); refreshAll();
+  if(isOpen(managePeopleOverlay)) renderManagePeopleList();
+  showOk("Profile saved.");
 });
 
 function removePerson(id){
-  var p = findPerson(id);
-  state.people = state.people.filter(function(x){ return x.id !== id; });
-  state.transactions = state.transactions.filter(function(t){ return t.person_id !== id; });
+  commitTrash();                       /* a pending undo could restore a row pointing at this person */
+  const p = findPerson(id);
+  const ids = (txnsOf.get(id) || []).map(t => t.id);
+  state.people = state.people.filter(x => x.id !== id);
+  purgeReceipts(removeTxns(ids));
   if(openPersonId === id) openPersonId = null;
-  persist(); refreshAll();
-  toast(p ? p.name + " deleted." : "Person deleted.");
+  personOptSig = "";
+  refreshAll();
+  toast(p ? `${p.name} deleted.` : "Person deleted.");
 }
+const deleteMsg = (id, quoteName) => {
+  const n = (txnsOf.get(id) || []).length, p = findPerson(id);
+  const who = quoteName && p ? `\u201c${p.name}\u201d` : "this person";
+  return n ? `Delete ${who} and ${n} transaction${n === 1 ? "" : "s"}? This cannot be undone.` : `Delete ${who}?`;
+};
 
-$("personDeleteBtn").addEventListener("click", function(){
-  var id = editingPersonId;
+on($("personDeleteBtn"), "click", () => {
+  const id = editingPersonId;
   if(id == null) return;
-  var n = (txnsOf.get(id) || []).length;
-  appConfirm("Delete this person and " + n + " transaction" + (n !== 1 ? "s" : "") + "? This cannot be undone.", function(){
+  appConfirm(deleteMsg(id, false), () => {
     closePersonSheet();
     removePerson(id);
+    if(isOpen(managePeopleOverlay)) renderManagePeopleList();
   });
 });
-$("personCancelBtn").addEventListener("click", closePersonSheet);
-$("addPersonBtn").addEventListener("click", function(){
-  closeOverlay(managePeopleOverlay);
-  openPersonSheet(null);
-});
+on($("personCancelBtn"), "click", closePersonSheet);
+on($("addPersonBtn"), "click", () => { closeOverlay(managePeopleOverlay); openPersonSheet(null); });
 
-/* ================= Manage People (Settings) ================= */
+/* ================= Manage People ================= */
 function renderManagePeopleList(){
-  var list = $("managePeopleList");
+  const list = $("managePeopleList");
   if(!state.people.length){ list.innerHTML = '<div class="txn-note">No one on the ledger yet.</div>'; return; }
-  var sorted = peopleSorted();
-  list.innerHTML = sorted.map(function(p){
-    var bal = balanceOf.get(p.id) || 0;
-    var balTxt = bal === 0 ? "Settled" : (bal > 0 ? "+" : "-") + money(bal);
-    return '<div class="pt-row" data-id="'+p.id+'">'
-      + '<div class="pt-name">'+esc(p.name)+' <span style="color:var(--dim);font-weight:400;">('+balTxt+')</span></div>'
-      + '<button type="button" class="pt-icon-btn" data-act="managePersonEdit" title="Edit">'+EDIT_ICON+'</button>'
-      + '<button type="button" class="pt-icon-btn danger" data-act="managePersonDelete" title="Delete">'
-      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>'
-      + '</div>';
+  list.innerHTML = peopleSorted().map(p => {
+    const bal = balanceOf.get(p.id) || 0;
+    const balTxt = bal === 0 ? "Settled" : (bal > 0 ? "+" : "-") + money(bal);
+    return `<div class="pt-row" data-id="${p.id}">`
+      + `<div class="pt-name">${esc(p.name)} <span style="color:var(--dim);font-weight:400;">(${balTxt})</span></div>`
+      + `<button type="button" class="pt-icon-btn" data-act="managePersonEdit" aria-label="Edit">${EDIT_ICON}</button>`
+      + `<button type="button" class="pt-icon-btn danger" data-act="managePersonDelete" aria-label="Delete">${TRASH_ICON}</button>`
+      + `</div>`;
   }).join("");
 }
 
-$("managePeopleList").addEventListener("click", function(e){
-  var btn = e.target.closest("button[data-act]");
+on($("managePeopleList"), "click", e => {
+  const btn = elOf(e.target)?.closest("button[data-act]");
   if(!btn) return;
-  var row = btn.closest(".pt-row"), id = parseInt(row.dataset.id, 10);
+  const id = parseInt(btn.closest(".pt-row").dataset.id, 10);
   if(isNaN(id)) return;
-
   if(btn.dataset.act === "managePersonEdit"){
     closeOverlay(managePeopleOverlay);
     openPersonSheet(id);
-  }else if(btn.dataset.act === "managePersonDelete"){
-    var n = (txnsOf.get(id) || []).length;
-    var p = findPerson(id);
-    var msg = n
-      ? "Delete " + (p ? "\u201c" + p.name + "\u201d" : "this person") + " and " + n + " transaction" + (n !== 1 ? "s" : "") + "? This cannot be undone."
-      : "Delete " + (p ? "\u201c" + p.name + "\u201d" : "this person") + "?";
-    appConfirm(msg, function(){ removePerson(id); renderManagePeopleList(); });
+  }else{
+    appConfirm(deleteMsg(id, true), () => { removePerson(id); renderManagePeopleList(); });
   }
 });
 
-$("managePeopleBtn").addEventListener("click", function(){
+on($("managePeopleBtn"), "click", () => {
   renderManagePeopleList();
   closeOverlay(settingsOverlay);
   openOverlay(managePeopleOverlay);
 });
-$("managePeopleCloseBtn").addEventListener("click", function(){ closeOverlay(managePeopleOverlay); });
+on($("managePeopleCloseBtn"), "click", () => closeOverlay(managePeopleOverlay));
 
 /* ================= Swipe to delete ================= */
-var swipe = {content:null, wrap:null, startX:0, startY:0, baseX:0, dragging:false, axis:null, openWrap:null, tx:0};
+const swipe = {content:null, wrap:null, startX:0, startY:0, baseX:0, dragging:false, axis:null, openWrap:null, tx:0};
 
 function closeSwipe(){
   if(!swipe.openWrap) return;
-  var c = swipe.openWrap.querySelector(".swipe-content");
+  const c = swipe.openWrap.querySelector(".swipe-content");
   if(c){ c.style.transition = "transform .18s ease"; c.style.transform = "translateX(0)"; }
   swipe.openWrap = null;
 }
-function slideOffAndDelete(wrap, done){
-  var c = wrap.querySelector(".swipe-content");
-  if(!c) return done();
+function commitSwipeDelete(wrap){
+  const id = parseInt(wrap.dataset.id, 10);
+  const c = wrap.querySelector(".swipe-content");
+  if(isNaN(id) || !c) return;
   c.style.transition = "transform .22s ease, opacity .22s ease .05s";
-  c.style.transform = "translateX(" + -(wrap.offsetWidth + 40) + "px)";
+  c.style.transform = `translateX(${-(wrap.offsetWidth + 40)}px)`;
   c.style.opacity = "0";
-  var fired = false;
-  var fire = function(){ if(fired) return; fired = true; if(swipe.openWrap === wrap) swipe.openWrap = null; done(); };
-  c.addEventListener("transitionend", fire, {once:true});
+  let fired = false;
+  const fire = () => {
+    if(fired) return;
+    fired = true;
+    if(swipe.openWrap === wrap) swipe.openWrap = null;
+    deleteWithUndo([id], "Transaction deleted.");
+  };
+  on(c, "transitionend", fire, {once:true});
   setTimeout(fire, 320);
 }
-function commitSwipeDelete(wrap){
-  var id = parseInt(wrap.dataset.id, 10);
-  if(isNaN(id)) return;
-  if(wrap.dataset.kind === "person"){
-    var n = (txnsOf.get(id) || []).length;
-    /* Wiping a person wipes their history — that always asks first. */
-    if(n){
-      closeSwipe();
-      var c = wrap.querySelector(".swipe-content");
-      if(c){ c.style.transition = "transform .18s ease"; c.style.transform = "translateX(0)"; }
-      appConfirm("Delete this person and " + n + " transaction" + (n !== 1 ? "s" : "") + "? This cannot be undone.", function(){ removePerson(id); });
-      return;
-    }
-    slideOffAndDelete(wrap, function(){ removePerson(id); });
-    return;
-  }
-  slideOffAndDelete(wrap, function(){
-    state.transactions = state.transactions.filter(function(t){ return t.id !== id; });
-    persist(); refreshAll(); toast("Transaction deleted.");
-  });
-}
 
-document.addEventListener("touchstart", function(e){
-  var target = el(e.target);
-  var wrap = target && target.closest(".swipe-wrap");
+on(document, "touchstart", e => {
+  const wrap = elOf(e.target)?.closest(".swipe-wrap");
   if(!wrap){ closeSwipe(); swipe.content = null; return; }
   if(swipe.openWrap && swipe.openWrap !== wrap) closeSwipe();
-  var c = wrap.querySelector(".swipe-content");
+  const c = wrap.querySelector(".swipe-content");
   if(!c){ swipe.content = null; return; }
   c.style.transition = "none";
-  swipe.content = c; swipe.wrap = wrap;
-  swipe.startX = e.touches[0].clientX;
-  swipe.startY = e.touches[0].clientY;
-  swipe.baseX = (swipe.openWrap === wrap) ? SWIPE_OPEN : 0;
+  Object.assign(swipe, {
+    content:c, wrap, startX:e.touches[0].clientX, startY:e.touches[0].clientY,
+    baseX: swipe.openWrap === wrap ? SWIPE_OPEN : 0, dragging:false, axis:null
+  });
   swipe.tx = swipe.baseX;
-  swipe.dragging = false; swipe.axis = null;
 }, {passive:true});
 
-document.addEventListener("touchmove", function(e){
+on(document, "touchmove", e => {
   if(!swipe.content) return;
-  var dx = e.touches[0].clientX - swipe.startX, dy = e.touches[0].clientY - swipe.startY;
+  const dx = e.touches[0].clientX - swipe.startX, dy = e.touches[0].clientY - swipe.startY;
   if(swipe.axis === null){
     if(Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
     swipe.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
@@ -1090,410 +1490,493 @@ document.addEventListener("touchmove", function(e){
   if(swipe.axis === "y") return;
   e.preventDefault();
   swipe.dragging = true;
-  var min = -(swipe.wrap.offsetWidth + 40);
-  swipe.tx = Math.max(min, Math.min(0, swipe.baseX + dx));
-  swipe.content.style.transform = "translateX(" + swipe.tx + "px)";
+  swipe.tx = clamp(swipe.baseX + dx, -(swipe.wrap.offsetWidth + 40), 0);
+  swipe.content.style.transform = `translateX(${swipe.tx}px)`;
 }, {passive:false});
 
-document.addEventListener("touchend", function(){
+on(document, "touchend", () => {
   if(!swipe.content) return;
   swipe.content.style.transition = "transform .18s ease";
   if(swipe.dragging){
     if(swipe.tx <= -swipe.wrap.offsetWidth * 0.6){
       commitSwipeDelete(swipe.wrap);
     }else if(swipe.tx <= SWIPE_OPEN / 2){
-      swipe.content.style.transform = "translateX(" + SWIPE_OPEN + "px)";
+      swipe.content.style.transform = `translateX(${SWIPE_OPEN}px)`;
       swipe.openWrap = swipe.wrap;
     }else{
       swipe.content.style.transform = "translateX(0)";
       swipe.openWrap = null;
     }
   }
-  swipe.content = null; swipe.wrap = null; swipe.dragging = false; swipe.axis = null;
+  Object.assign(swipe, {content:null, wrap:null, dragging:false, axis:null});
 }, {passive:true});
 
 /* ================= Delegated clicks ================= */
-document.addEventListener("click", function(e){
-  var target = el(e.target);
-  var node = target && target.closest("[data-act]");
-  var act = node && node.dataset.act;
+on(document, "click", e => {
+  const target = elOf(e.target);
+  const node = target?.closest("[data-act]");
+  const act = node?.dataset.act;
 
   /* First tap while a row is swiped open only closes it. */
   if(swipe.openWrap){
-    var inside = swipe.openWrap.contains(target);
+    const inside = swipe.openWrap.contains(target);
     closeSwipe();
     if(inside && act !== "swipedelete"){ e.preventDefault(); e.stopImmediatePropagation(); return; }
   }
   if(!act) return;
-  var id = parseInt(node.dataset.id, 10);
+  const id = parseInt(node.dataset.id, 10);
   if(isNaN(id)) return;
 
   if(act === "person"){
-    openPersonId = (openPersonId === id) ? null : id;
+    openPersonId = openPersonId === id ? null : id;
     renderPeople();
-  }else if(act === "editperson"){
-    e.stopPropagation();
-    openPersonSheet(id);
   }else if(act === "txn"){
     e.stopPropagation();
     openEdit(id);
   }else if(act === "receipt"){
     e.stopPropagation();
-    var t = findTxn(id);
-    if(t && t.receipt) openLightbox(t.receipt);
+    receiptURL(id).then(url => url ? openLightbox(url) : showError("That receipt is missing."));
   }else if(act === "swipedelete"){
     e.stopPropagation();
-    var wrap = node.closest(".swipe-wrap");
+    const wrap = node.closest(".swipe-wrap");
     if(wrap) commitSwipeDelete(wrap);
   }
 });
 
-/* ================= Inputs & tabs ================= */
-Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(tab){
-  tab.addEventListener("click", function(){
-    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(t){ t.classList.remove("active"); });
-    tab.classList.add("active");
-    currentTab = tab.dataset.tab;
-    $("overviewTab").hidden = currentTab !== "overview";
-    $("historyTab").hidden = currentTab !== "history";
-    if(currentTab === "history") renderHistory(); else renderPeople();
-  });
-});
-["fPerson","fType","fDateFrom","fDateTo"].forEach(function(id){ $(id).addEventListener("change", renderHistory); });
-$("fSearch").addEventListener("input", renderHistory);
+/* ================= Tabs & filters ================= */
+document.querySelectorAll(".tab").forEach(tab => on(tab, "click", () => {
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === tab));
+  currentTab = tab.dataset.tab;
+  $("overviewTab").hidden = currentTab !== "overview";
+  $("historyTab").hidden = currentTab !== "history";
+  if(currentTab === "history") renderHistory(); else renderPeople();
+}));
 
-$("searchToggleBtn").addEventListener("click", function(){
-  var input = $("fSearch"), open = input.style.display !== "none";
+["fPerson", "fType"].forEach(id => on($(id), "change", renderHistory));
+on($("fSearch"), "input", renderHistory);
+
+on($("searchToggleBtn"), "click", function(){
+  const input = $("fSearch"), open = input.style.display !== "none";
   input.style.display = open ? "none" : "block";
   this.classList.toggle("active", !open);
-  if(open){ if(input.value){ input.value = ""; renderHistory(); } }
-  else input.focus();
+  if(open){
+    if(input.value){ input.value = ""; renderHistory(); }
+  }else input.focus();
 });
 
-$("dateToggleBtn").addEventListener("click", function(){
-  var row = $("dateFilterRow"), open = row.style.display !== "none";
+function labelDateFilters(){
+  $("fFromBtn").textContent = "From: " + (filterFrom ? fmtDate(filterFrom) : "Any");
+  $("fToBtn").textContent = "To: " + (filterTo ? fmtDate(filterTo) : "Any");
+  $("fFromBtn").classList.toggle("set", !!filterFrom);
+  $("fToBtn").classList.toggle("set", !!filterTo);
+}
+on($("dateToggleBtn"), "click", function(){
+  const row = $("dateFilterRow"), open = row.style.display !== "none";
   row.style.display = open ? "none" : "flex";
   this.classList.toggle("active", !open);
-  if(open){
-    var had = $("fDateFrom").value || $("fDateTo").value;
-    $("fDateFrom").value = ""; $("fDateTo").value = "";
-    if(had) renderHistory();
+  if(open && (filterFrom || filterTo)){
+    filterFrom = filterTo = null;
+    labelDateFilters();
+    renderHistory();
   }
 });
+on($("fFromBtn"), "click", () => openWheel({
+  value: filterFrom || new Date(), withTime:false, title:"From date", allowClear:true,
+  onPick: d => { filterFrom = d ? new Date(d.setHours(0, 0, 0, 0)) : null; labelDateFilters(); renderHistory(); }
+}));
+on($("fToBtn"), "click", () => openWheel({
+  value: filterTo || new Date(), withTime:false, title:"To date", allowClear:true,
+  onPick: d => { filterTo = d ? new Date(d.setHours(23, 59, 59, 999)) : null; labelDateFilters(); renderHistory(); }
+}));
 
-personSelect.addEventListener("change", function(){
+/* ================= Sheet inputs ================= */
+on(personSelect, "change", function(){
   newPersonName.style.display = this.value === "__new__" ? "block" : "none";
   if(this.value === "__new__") newPersonName.focus();
   setErr("");
 });
-methodSelect.addEventListener("change", function(){
+on(methodSelect, "change", function(){
   newMethodName.style.display = this.value === "__new__" ? "block" : "none";
   if(this.value === "__new__") newMethodName.focus();
 });
-
-typeGrid.addEventListener("click", function(e){
-  var target = el(e.target), opt = target && target.closest(".type-opt");
+on(typeGrid, "click", e => {
+  const opt = elOf(e.target)?.closest(".type-opt");
   if(!opt || editingTxnId) return;
   setTypeUI(opt.dataset.type, false);
   setErr("");
 });
 
-/* Cents-first entry keeps decimals exact: typing "500" gives 5.00. */
-amountInput.addEventListener("input", function(){
-  var digits = this.value.replace(/\D/g, "").slice(0, 12).replace(/^0+(?=\d)/, "");
+on(amountInput, "input", function(){
+  const digits = this.value.replace(/\D/g, "").slice(0, 11).replace(/^0+(?=\d)/, "");
   setAmountCents(digits ? parseInt(digits, 10) : 0);
-  var len = this.value.length;
+  const len = this.value.length;
   try{ this.setSelectionRange(len, len); }catch(err){}
 });
-amountInput.addEventListener("keydown", function(e){
-  if(e.key === "Backspace"){ e.preventDefault(); setAmountCents(Math.floor(amountCents() / 10)); }
+on(amountInput, "keydown", e => {
+  if(e.key === "Backspace"){ e.preventDefault(); setAmountCents(Math.floor(amountCents / 10)); }
 });
 
-$("receiptFile").addEventListener("change", function(e){
-  var file = e.target.files[0];
+on($("receiptFile"), "change", e => {
+  const file = e.target.files[0];
   e.target.value = "";
   if(!file) return;
   if(!/^image\//.test(file.type)) return setErr("Please choose an image file.");
-  compressImage(file, function(dataUrl){
-    if(!dataUrl) return setErr("Couldn't read that image.");
-    setReceipt(dataUrl);
+  compressImage(file, blob => {
+    if(!blob) return setErr("Couldn't read that image.");
+    setRcpt({mode:"new", blob, url:URL.createObjectURL(blob), temp:true});
     setErr("");
   });
 });
-$("lightboxClose").addEventListener("click", closeLightbox);
-$("lightbox").addEventListener("click", function(e){ if(e.target === this) closeLightbox(); });
+on($("lightboxClose"), "click", closeLightbox);
+on(lightbox, "click", e => { if(e.target === lightbox) closeLightbox(); });
 
-$("fabBtn").addEventListener("click", openAdd);
-$("cancelBtn").addEventListener("click", closeSheet);
-$("backupBtn").addEventListener("click", function(){ openOverlay(backupOverlay); });
-$("closeBackupBtn").addEventListener("click", function(){ closeOverlay(backupOverlay); });
-$("settingsBtn").addEventListener("click", function(){
+on($("fabBtn"), "click", openAdd);
+on($("cancelBtn"), "click", closeSheet);
+on($("backupBtn"), "click", () => openOverlay(backupOverlay));
+on($("closeBackupBtn"), "click", () => closeOverlay(backupOverlay));
+on($("settingsBtn"), "click", () => {
   $("darkModeToggle").checked = document.body.classList.contains("dark");
+  showStorageStat();
   openOverlay(settingsOverlay);
 });
-$("closeSettingsBtn").addEventListener("click", function(){ closeOverlay(settingsOverlay); });
+on($("closeSettingsBtn"), "click", () => closeOverlay(settingsOverlay));
+on($("darkModeToggle"), "change", function(){ setTheme(this.checked); });
+
+const MODE_LABEL = {idb:"IndexedDB", local:"localStorage (limited)", memory:"Memory only — nothing is saved"};
+async function showStorageStat(){
+  let txt = MODE_LABEL[Store.mode];
+  try{
+    const est = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : null;
+    if(est && est.usage != null) txt += ` · ${(est.usage / 1048576).toFixed(1)} MB used`;
+  }catch(e){}
+  $("storageStat").textContent = txt;
+}
+
+on($("deleteAllBtn"), "click", () => {
+  appConfirm("Delete ALL people, transactions, and receipts? This cannot be undone.", async () => {
+    commitTrash();
+    urlCache.forEach((u, id) => dropReceiptURL(id));
+    urlCache.clear();
+    state = blank();
+    openPersonId = editingTxnId = editingPersonId = null;
+    personOptSig = "";
+    try{ await Store.clear(); }catch(e){}
+    persist(); closeOverlay(settingsOverlay); refreshAll(); toast("All data deleted.");
+  });
+});
 
 /* ================= Payment methods editor ================= */
-function setPtErr(msg){ $("ptErr").textContent = msg || ""; }
+const setPtErr = msg => { $("ptErr").textContent = msg || ""; };
 
 function renderPtList(){
-  var methods = state.paymentTypes.slice().sort(function(a,b){ return a.localeCompare(b); });
-  var list = $("ptList");
+  const list = $("ptList");
+  const methods = [...state.paymentTypes].sort((a, b) => a.localeCompare(b));
   if(!methods.length){ list.innerHTML = '<div class="txn-note">No payment methods yet.</div>'; return; }
-  list.innerHTML = methods.map(function(m){
-    var count = state.transactions.filter(function(t){ return t.payment_type === m; }).length;
-    return '<div class="pt-row" data-name="'+esc(m)+'">'
-      + '<div class="pt-name">'+esc(m)+(count ? ' <span style="color:var(--dim);font-weight:400;">('+count+')</span>' : '')+'</div>'
-      + '<button type="button" class="pt-icon-btn" data-act="ptRename" title="Rename">'
-      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>'
-      + '<button type="button" class="pt-icon-btn danger" data-act="ptDelete" title="Delete">'
-      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>'
-      + '</div>';
+  const counts = new Map();
+  state.transactions.forEach(t => counts.set(t.payment_type, (counts.get(t.payment_type) || 0) + 1));
+  list.innerHTML = methods.map(m => {
+    const n = counts.get(m) || 0;
+    return `<div class="pt-row" data-name="${esc(m)}">`
+      + `<div class="pt-name">${esc(m)}${n ? ` <span style="color:var(--dim);font-weight:400;">(${n})</span>` : ""}</div>`
+      + `<button type="button" class="pt-icon-btn" data-act="ptRename" aria-label="Rename">${EDIT_ICON}</button>`
+      + `<button type="button" class="pt-icon-btn danger" data-act="ptDelete" aria-label="Delete">${TRASH_ICON}</button>`
+      + `</div>`;
   }).join("");
 }
 
-$("ptList").addEventListener("click", function(e){
-  var btn = e.target.closest("button[data-act]");
+on($("ptList"), "click", e => {
+  const btn = elOf(e.target)?.closest("button[data-act]");
   if(!btn) return;
-  var row = btn.closest(".pt-row"), oldName = row.dataset.name;
+  const row = btn.closest(".pt-row"), oldName = row.dataset.name, act = btn.dataset.act;
 
-  if(btn.dataset.act === "ptRename"){
-    row.innerHTML = '<input type="text" value="'+esc(oldName)+'" id="ptRenameInput" autocomplete="off">'
-      + '<button type="button" class="pt-icon-btn" data-act="ptRenameSave" title="Save">'
-      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>'
-      + '<button type="button" class="pt-icon-btn" data-act="ptRenameCancel" title="Cancel">'
-      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
-    var input = $("ptRenameInput");
+  if(act === "ptRename"){
+    row.innerHTML = `<input type="text" value="${esc(oldName)}" id="ptRenameInput" autocomplete="off">`
+      + '<button type="button" class="pt-icon-btn" data-act="ptRenameSave" aria-label="Save"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>'
+      + '<button type="button" class="pt-icon-btn" data-act="ptRenameCancel" aria-label="Cancel"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+    const input = $("ptRenameInput");
     input.focus(); input.select();
-    input.addEventListener("keydown", function(e2){
-      if(e2.key === "Enter") $("ptRenameInput").closest(".pt-row").querySelector('[data-act="ptRenameSave"]').click();
+    on(input, "keydown", e2 => {
+      if(e2.key === "Enter") row.querySelector('[data-act="ptRenameSave"]').click();
       if(e2.key === "Escape") renderPtList();
     });
     return;
   }
 
-  if(btn.dataset.act === "ptRenameSave"){
-    var newName = $("ptRenameInput").value.trim();
+  if(act === "ptRenameSave"){
+    const newName = $("ptRenameInput").value.trim();
     setPtErr("");
     if(!newName) return setPtErr("Enter a name.");
-    var clash = state.paymentTypes.some(function(m){ return m.toLowerCase() === newName.toLowerCase() && m !== oldName; });
-    if(clash) return setPtErr("That payment method already exists.");
+    if(state.paymentTypes.some(m => m.toLowerCase() === newName.toLowerCase() && m !== oldName))
+      return setPtErr("That payment method already exists.");
     if(newName !== oldName){
-      var idx = state.paymentTypes.indexOf(oldName);
+      const idx = state.paymentTypes.indexOf(oldName);
       if(idx !== -1) state.paymentTypes[idx] = newName;
-      state.transactions.forEach(function(t){ if(t.payment_type === oldName) t.payment_type = newName; });
+      state.transactions.forEach(t => { if(t.payment_type === oldName) t.payment_type = newName; });
       persist(); refreshAll();
-      toast("Renamed to \u201c" + newName + "\u201d.");
+      showOk(`Renamed to \u201c${newName}\u201d.`);
     }
     renderPtList();
     return;
   }
 
-  if(btn.dataset.act === "ptRenameCancel"){ renderPtList(); return; }
+  if(act === "ptRenameCancel") return renderPtList();
 
-  if(btn.dataset.act === "ptDelete"){
-    var count = state.transactions.filter(function(t){ return t.payment_type === oldName; }).length;
-    var msg = count
-      ? "Delete \u201c" + oldName + "\u201d? " + count + " transaction" + (count === 1 ? "" : "s") + " using it will be marked \u201cNot specified.\u201d"
-      : "Delete \u201c" + oldName + "\u201d?";
-    appConfirm(msg, function(){
-      state.paymentTypes = state.paymentTypes.filter(function(m){ return m !== oldName; });
-      state.transactions.forEach(function(t){ if(t.payment_type === oldName) t.payment_type = ""; });
+  if(act === "ptDelete"){
+    const n = state.transactions.filter(t => t.payment_type === oldName).length;
+    appConfirm(n
+      ? `Delete \u201c${oldName}\u201d? ${n} transaction${n === 1 ? "" : "s"} using it will be marked \u201cNot specified.\u201d`
+      : `Delete \u201c${oldName}\u201d?`, () => {
+      state.paymentTypes = state.paymentTypes.filter(m => m !== oldName);
+      state.transactions.forEach(t => { if(t.payment_type === oldName) t.payment_type = ""; });
       persist(); refreshAll(); renderPtList();
       toast("Payment method deleted.");
-    }, "Delete");
-    return;
+    });
   }
 });
 
-$("ptAddBtn").addEventListener("click", function(){
-  var name = $("ptNewInput").value.trim();
+on($("ptAddBtn"), "click", () => {
+  const name = $("ptNewInput").value.trim();
   setPtErr("");
   if(!name) return setPtErr("Enter a name.");
-  if(state.paymentTypes.some(function(m){ return m.toLowerCase() === name.toLowerCase(); })) return setPtErr("That payment method already exists.");
+  if(state.paymentTypes.some(m => m.toLowerCase() === name.toLowerCase())) return setPtErr("That payment method already exists.");
   state.paymentTypes.push(name);
-  persist(); $("ptNewInput").value = ""; renderPtList();
-  toast("Payment method added.");
+  persist();
+  $("ptNewInput").value = "";
+  renderPtList();
+  showOk("Payment method added.");
 });
-$("ptNewInput").addEventListener("keydown", function(e){ if(e.key === "Enter") $("ptAddBtn").click(); });
+on($("ptNewInput"), "keydown", e => { if(e.key === "Enter") $("ptAddBtn").click(); });
 
-$("paymentTypesBtn").addEventListener("click", function(){
-  setPtErr(""); $("ptNewInput").value = "";
+on($("paymentTypesBtn"), "click", () => {
+  setPtErr("");
+  $("ptNewInput").value = "";
   renderPtList();
   closeOverlay(settingsOverlay);
   openOverlay(paymentTypesOverlay);
 });
-$("ptCloseBtn").addEventListener("click", function(){ closeOverlay(paymentTypesOverlay); });
-$("darkModeToggle").addEventListener("change", function(){ setTheme(this.checked); });
+on($("ptCloseBtn"), "click", () => closeOverlay(paymentTypesOverlay));
 
-$("deleteAllBtn").addEventListener("click", function(){
-  appConfirm("Delete ALL people, transactions, and receipts? This cannot be undone.", function(){
-    state = blank(); openPersonId = null; editingTxnId = null; editingPersonId = null;
-    persist(); closeOverlay(settingsOverlay); refreshAll(); toast("All data deleted.");
-  });
-});
-
-document.addEventListener("keydown", function(e){
+/* Escape closes the topmost layer first. */
+on(document, "keydown", e => {
   if(e.key !== "Escape") return;
-  if($("lightbox").classList.contains("open")) closeLightbox();
-  else if(confirmOverlay.classList.contains("open")) cancelConfirm();
-  else if(overlay.classList.contains("open")) closeSheet();
-  else if(personOverlay.classList.contains("open")) closePersonSheet();
-  else if(backupOverlay.classList.contains("open")) closeOverlay(backupOverlay);
-  else if(settingsOverlay.classList.contains("open")) closeOverlay(settingsOverlay);
-  else if(paymentTypesOverlay.classList.contains("open")) closeOverlay(paymentTypesOverlay);
-  else if(managePeopleOverlay.classList.contains("open")) closeOverlay(managePeopleOverlay);
+  if(lightbox.classList.contains("open")) return closeLightbox();
+  const layer = [[confirmOverlay, cancelConfirm], [wheelOverlay, closeWheel], [overlay, closeSheet],
+    [personOverlay, closePersonSheet], [backupOverlay, () => closeOverlay(backupOverlay)],
+    [settingsOverlay, () => closeOverlay(settingsOverlay)],
+    [paymentTypesOverlay, () => closeOverlay(paymentTypesOverlay)],
+    [managePeopleOverlay, () => closeOverlay(managePeopleOverlay)]].find(([o]) => isOpen(o));
+  if(layer) layer[1]();
 });
 
 /* ================= Backup ================= */
 function download(filename, text, mime){
-  var url = URL.createObjectURL(new Blob([text], {type:mime}));
-  var a = document.createElement("a");
+  const url = URL.createObjectURL(new Blob([text], {type:mime}));
+  const a = document.createElement("a");
   a.href = url; a.download = filename; a.rel = "noopener";
   document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
-function stamp(){ return new Date().toISOString().slice(0,10); }
+const stamp = () => new Date().toISOString().slice(0, 10);
 
-$("exportBtn").addEventListener("click", function(){
-  download("debt-tracker-backup-" + stamp() + ".json", JSON.stringify(state), "application/json");
-  toast("Backup exported.");
+/* The .json backup inlines photos as data URLs so a single file restores everything. */
+on($("exportBtn"), "click", async () => {
+  try{
+    toast("Preparing backup…");
+    const out = JSON.parse(JSON.stringify(state));
+    for(const t of out.transactions){
+      if(!t.receipt){ t.receipt = null; continue; }
+      const v = await Store.getReceipt(t.id);
+      t.receipt = !v ? null : (typeof v === "string" ? v : await blobToDataURL(v));
+    }
+    download(`debt-tracker-backup-${stamp()}.json`, JSON.stringify(out), "application/json");
+    showOk("Backup exported.");
+  }catch(e){ showError("Export failed — try again."); }
 });
 
-$("csvBtn").addEventListener("click", function(){
-  var phoneOf = new Map(state.people.map(function(p){ return [p.id, p.phone || ""]; }));
-  var q = function(v){ return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; };
-  var rows = [["Date","Time","Person","Phone","Direction","Signed Amount (SGD)","Amount (SGD)","Payment Type","Description","Edited","Edited At","Has Receipt"].join(",")];
-  sortedTxns.forEach(function(t){
-    var d = new Date(t.txn_date);
-    rows.push([
-      q(d.toLocaleDateString("en-GB")), q(d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})),
-      q(nameOf.get(t.person_id) || ""), q(phoneOf.get(t.person_id) || ""), q(TYPE_LABELS[t.type]),
-      signedAmount(t).toFixed(2), t.amount.toFixed(2),
-      q(t.payment_type), q(t.note), t.edited ? "Yes" : "No",
-      q(t.edited_at ? new Date(t.edited_at).toLocaleString("en-GB") : ""), t.receipt ? "Yes" : "No"
-    ].join(","));
-  });
-  /* BOM keeps Excel happy with UTF-8 names. */
-  download("debt-tracker-" + stamp() + ".csv", "\uFEFF" + rows.join("\r\n"), "text/csv;charset=utf-8");
-  toast("CSV exported.");
-});
-
-$("importBtn").addEventListener("click", function(){ $("importFile").click(); });
-$("importFile").addEventListener("change", function(e){
-  var file = e.target.files[0];
-  e.target.value = "";
+function readFile(input, onText){
+  const file = input.files[0];
+  input.value = "";
   if(!file) return;
-  var reader = new FileReader();
-  reader.onload = function(evt){
-    var parsed;
+  const reader = new FileReader();
+  reader.onload = evt => onText(String(evt.target.result));
+  reader.onerror = () => showError("Couldn't read that file.");
+  reader.readAsText(file);
+}
+
+/* Merge: people matched by name (case-insensitive), payment types unioned, transactions
+   re-keyed onto local ids. Rows identical in person+type+amount+timestamp are treated as
+   the same entry, so importing the same backup twice doesn't duplicate the ledger. */
+async function mergeBackup(inc, photos){
+  const idMap = new Map();
+  inc.people.forEach(p => {
+    const key = p.name.toLowerCase();
+    let mine = state.people.find(x => x.name.toLowerCase() === key);
+    if(mine){
+      if(!mine.phone && p.phone) mine.phone = p.phone;
+      if(!mine.note && p.note) mine.note = p.note;
+    }else{
+      mine = {id:state.nextPersonId++, name:p.name, phone:p.phone, note:p.note};
+      state.people.push(mine);
+    }
+    idMap.set(p.id, mine.id);
+  });
+
+  inc.paymentTypes.forEach(m => {
+    if(!state.paymentTypes.some(x => x.toLowerCase() === m.toLowerCase())) state.paymentTypes.push(m);
+  });
+
+  const sig = t => `${t.person_id}|${t.type}|${t.amount}|${t.txn_date}`;
+  const seen = new Set(state.transactions.map(sig));
+  let added = 0, skipped = 0;
+
+  for(const t of inc.transactions){
+    const pid = idMap.get(t.person_id);
+    if(pid == null) continue;
+    const copy = Object.assign({}, t, {person_id:pid, receipt:0});
+    if(seen.has(sig(copy))){ skipped++; continue; }
+    copy.id = state.nextTxnId++;
+    seen.add(sig(copy));
+    state.transactions.push(copy);
+    const photo = photos.get(t.id);
+    if(photo){
+      await Store.putReceipt(copy.id, dataURLtoBlob(photo));
+      copy.receipt = 1;
+    }
+    added++;
+  }
+  return {added, skipped};
+}
+
+on($("importBtn"), "click", () => $("importFile").click());
+on($("importFile"), "change", function(){
+  readFile(this, text => {
+    let parsed;
     try{
-      parsed = JSON.parse(evt.target.result);
-      if(!Array.isArray(parsed.people) || !Array.isArray(parsed.transactions)) throw new Error("bad shape");
+      parsed = JSON.parse(text);
+      if(!Array.isArray(parsed.people) || !Array.isArray(parsed.transactions)) throw 0;
     }catch(err){
       return showError("Couldn't read that file. Make sure it's a Debt Tracker .json backup.");
     }
-    appConfirm("Import will replace all current data with this backup. Continue?", function(){
-      state = normalize(parsed);
-      openPersonId = null;
-      persist(); closeOverlay(backupOverlay); refreshAll(); toast("Backup imported.");
-    }, "Import");
-  };
-  reader.onerror = function(){ showError("Couldn't read that file."); };
-  reader.readAsText(file);
+    const photos = new Map();
+    const inc = normalize(parsed, photos);
+    const msg = `This backup holds ${inc.people.length} ${inc.people.length === 1 ? "person" : "people"} `
+      + `and ${inc.transactions.length} transaction${inc.transactions.length === 1 ? "" : "s"}. `
+      + "Merge it into your ledger, or replace everything with it?";
+
+    const replace = async () => {
+      try{
+        commitTrash();
+        urlCache.forEach((u, id) => dropReceiptURL(id));
+        urlCache.clear();
+        await Store.clear();
+        state = inc;
+        openPersonId = null;
+        personOptSig = "";
+        for(const [id, dataUrl] of photos) await Store.putReceipt(id, dataURLtoBlob(dataUrl));
+        await Store.saveLedger(state);
+        closeOverlay(backupOverlay); refreshAll(); showOk("Backup restored.");
+      }catch(e){ onStorageError(e); }
+    };
+    const merge = async () => {
+      try{
+        commitTrash();
+        const {added, skipped} = await mergeBackup(inc, photos);
+        personOptSig = "";
+        await Store.saveLedger(state);
+        closeOverlay(backupOverlay); refreshAll();
+        if(added) showOk(`${added} added${skipped ? `, ${skipped} already there` : ""}.`);
+        else toast("Nothing new — everything in that file is already here.");
+      }catch(e){ onStorageError(e); }
+    };
+
+    /* Confirm sits above the Backup sheet, so it's answered here — not after closing it. */
+    appConfirm(msg, replace, "Replace", {label:"Merge", fn:merge});
+  });
 });
 
-/* Minimal RFC4180-ish CSV parser — handles quoted fields with embedded commas/quotes. */
-function parseCsv(text){
-  var rows = [], row = [], field = "", inQuotes = false, i = 0;
-  text = text.replace(/^\uFEFF/, "");
-  while(i < text.length){
-    var c = text[i];
-    if(inQuotes){
-      if(c === '"'){
-        if(text[i+1] === '"'){ field += '"'; i += 2; continue; }
-        inQuotes = false; i++; continue;
-      }
-      field += c; i++; continue;
-    }
-    if(c === '"'){ inQuotes = true; i++; continue; }
-    if(c === ','){ row.push(field); field = ""; i++; continue; }
-    if(c === '\r'){ i++; continue; }
-    if(c === '\n'){ row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
-    field += c; i++;
-  }
-  if(field.length || row.length){ row.push(field); rows.push(row); }
-  return rows.filter(function(r){ return r.length > 1 || (r.length === 1 && r[0] !== ""); });
+/* ================= Fatal errors ================= */
+/* A failed load is a stop, not a warning: the app is blocked so no half-initialised
+   state can be written back, and the user is given a way to salvage what's on disk. */
+function showFatal(err){
+  bootOk = false;
+  $("fatalMsg").textContent = Store.mode === "memory"
+    ? "This browser is blocking storage, so the ledger couldn't be opened. Private Browsing is the usual cause — reopen the app in a normal window."
+    : "Your data hasn't been touched. The app stopped here so that nothing could be written over it.";
+  $("fatalDetail").textContent = (err && (err.stack || err.message)) || String(err);
+  $("fatal").classList.add("open");
+  document.body.classList.add("locked");
 }
-
-$("importCsvBtn").addEventListener("click", function(){ $("importCsvFile").click(); });
-$("importCsvFile").addEventListener("change", function(e){
-  var file = e.target.files[0];
-  e.target.value = "";
-  if(!file) return;
-  var reader = new FileReader();
-  reader.onload = function(evt){
-    var rows;
-    try{ rows = parseCsv(String(evt.target.result)); }catch(err){ rows = null; }
-    if(!rows || rows.length < 2) return showError("Couldn't read that file. Make sure it's a Debt Tracker .csv export.");
-
-    var header = rows[0].map(function(h){ return h.trim().toLowerCase(); });
-    var col = function(name){ return header.indexOf(name); };
-    var iDate = col("date"), iTime = col("time"), iPerson = col("person"), iPhone = col("phone"),
-        iDir = col("direction"), iAmt = col("amount (sgd)"), iPay = col("payment type"), iNote = col("description");
-    if(iDate < 0 || iPerson < 0 || iDir < 0 || iAmt < 0) return showError("That CSV doesn't match the expected format.");
-
-    appConfirm("Import will add these transactions to your current data. Continue?", function(){
-      var added = 0;
-      for(var r = 1; r < rows.length; r++){
-        var row = rows[r];
-        var name = (row[iPerson] || "").trim();
-        var dirRaw = (row[iDir] || "").trim();
-        var amt = round2(parseFloat(row[iAmt]));
-        if(!name || !(amt > 0)) continue;
-        var type = dirRaw === TYPE_LABELS.i_owe ? "i_owe" : dirRaw === TYPE_LABELS.owed_to_me ? "owed_to_me" : null;
-        if(!type) continue;
-
-        var person = state.people.filter(function(p){ return p.name.toLowerCase() === name.toLowerCase(); })[0];
-        if(!person){
-          person = {id: state.nextPersonId++, name:name, phone: iPhone >= 0 ? (row[iPhone] || "") : "", note:""};
-          state.people.push(person);
-        }
-        var dt = new Date(((row[iDate] || "") + " " + (iTime >= 0 ? (row[iTime] || "") : "")).trim());
-        state.transactions.push({
-          id: state.nextTxnId++, person_id: person.id, type: type, amount: amt,
-          payment_type: iPay >= 0 ? (row[iPay] || "") : "",
-          note: iNote >= 0 ? (row[iNote] || "") : "",
-          txn_date: isNaN(dt.getTime()) ? new Date().toISOString() : dt.toISOString(),
-          created_at: new Date().toISOString(), edited: 0, edited_at: null, receipt: null
-        });
-        added++;
-      }
-      persist(); closeOverlay(backupOverlay); refreshAll();
-      toast(added ? added + " transaction" + (added !== 1 ? "s" : "") + " imported." : "No valid rows found in that file.");
-    }, "Import");
-  };
-  reader.onerror = function(){ showError("Couldn't read that file."); };
-  reader.readAsText(file);
+on($("fatalReload"), "click", () => location.reload());
+on($("fatalExport"), "click", async () => {
+  try{
+    let raw = null;
+    try{ raw = await Store.loadLedger(); }catch(e){}
+    if(!raw){
+      const legacy = lsGet(LS_LEDGER) || lsGet(LS_KEY);
+      if(legacy) raw = JSON.parse(legacy);
+    }
+    if(!raw) return showError("No readable data found to export.");
+    download(`debt-tracker-raw-${stamp()}.json`, JSON.stringify(raw), "application/json");
+    showOk("Raw data exported.");
+  }catch(e){ showError("Couldn't read the stored data."); }
 });
 
 /* ================= Boot ================= */
-try{
-  loadTheme();
-  loadState();
-  if(!storageAvailable){
-    showBanner();
-    $("storageNote").textContent = "Storage is unavailable here, so nothing saves automatically. Export before you close the page, and import to restore.";
-  }
-  setReceipt(null);
-  refreshAll();
-}catch(err){
-  $("bannerSlot").innerHTML = '<div class="banner">Something went wrong loading the ledger: ' + esc(err.message) + '</div>';
+/* One-time lift of the old localStorage v2 blob into the new stores. */
+async function migrateLegacy(){
+  if(lsGet(MIGRATED_KEY) || !lsGet(LS_KEY)) return null;
+  try{
+    const photos = new Map();
+    const migrated = normalize(JSON.parse(lsGet(LS_KEY)), photos);
+    for(const [id, dataUrl] of photos) await Store.putReceipt(id, dataURLtoBlob(dataUrl));
+    await Store.saveLedger(migrated);
+    try{ localStorage.setItem(MIGRATED_KEY, "1"); }catch(e){}
+    return migrated;
+  }catch(e){ return null; }
 }
 
+/* Photos with no surviving transaction (tab closed mid-undo, an interrupted import)
+   would otherwise sit in storage forever. Cheap, non-blocking, runs after first paint. */
+async function sweepOrphanReceipts(){
+  try{
+    const live = new Set(state.transactions.filter(t => t.receipt).map(t => t.id));
+    const dead = (await Store.receiptIds()).filter(id => !live.has(id));
+    if(dead.length) await Store.delReceipt(dead);
+  }catch(e){}
+}
+
+(async () => {
+  try{
+    loadTheme();
+    setRcpt(null);
+    setTxnDate(new Date());
+    labelDateFilters();
+
+    await Store.init();
+    if(Store.mode === "memory"){
+      showBanner();
+      $("storageNote").textContent = "Storage is unavailable here, so nothing saves automatically. Export before you close the page, and import to restore.";
+    }
+    state = (await migrateLegacy()) || normalize(await Store.loadLedger());
+    bootOk = true;                       /* writes are unlocked only once data is really loaded */
+    refreshAll();
+    sweepOrphanReceipts();
+  }catch(err){
+    showFatal(err);
+  }
+})();
+
 if("serviceWorker" in navigator){
-  window.addEventListener("load", function(){
-    navigator.serviceWorker.register("sw.js").catch(function(){});
+  on(window, "load", () => {
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      reg.addEventListener("updatefound", () => {
+        const w = reg.installing;
+        if(!w) return;
+        w.addEventListener("statechange", () => {
+          if(w.state === "installed" && navigator.serviceWorker.controller) toast("Update ready — reopen the app to apply.");
+        });
+      });
+    }).catch(() => {});
   });
 }
 })();
