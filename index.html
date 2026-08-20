@@ -13,7 +13,7 @@
 <title>Debt Tracker</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230A0A0A'/><text x='50' y='70' font-size='58' font-family='Helvetica,Arial' font-weight='bold' fill='white' text-anchor='middle'>$</text></svg>">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 :root{
 --bg:#F8F8F8;--card:#FFF;--text:#111;--dim:#767676;--faint:#C7C7C7;--line:#E4E4E4;
@@ -37,30 +37,31 @@ body.locked{overflow:hidden}
 
 header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
-.eyebrow{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--dim);font-weight:700;margin-bottom:2px}
 .hdr-btns{display:flex;gap:8px}
-.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);flex-shrink:0;padding:0}
-.icon-btn:active{background:var(--chip)}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);flex-shrink:0;padding:0;transition:transform .12s ease,background .12s ease}
+.icon-btn:active{background:var(--chip);transform:scale(.9)}
 .icon-btn.active{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 
-.banner{background:var(--banner);color:var(--on-banner);padding:11px 14px;border-radius:12px;font-size:12.5px;font-weight:600;margin-bottom:14px;line-height:1.45}
+.banner{background:var(--banner);color:var(--on-banner);padding:11px 14px;border-radius:14px;font-size:12.5px;font-weight:600;margin-bottom:14px;line-height:1.45}
 .banner b{font-weight:800}
 
-.summary{background:var(--summary);border-radius:18px;padding:24px 20px;color:#fff;box-shadow:var(--shadow);margin-bottom:18px}
+.summary{background:var(--summary);border-radius:24px;padding:24px 20px;color:#fff;box-shadow:var(--shadow);margin-bottom:18px}
 .summary-label{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:rgba(255,255,255,.5);font-weight:700}
 .summary-net{font-size:36px;font-weight:800;margin-top:6px;letter-spacing:-.8px;font-variant-numeric:tabular-nums}
 .summary-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px}
 
-.tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--chip);padding:4px;border-radius:12px}
-.tab{flex:1;text-align:center;padding:9px 4px;font-size:13.5px;font-weight:700;color:var(--dim);cursor:pointer;border-radius:9px;border:none;background:none;font-family:inherit}
+.tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--chip);padding:4px;border-radius:16px}
+.tab{flex:1;text-align:center;padding:9px 4px;font-size:13.5px;font-weight:700;color:var(--dim);cursor:pointer;border-radius:12px;border:none;background:none;font-family:inherit;transition:transform .12s ease}
 .tab.active{color:var(--on-ink);background:var(--ink)}
+.tab:active{transform:scale(.95)}
 
 .people{display:flex;flex-direction:column;gap:10px}
-.person-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
-.person-row{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;background:var(--card)}
+.person-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:15px 16px}
+.person-row{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;background:var(--card);transition:opacity .1s ease}
+.person-row:active{opacity:.55}
 .person-name{font-size:15.5px;font-weight:700}
 .person-meta{font-size:12px;color:var(--dim);margin-top:2px}
-.balance{font-size:16px;font-weight:800;padding:5px 10px;border-radius:8px;white-space:nowrap;font-variant-numeric:tabular-nums;flex-shrink:0}
+.balance{font-size:16px;font-weight:800;padding:5px 12px;border-radius:999px;white-space:nowrap;font-variant-numeric:tabular-nums;flex-shrink:0}
 .balance.pos{background:var(--ink);color:var(--on-ink)}
 .balance.neg{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
 .balance.zero{background:var(--chip);color:var(--dim)}
@@ -70,11 +71,13 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .empty{text-align:center;padding:54px 20px;color:var(--dim)}
 .empty .big{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
 
-.swipe-wrap{position:relative;overflow:hidden;border-radius:10px}
+.swipe-wrap{position:relative;overflow:hidden;border-radius:16px}
 .swipe-wrap:last-child .txn{border-bottom:none}
-.swipe-delete-bg{position:absolute;inset:0;background:var(--danger);color:#fff;display:flex;align-items:center;justify-content:flex-end;padding-right:26px;font-weight:700;font-size:12.5px;cursor:pointer;border-radius:inherit}
+.swipe-delete-bg{position:absolute;inset:0;background:var(--danger);color:#fff;font-weight:700;font-size:12.5px;cursor:pointer;border-radius:inherit}
+.swipe-delete-icon{position:absolute;top:50%;right:calc((var(--swipe-w,84px) - 19px)/2);transform:translateY(-50%)}
 .swipe-content{position:relative;transition:transform .18s ease}
-.txn{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;background:var(--card);touch-action:pan-y}
+.txn{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;background:var(--card);touch-action:pan-y;transition:opacity .1s ease}
+.txn:active{opacity:.55}
 .txn-left{display:flex;flex-direction:column;gap:2px;min-width:0}
 .txn-type{font-size:13px;font-weight:700}
 .txn-note{font-size:12.5px;color:var(--dim);word-break:break-word}
@@ -88,35 +91,40 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .txn-person{font-size:11px;color:var(--chip-fg);font-weight:700}
 
 .filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.filter{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--card);font-weight:600;font-family:inherit;color:var(--text)}
+.filter{font-size:13px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:600;font-family:inherit;color:var(--text);transition:transform .12s ease}
 .filter.date-btn{flex:1;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filter.date-btn:active{transform:scale(.97)}
 .filter.date-btn.set{border-color:var(--ink)}
 
 .fab{position:fixed;right:20px;bottom:calc(24px + var(--safe-b));width:58px;height:58px;border-radius:50%;background:var(--ink);color:var(--on-ink);display:flex;align-items:center;justify-content:center;box-shadow:var(--fab-shadow);font-size:28px;font-weight:700;border:none;cursor:pointer;z-index:40;line-height:1;padding-bottom:3px}
 .fab:active{transform:scale(.94)}
 
-.overlay{position:fixed;inset:0;background:var(--scrim);display:none;align-items:flex-end;justify-content:center;z-index:50}
-.overlay.open{display:flex}
+.overlay{position:fixed;inset:0;background:var(--scrim);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.overlay.open{display:flex;animation:scrimfade .22s ease}
+@keyframes scrimfade{from{background-color:transparent;-webkit-backdrop-filter:blur(0);backdrop-filter:blur(0)}to{background-color:var(--scrim)}}
 /* Layer order: sheets 50 < wheel 55 < confirm 60 < lightbox 80 < fatal 95 < toast 100 */
 #wheelOverlay{z-index:55}
 #confirmOverlay{z-index:60}
-.sheet{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 20px calc(26px + var(--safe-b));max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideup .18s ease}
-@media (min-width:600px){.overlay{align-items:center}.sheet{border-radius:18px;max-height:82vh;padding-bottom:26px}}
-@keyframes slideup{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.sheet{position:relative;background:var(--card);width:100%;max-width:480px;border-radius:26px 26px 0 0;padding:28px 20px calc(26px + var(--safe-b));max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideup .32s cubic-bezier(.32,.72,0,1)}
+.sheet::before{content:"";position:absolute;top:9px;left:50%;transform:translateX(-50%);width:36px;height:5px;border-radius:3px;background:var(--faint);opacity:.55}
+@media (min-width:600px){.overlay{align-items:center}.sheet{border-radius:24px;max-height:82vh;padding-bottom:26px}.sheet::before{display:none}}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet h2{margin:0 0 16px;font-size:17px;font-weight:800}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:11.5px;font-weight:700;color:var(--dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-.field input,.field select,.field-btn{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);font-size:16px;background:var(--input);color:var(--text);font-family:inherit}
+.field input,.field select,.field-btn{width:100%;padding:11px 14px;border-radius:14px;border:1.5px solid var(--line);font-size:16px;background:var(--input);color:var(--text);font-family:inherit}
 .field input:focus,.field select:focus,.field-btn:focus{outline:none;border-color:var(--ink)}
 .field-btn{text-align:left;font-weight:600;cursor:pointer}
 .field input:disabled,.field select:disabled,.field-btn:disabled{background:var(--chip);color:var(--dim);-webkit-text-fill-color:var(--dim);opacity:1;cursor:default}
-.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.type-opt{border:1.5px solid var(--line);border-radius:10px;padding:11px 8px;text-align:center;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--dim);user-select:none;-webkit-user-select:none}
-.type-opt.selected{border-color:var(--ink);background:var(--ink);color:var(--on-ink)}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--chip);padding:4px;border-radius:15px}
+.type-opt{border:none;border-radius:12px;padding:11px 8px;text-align:center;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--dim);user-select:none;-webkit-user-select:none;background:none;transition:transform .12s ease}
+.type-opt.selected{background:var(--ink);color:var(--on-ink)}
+.type-opt:active{transform:scale(.95)}
 .type-grid.locked .type-opt{pointer-events:none}
 .type-grid.locked .type-opt:not(.selected){opacity:.4}
 .btn-row{display:flex;gap:10px;margin-top:6px}
-.btn{flex:1;padding:13px;border-radius:11px;border:none;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn{flex:1;padding:13px;border-radius:999px;border:none;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .12s ease}
+.btn:active{transform:scale(.96)}
 .btn-primary{background:var(--ink);color:var(--on-ink)}
 .btn-secondary{background:var(--chip);color:var(--text)}
 .btn-danger{background:var(--card);color:var(--text);border:1.5px solid var(--line)}
@@ -130,7 +138,7 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .wheel{position:relative;display:flex;gap:1px;height:180px;margin:2px 0 18px;
   -webkit-mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent);
   mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent)}
-.wheel-band{position:absolute;left:0;right:0;top:72px;height:36px;background:var(--chip);border-radius:10px;pointer-events:none}
+.wheel-band{position:absolute;left:0;right:0;top:72px;height:36px;background:var(--chip);border-radius:12px;pointer-events:none}
 .wcol{flex:1;min-width:0;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;text-align:center;position:relative;z-index:1}
 .wcol::-webkit-scrollbar{display:none}
 .wcol.w-wide{flex:1.15}
@@ -140,15 +148,16 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .witem.off{opacity:.25}
 .wpad{height:72px}
 
-.row-action{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px}
+.row-action{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border:1.5px solid var(--line);border-radius:18px;margin-bottom:10px}
 .ra-title{font-size:14px;font-weight:700}
 .ra-sub{font-size:11.5px;color:var(--dim);margin-top:2px}
-.ra-btn{padding:9px 14px;border-radius:9px;border:none;background:var(--ink);color:var(--on-ink);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.ra-btn{padding:9px 16px;border-radius:999px;border:none;background:var(--ink);color:var(--on-ink);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;transition:transform .12s ease}
+.ra-btn:active{transform:scale(.94)}
 .ra-btn.secondary{background:var(--chip);color:var(--text)}
 .ra-btn.danger{background:var(--danger);color:#fff}
 #importFile,#receiptFile{display:none}
 
-.toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translate(-50%,10px);background:var(--ink);color:var(--on-ink);padding:11px 15px;border-radius:11px;font-size:13px;font-weight:600;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90%;text-align:left;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translate(-50%,10px);background:var(--ink);color:var(--on-ink);padding:11px 18px;border-radius:999px;font-size:13px;font-weight:600;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90%;text-align:left;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.22)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .toast.with-action{pointer-events:auto}
 .toast svg{flex-shrink:0}
@@ -158,12 +167,12 @@ body.dark .toast.success{background:#1C8B4D}
 .toast.error{background:var(--danger);color:#fff}
 
 .receipt-row{display:flex;align-items:center;gap:10px}
-.receipt-thumb{width:52px;height:52px;border-radius:9px;object-fit:cover;border:1.5px solid var(--line);cursor:pointer;flex-shrink:0}
-.receipt-add-btn{padding:10px 14px;border-radius:9px;border:1.5px dashed var(--line);background:var(--input);font-size:12.5px;font-weight:700;color:var(--chip-fg);cursor:pointer;font-family:inherit}
+.receipt-thumb{width:52px;height:52px;border-radius:14px;object-fit:cover;border:1.5px solid var(--line);cursor:pointer;flex-shrink:0}
+.receipt-add-btn{padding:10px 16px;border-radius:14px;border:1.5px dashed var(--line);background:var(--input);font-size:12.5px;font-weight:700;color:var(--chip-fg);cursor:pointer;font-family:inherit}
 .receipt-remove{font-size:11.5px;font-weight:700;color:var(--danger);cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:80;padding:24px}
 .lightbox.open{display:flex}
-.lightbox img{max-width:100%;max-height:100%;border-radius:10px}
+.lightbox img{max-width:100%;max-height:100%;border-radius:18px}
 .lightbox-close{position:fixed;top:calc(18px + var(--safe-t));right:18px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
 /* Full-screen stop for a failed boot — deliberately above every other layer. */
@@ -173,7 +182,7 @@ body.dark .toast.success{background:#1C8B4D}
 .fatal-icon{width:56px;height:56px;border-radius:50%;background:var(--danger);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
 .fatal h2{font-size:19px;font-weight:800;margin:0 0 8px;letter-spacing:-.2px}
 .fatal p{font-size:13.5px;color:var(--dim);line-height:1.6;margin:0 0 18px}
-.fatal details{text-align:left;background:var(--chip);border-radius:10px;padding:11px 13px;margin-bottom:18px;font-size:12px;color:var(--chip-fg)}
+.fatal details{text-align:left;background:var(--chip);border-radius:14px;padding:11px 13px;margin-bottom:18px;font-size:12px;color:var(--chip-fg)}
 .fatal summary{cursor:pointer;font-weight:700;list-style:none}
 .fatal summary::-webkit-details-marker{display:none}
 .fatal summary:after{content:" ▾"}
@@ -183,15 +192,14 @@ body.dark .toast.success{background:#1C8B4D}
 .pt-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
 .pt-row:last-child{border-bottom:none}
 .pt-name{flex:1;font-size:14px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pt-row input{flex:1;padding:9px 10px;border-radius:9px;border:1.5px solid var(--line);font-size:16px;background:var(--input);color:var(--text);font-family:inherit;min-width:0}
-.pt-icon-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--chip);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
+.pt-row input{flex:1;padding:9px 12px;border-radius:12px;border:1.5px solid var(--line);font-size:16px;background:var(--input);color:var(--text);font-family:inherit;min-width:0}
+.pt-icon-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--chip);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:transform .12s ease}
+.pt-icon-btn:active{transform:scale(.9)}
 .pt-icon-btn.danger{color:var(--danger)}
-.switch{position:relative;display:inline-block;width:46px;height:27px;flex-shrink:0}
-.switch input{opacity:0;width:0;height:0;position:absolute}
-.switch-slider{position:absolute;inset:0;background:var(--track);border-radius:27px;transition:.2s;cursor:pointer}
-.switch-slider:before{content:"";position:absolute;height:21px;width:21px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
-.switch input:checked + .switch-slider{background:var(--ink)}
-.switch input:checked + .switch-slider:before{transform:translateX(19px);background:var(--on-ink)}
+.btn-danger,.ra-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.settle-btn{width:100%;padding:11px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:12px;transition:transform .12s ease,background .12s ease}
+.settle-btn:active{background:var(--chip);transform:scale(.97)}
+.settle-max{font-size:12px;font-weight:700;color:var(--dim);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -199,7 +207,6 @@ body.dark .toast.success{background:#1C8B4D}
 
 <header>
   <div>
-    <div class="eyebrow">Personal Ledger</div>
     <h1>Debt Tracker</h1>
   </div>
   <div class="hdr-btns">
@@ -305,7 +312,7 @@ body.dark .toast.success{background:#1C8B4D}
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-danger" id="deleteBtn" style="display:none;">Delete</button>
+      <button class="btn btn-danger" id="deleteBtn" style="display:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>Delete</button>
       <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
       <button class="btn btn-primary" id="saveBtn">Save</button>
     </div>
@@ -333,9 +340,44 @@ body.dark .toast.success{background:#1C8B4D}
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-danger" id="personDeleteBtn">Delete</button>
+      <button class="btn btn-danger" id="personDeleteBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>Delete</button>
       <button class="btn btn-secondary" id="personCancelBtn">Cancel</button>
       <button class="btn btn-primary" id="personSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settle up (full or partial) -->
+<div class="overlay" id="settleOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2 id="settleTitle">Settle Up</h2>
+    <div class="err" id="settleErr"></div>
+    <div class="field-desc" id="settleDesc"></div>
+
+    <div class="field">
+      <label for="settleAmountInput">Amount (SGD)</label>
+      <input type="text" id="settleAmountInput" placeholder="0.00" inputmode="numeric" autocomplete="off">
+      <div class="lock-note"><button type="button" class="settle-max" id="settleMaxBtn">Use full amount</button></div>
+    </div>
+
+    <div class="field">
+      <label for="settleMethodSelect">Payment Type</label>
+      <select id="settleMethodSelect"></select>
+    </div>
+
+    <div class="field">
+      <label for="settleDateBtn">Date &amp; Time</label>
+      <button type="button" class="field-btn" id="settleDateBtn"></button>
+    </div>
+
+    <div class="field">
+      <label for="settleNoteInput">Description (optional)</label>
+      <input type="text" id="settleNoteInput" placeholder="e.g. Paid via bank transfer" autocomplete="off">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="settleCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="settleSaveBtn">Settle</button>
     </div>
   </div>
 </div>
@@ -360,9 +402,13 @@ body.dark .toast.success{background:#1C8B4D}
 <div class="overlay" id="settingsOverlay">
   <div class="sheet" role="dialog" aria-modal="true">
     <h2>Settings</h2>
-    <div class="row-action">
-      <div><div class="ra-title">Dark Mode</div><div class="ra-sub">Switch to a dark colour theme.</div></div>
-      <label class="switch"><input type="checkbox" id="darkModeToggle" aria-label="Dark mode"><span class="switch-slider"></span></label>
+    <div class="row-action" style="flex-direction:column;align-items:stretch;">
+      <div style="margin-bottom:10px;"><div class="ra-title">Appearance</div><div class="ra-sub">Auto follows your device's setting live.</div></div>
+      <div class="type-grid" id="themeGrid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="type-opt" data-theme="system">Auto</div>
+        <div class="type-opt" data-theme="light">Light</div>
+        <div class="type-opt" data-theme="dark">Dark</div>
+      </div>
     </div>
     <div class="row-action">
       <div><div class="ra-title">Manage People</div><div class="ra-sub">Add, edit, or remove people.</div></div>
@@ -377,7 +423,7 @@ body.dark .toast.success{background:#1C8B4D}
     </div>
     <div class="row-action" style="border-color:var(--danger);">
       <div><div class="ra-title" style="color:var(--danger);">Delete All Data</div><div class="ra-sub">Erases every person, transaction, and receipt.</div></div>
-      <button class="ra-btn danger" id="deleteAllBtn">Delete All</button>
+      <button class="ra-btn danger" id="deleteAllBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>Delete All</button>
     </div>
     <div class="btn-row"><button class="btn btn-secondary" id="closeSettingsBtn">Close</button></div>
   </div>
@@ -472,6 +518,7 @@ const DEFAULT_METHODS = ["Cash", "PayNow", "Card"];
 const TYPE_LABELS = {owed_to_me:"Owed to Me", i_owe:"I Owe"};
 const TYPE_HINTS = {owed_to_me:"This person owes you this amount.", i_owe:"You owe this person this amount."};
 const SWIPE_OPEN = -84, MAX_CENTS = 99999999999, UNDO_MS = 6000;
+document.documentElement.style.setProperty("--swipe-w", Math.abs(SWIPE_OPEN) + "px");
 
 const $ = id => document.getElementById(id);
 const elOf = t => t && (t.nodeType === 1 ? t : t.parentElement);
@@ -554,7 +601,8 @@ function normalize(raw, outReceipts){
       created_at: t.created_at || new Date().toISOString(),
       edited: t.edited ? 1 : 0,
       edited_at: t.edited_at || null,
-      receipt: (legacy || t.receipt === 1 || t.receipt === true) ? 1 : 0
+      receipt: (legacy || t.receipt === 1 || t.receipt === true) ? 1 : 0,
+      settlement: t.settlement ? 1 : 0
     });
   });
 
@@ -730,19 +778,41 @@ function showBanner(){
   $("bannerSlot").appendChild(b);
 }
 
-/* ================= Theme ================= */
-function loadTheme(){
+/* ================= Theme =================
+   Three modes: "system" (no saved key — live-follows the OS), "light", "dark".
+   Previously a single on/off toggle wrote a saved preference the first time it was
+   touched, with no way back to auto — so "automatic" looked broken forever after one tap.
+   A saved key now only ever means an explicit manual choice; deleting it returns to auto. */
+const themeMQ = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+function applyTheme(){
   const saved = lsGet(THEME_KEY);
-  const mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-  document.body.classList.toggle("dark", saved ? saved === "dark" : !!(mq && mq.matches));
-  /* No manual choice saved yet — keep following the system theme live. */
-  if(!saved && mq && mq.addEventListener){
-    mq.addEventListener("change", e => { if(!lsGet(THEME_KEY)) document.body.classList.toggle("dark", e.matches); });
+  const dark = saved ? saved === "dark" : !!(themeMQ && themeMQ.matches);
+  document.body.classList.toggle("dark", dark);
+  /* Keeps the browser chrome / status bar colour (Safari's toolbar, Android's status
+     bar) matching the app's own background instead of staying stuck on one shade —
+     these two hexes must stay in sync with --bg in :root and body.dark above. */
+  if(themeColorMeta) themeColorMeta.setAttribute("content", dark ? "#000000" : "#F8F8F8");
+}
+function loadTheme(){
+  applyTheme();
+  if(themeMQ && themeMQ.addEventListener){
+    themeMQ.addEventListener("change", () => { if(!lsGet(THEME_KEY)) applyTheme(); });
   }
 }
-function setTheme(dark){
-  document.body.classList.toggle("dark", dark);
-  try{ localStorage.setItem(THEME_KEY, dark ? "dark" : "light"); }catch(e){}
+function setTheme(mode){
+  try{
+    if(mode === "system") localStorage.removeItem(THEME_KEY);
+    else localStorage.setItem(THEME_KEY, mode);
+  }catch(e){}
+  applyTheme();
+  syncThemeUI();
+}
+function syncThemeUI(){
+  const saved = lsGet(THEME_KEY);
+  const mode = saved === "dark" ? "dark" : saved === "light" ? "light" : "system";
+  const grid = $("themeGrid");
+  if(grid) [...grid.children].forEach(o => o.classList.toggle("selected", o.dataset.theme === mode));
 }
 
 /* ================= Toast ================= */
@@ -805,7 +875,9 @@ function reindex(){
 
 /* ================= Render ================= */
 const EDIT_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
-const TRASH_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
+const TRASH_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>';
+const TRASH_ICON_LG = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>';
+const SETTLE_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
 
 function renderSummary(){
   const net = round2(totals.owed - totals.iowe);
@@ -841,6 +913,7 @@ function renderPeople(){
     if(openPersonId === p.id){
       html += '<div class="person-detail">'
         + (profile ? `<div class="person-profile">${profile}</div>` : "")
+        + (bal !== 0 ? `<button type="button" class="settle-btn" data-act="settleUp" data-id="${p.id}">${SETTLE_ICON}Settle Up</button>` : "")
         + (n ? txns.map(t => txnRow(t, false)).join("") : '<div class="txn-note">No transactions yet.</div>')
         + '</div>';
     }
@@ -850,10 +923,11 @@ function renderPeople(){
 
 function txnRow(t, showPerson){
   const credit = t.type === "owed_to_me";
+  const label = t.settlement ? "Settlement" : TYPE_LABELS[t.type];
   return `<div class="swipe-wrap" data-id="${t.id}">`
-    + `<div class="swipe-delete-bg" data-act="swipedelete" data-id="${t.id}">Delete</div>`
+    + `<div class="swipe-delete-bg" data-act="swipedelete" data-id="${t.id}" aria-label="Delete"><span class="swipe-delete-icon">${TRASH_ICON_LG}</span></div>`
     + `<div class="txn swipe-content" data-act="txn" data-id="${t.id}"><div class="txn-left">`
-      + `<div class="txn-type">${TYPE_LABELS[t.type]}</div>`
+      + `<div class="txn-type">${label}</div>`
       + (showPerson ? `<div class="txn-person">${esc(nameOf.get(t.person_id) || "—")}</div>` : "")
       + (t.note ? `<div class="txn-note">${esc(t.note)}</div>` : "")
       + `<div class="txn-meta"><div class="txn-date">${fmtDateTime(t.txn_date)}</div>`
@@ -908,7 +982,7 @@ function refreshAll(){
 const overlay = $("overlay"), personOverlay = $("personOverlay"), confirmOverlay = $("confirmOverlay"),
       backupOverlay = $("backupOverlay"), settingsOverlay = $("settingsOverlay"),
       paymentTypesOverlay = $("paymentTypesOverlay"), managePeopleOverlay = $("managePeopleOverlay"),
-      wheelOverlay = $("wheelOverlay"), lightbox = $("lightbox");
+      wheelOverlay = $("wheelOverlay"), lightbox = $("lightbox"), settleOverlay = $("settleOverlay");
 
 /* Scroll lock is derived from what's actually open — stacked sheets used to unlock the body early. */
 const syncLock = () => document.body.classList.toggle("locked", !!document.querySelector(".overlay.open, .lightbox.open"));
@@ -948,7 +1022,8 @@ on($("confirmAltBtn"), "click", () => {
  [wheelOverlay, closeWheel], [backupOverlay, () => closeOverlay(backupOverlay)],
  [settingsOverlay, () => closeOverlay(settingsOverlay)],
  [paymentTypesOverlay, () => closeOverlay(paymentTypesOverlay)],
- [managePeopleOverlay, () => closeOverlay(managePeopleOverlay)]
+ [managePeopleOverlay, () => closeOverlay(managePeopleOverlay)],
+ [settleOverlay, closeSettleSheet]
 ].forEach(([o, close]) => on(o, "click", e => { if(e.target === o) close(); }));
 
 /* ================= Scrolling wheel date picker =================
@@ -1168,7 +1243,7 @@ function openEdit(id){
   if(!t) return showError("That transaction no longer exists.");
   editingTxnId = id;
   setErr("");
-  $("sheetTitle").textContent = "Edit Debt";
+  $("sheetTitle").textContent = t.settlement ? "Edit Settlement" : "Edit Debt";
   $("deleteBtn").style.display = "block";
   populatePersonSelect(t.person_id);
   personSelect.disabled = true;
@@ -1190,6 +1265,88 @@ function openEdit(id){
   }
 }
 function closeSheet(){ releaseTemp(); rcpt = {mode:"none", blob:null, url:null, temp:false}; closeOverlay(overlay); editingTxnId = null; setErr(""); }
+
+/* ================= Settle up (full or partial) =================
+   Records a payment against a person's balance as an ordinary transaction (so all the
+   existing balance math, history, undo, and backup logic just works), tagged `settlement:1`
+   purely for display — it always moves the balance toward zero, in whichever direction
+   the current balance needs, and is capped so it can never overshoot past zero. */
+let settlePersonId = null, settleDate = new Date(), settleAmountCents = 0, settleMaxCents = 0;
+const settleAmountInput = $("settleAmountInput"), settleDateBtn = $("settleDateBtn"),
+      settleMethodSelect = $("settleMethodSelect");
+const setSettleErr = msg => { $("settleErr").textContent = msg || ""; };
+
+function setSettleAmountCents(c){
+  settleAmountCents = clamp(Math.floor(Number(c) || 0), 0, settleMaxCents);
+  settleAmountInput.value = settleAmountCents === 0 ? "" : (settleAmountCents / 100).toFixed(2);
+}
+function setSettleDate(d){
+  settleDate = validDate(d) ? d : new Date();
+  settleDateBtn.textContent = fmtDateTime(settleDate);
+}
+function populateSettleMethodSelect(){
+  const methods = [...state.paymentTypes].sort((a, b) => a.localeCompare(b));
+  settleMethodSelect.innerHTML = '<option value="__none__">Not specified</option>'
+    + methods.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join("");
+  settleMethodSelect.value = "__none__";
+}
+function openSettle(personId){
+  const p = findPerson(personId);
+  const bal = balanceOf.get(personId) || 0;
+  if(!p || bal === 0) return;
+  settlePersonId = personId;
+  settleMaxCents = Math.round(Math.abs(bal) * 100);
+  setSettleErr("");
+  $("settleTitle").textContent = `Settle with ${p.name}`;
+  $("settleDesc").textContent = bal > 0
+    ? `${p.name} owes you ${money(bal)}. Record what they've paid back — in full, or part of it.`
+    : `You owe ${p.name} ${money(bal)}. Record what you've paid back — in full, or part of it.`;
+  setSettleAmountCents(settleMaxCents);
+  populateSettleMethodSelect();
+  $("settleNoteInput").value = "";
+  setSettleDate(new Date());
+  openOverlay(settleOverlay);
+}
+function closeSettleSheet(){ closeOverlay(settleOverlay); settlePersonId = null; setSettleErr(""); }
+
+on($("settleCancelBtn"), "click", closeSettleSheet);
+on($("settleMaxBtn"), "click", () => setSettleAmountCents(settleMaxCents));
+on(settleAmountInput, "input", function(){
+  const digits = this.value.replace(/\D/g, "").slice(0, 11).replace(/^0+(?=\d)/, "");
+  setSettleAmountCents(digits ? parseInt(digits, 10) : 0);
+  const len = this.value.length;
+  try{ this.setSelectionRange(len, len); }catch(err){}
+});
+on(settleAmountInput, "keydown", e => {
+  if(e.key === "Backspace"){ e.preventDefault(); setSettleAmountCents(Math.floor(settleAmountCents / 10)); }
+});
+on(settleDateBtn, "click", () => {
+  openWheel({value:settleDate, title:"Date & Time", onPick:d => { if(d) setSettleDate(d); }});
+});
+on($("settleSaveBtn"), "click", async () => {
+  const amount = round2(settleAmountCents / 100);
+  const p = findPerson(settlePersonId);
+  const bal = settlePersonId != null ? (balanceOf.get(settlePersonId) || 0) : 0;
+  if(!p || bal === 0) return setSettleErr("That balance is already settled.");
+  if(!(amount > 0)) return setSettleErr("Enter an amount greater than zero.");
+  if(amount > round2(Math.abs(bal)) + 0.001) return setSettleErr(`Can't settle more than ${money(bal)} owed.`);
+
+  const method = settleMethodSelect.value === "__none__" ? "" : settleMethodSelect.value;
+  const note = $("settleNoteInput").value.trim();
+  const full = amount >= round2(Math.abs(bal)) - 0.001;
+
+  try{
+    const t = {
+      id: state.nextTxnId++, person_id: settlePersonId, type: bal > 0 ? "i_owe" : "owed_to_me", amount,
+      payment_type: method, note,
+      txn_date: settleDate.toISOString(), created_at: new Date().toISOString(),
+      edited: 0, edited_at: null, receipt: 0, settlement: 1
+    };
+    state.transactions.push(t);
+    persist(); closeSettleSheet(); refreshAll();
+    showOk(full ? "Settled in full." : `${money(amount)} settled.`);
+  }catch(e){ onStorageError(e); }
+});
 
 /* Only commits a brand-new payment type once the rest of the form has validated. */
 function resolveMethod(){
@@ -1440,12 +1597,25 @@ on($("managePeopleBtn"), "click", () => {
 on($("managePeopleCloseBtn"), "click", () => closeOverlay(managePeopleOverlay));
 
 /* ================= Swipe to delete ================= */
-const swipe = {content:null, wrap:null, startX:0, startY:0, baseX:0, dragging:false, axis:null, openWrap:null, tx:0};
+const swipe = {content:null, wrap:null, icon:null, startX:0, startY:0, baseX:0, dragging:false, axis:null, openWrap:null, tx:0};
+const SWIPE_ICON_W = 19;
+/* The icon is repositioned from the very same `tx` value that drives the row's own
+   translateX, in the same tick — so it can never fall out of step with the reveal.
+   It's centred within whatever width is currently exposed (clamped to the resting
+   width), so it tracks the red box the whole way instead of just sitting in its
+   final spot and waiting to be uncovered. */
+function positionSwipeIcon(icon, tx){
+  if(!icon) return;
+  const revealed = clamp(Math.abs(tx), 0, Math.abs(SWIPE_OPEN));
+  icon.style.right = `${(revealed - SWIPE_ICON_W) / 2}px`;
+}
 
 function closeSwipe(){
   if(!swipe.openWrap) return;
   const c = swipe.openWrap.querySelector(".swipe-content");
+  const icon = swipe.openWrap.querySelector(".swipe-delete-icon");
   if(c){ c.style.transition = "transform .18s ease"; c.style.transform = "translateX(0)"; }
+  if(icon){ icon.style.transition = "right .18s ease"; positionSwipeIcon(icon, 0); }
   swipe.openWrap = null;
 }
 function commitSwipeDelete(wrap){
@@ -1472,12 +1642,15 @@ on(document, "touchstart", e => {
   if(swipe.openWrap && swipe.openWrap !== wrap) closeSwipe();
   const c = wrap.querySelector(".swipe-content");
   if(!c){ swipe.content = null; return; }
+  const icon = wrap.querySelector(".swipe-delete-icon");
   c.style.transition = "none";
+  if(icon) icon.style.transition = "none";
   Object.assign(swipe, {
-    content:c, wrap, startX:e.touches[0].clientX, startY:e.touches[0].clientY,
+    content:c, wrap, icon, startX:e.touches[0].clientX, startY:e.touches[0].clientY,
     baseX: swipe.openWrap === wrap ? SWIPE_OPEN : 0, dragging:false, axis:null
   });
   swipe.tx = swipe.baseX;
+  positionSwipeIcon(icon, swipe.tx);
 }, {passive:true});
 
 on(document, "touchmove", e => {
@@ -1492,23 +1665,27 @@ on(document, "touchmove", e => {
   swipe.dragging = true;
   swipe.tx = clamp(swipe.baseX + dx, -(swipe.wrap.offsetWidth + 40), 0);
   swipe.content.style.transform = `translateX(${swipe.tx}px)`;
+  positionSwipeIcon(swipe.icon, swipe.tx);
 }, {passive:false});
 
 on(document, "touchend", () => {
   if(!swipe.content) return;
   swipe.content.style.transition = "transform .18s ease";
+  if(swipe.icon) swipe.icon.style.transition = "right .18s ease";
   if(swipe.dragging){
     if(swipe.tx <= -swipe.wrap.offsetWidth * 0.6){
       commitSwipeDelete(swipe.wrap);
     }else if(swipe.tx <= SWIPE_OPEN / 2){
       swipe.content.style.transform = `translateX(${SWIPE_OPEN}px)`;
+      positionSwipeIcon(swipe.icon, SWIPE_OPEN);
       swipe.openWrap = swipe.wrap;
     }else{
       swipe.content.style.transform = "translateX(0)";
+      positionSwipeIcon(swipe.icon, 0);
       swipe.openWrap = null;
     }
   }
-  Object.assign(swipe, {content:null, wrap:null, dragging:false, axis:null});
+  Object.assign(swipe, {content:null, wrap:null, icon:null, dragging:false, axis:null});
 }, {passive:true});
 
 /* ================= Delegated clicks ================= */
@@ -1540,6 +1717,9 @@ on(document, "click", e => {
     e.stopPropagation();
     const wrap = node.closest(".swipe-wrap");
     if(wrap) commitSwipeDelete(wrap);
+  }else if(act === "settleUp"){
+    e.stopPropagation();
+    openSettle(id);
   }
 });
 
@@ -1635,12 +1815,15 @@ on($("cancelBtn"), "click", closeSheet);
 on($("backupBtn"), "click", () => openOverlay(backupOverlay));
 on($("closeBackupBtn"), "click", () => closeOverlay(backupOverlay));
 on($("settingsBtn"), "click", () => {
-  $("darkModeToggle").checked = document.body.classList.contains("dark");
+  syncThemeUI();
   showStorageStat();
   openOverlay(settingsOverlay);
 });
 on($("closeSettingsBtn"), "click", () => closeOverlay(settingsOverlay));
-on($("darkModeToggle"), "change", function(){ setTheme(this.checked); });
+on($("themeGrid"), "click", e => {
+  const opt = elOf(e.target)?.closest(".type-opt");
+  if(opt) setTheme(opt.dataset.theme);
+});
 
 const MODE_LABEL = {idb:"IndexedDB", local:"localStorage (limited)", memory:"Memory only — nothing is saved"};
 async function showStorageStat(){
@@ -1764,7 +1947,8 @@ on(document, "keydown", e => {
     [personOverlay, closePersonSheet], [backupOverlay, () => closeOverlay(backupOverlay)],
     [settingsOverlay, () => closeOverlay(settingsOverlay)],
     [paymentTypesOverlay, () => closeOverlay(paymentTypesOverlay)],
-    [managePeopleOverlay, () => closeOverlay(managePeopleOverlay)]].find(([o]) => isOpen(o));
+    [managePeopleOverlay, () => closeOverlay(managePeopleOverlay)],
+    [settleOverlay, closeSettleSheet]].find(([o]) => isOpen(o));
   if(layer) layer[1]();
 });
 

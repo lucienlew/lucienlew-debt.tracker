@@ -1,67 +1,64 @@
-/* Debt Tracker service worker.
-   Bump CACHE on every release — the name is the only cache-busting mechanism here.
-   Nothing user-generated is cached: the ledger lives in IndexedDB, not in the Cache API. */
-const CACHE = "debt-tracker-v4";
-const SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+/* Debt Tracker — offline app shell.
+   Bump CACHE_VERSION any time index.html (or this file) changes and is redeployed.
+   That's what makes the browser see a byte-diff in sw.js, install the new worker,
+   and fire the "Update ready" toast already wired up in index.html — until then,
+   everyone keeps getting the exact cached version below, even with no network at all. */
+const CACHE_VERSION = "v1";
+const CACHE_NAME = `debt-tracker-${CACHE_VERSION}`;
 
-/* Precache tolerantly: one missing icon must not fail the whole install. */
+const SHELL_URLS = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./icon-192-maskable.png",
+  "./icon-512-maskable.png",
+  "./apple-touch-icon.png"
+];
+
 self.addEventListener("install", event => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(CACHE);
-    await Promise.all(SHELL.map(url =>
-      cache.add(new Request(url, {cache:"reload"})).catch(() => {})
-    ));
-    await self.skipWaiting();
-  })());
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache =>
+      /* addAll fails the whole install if even one URL 404s — safer than a half-cached shell. */
+      cache.addAll(SHELL_URLS)
+    )
+    /* No skipWaiting(): the new worker parks in "installed" while the old one keeps
+       serving open tabs, matching the "Update ready — reopen the app to apply" toast. */
+  );
 });
 
-/* Drop every cache from an older version, then take over open tabs. */
 self.addEventListener("activate", event => {
-  event.waitUntil((async () => {
-    const names = await caches.keys();
-    await Promise.all(names.filter(n => n !== CACHE).map(n => caches.delete(n)));
-    if(self.registration.navigationPreload) await self.registration.navigationPreload.enable();
-    await self.clients.claim();
-  })());
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
 });
 
-self.addEventListener("message", event => {
-  if(event.data === "SKIP_WAITING") self.skipWaiting();
-});
-
-/* Navigations: network first, so a deployed update is picked up on the next launch,
-   falling back to the cached shell when offline.
-   Assets: cache first for instant paint, refreshed quietly in the background. */
+/* Cache-first for everything in scope, so the app opens instantly with zero network —
+   airplane mode, dead signal, whatever. A cache miss still tries the network (harmless
+   no-op offline), and a failed navigation falls back to the cached shell itself, so a
+   hard refresh or deep link while offline boots the app instead of the browser's own
+   offline page. */
 self.addEventListener("fetch", event => {
   const req = event.request;
   if(req.method !== "GET") return;
 
-  const url = new URL(req.url);
-  if(url.origin !== self.location.origin) return;
-
-  if(req.mode === "navigate"){
-    event.respondWith((async () => {
-      try{
-        const preload = await event.preloadResponse;
-        const res = preload || await fetch(req);
-        const cache = await caches.open(CACHE);
-        cache.put("./index.html", res.clone());
-        return res;
-      }catch(e){
-        return (await caches.match("./index.html")) || (await caches.match("./")) || Response.error();
-      }
-    })());
-    return;
-  }
-
-  event.respondWith((async () => {
-    const cached = await caches.match(req);
-    const network = fetch(req).then(res => {
-      if(res && res.ok && res.type === "basic"){
-        caches.open(CACHE).then(c => c.put(req, res.clone()));
-      }
-      return res;
-    }).catch(() => null);
-    return cached || (await network) || Response.error();
-  })());
+  event.respondWith(
+    caches.match(req, {ignoreSearch:true}).then(cached => {
+      if(cached) return cached;
+      return fetch(req)
+        .then(res => {
+          if(res && res.ok && req.url.startsWith(self.location.origin)){
+            const copy = res.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => {
+          if(req.mode === "navigate") return caches.match("./index.html");
+        });
+    })
+  );
 });
