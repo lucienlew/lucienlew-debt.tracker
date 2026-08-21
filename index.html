@@ -29,7 +29,9 @@ body.dark{
 --shadow:none;--fab-shadow:0 10px 26px rgba(0,0,0,.6);
 color-scheme:dark}
 
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+button,.icon-btn,.fab,.tab,.filter,.ra-btn,.pt-icon-btn,.settle-btn,.settle-max,.lock-btn,.lock-link,
+.ios-switch,.type-opt,.field-btn,.person-row,.txn,.swipe-delete-bg{-webkit-user-select:none;user-select:none}
 html,body{overscroll-behavior-y:none;height:100%}
 body{margin:0;min-height:100dvh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 body.locked{overflow:hidden}
@@ -51,6 +53,13 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .summary-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px}
 
 .tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--chip);padding:4px;border-radius:16px}
+#overviewTab,#historyTab{animation:tabIn .22s cubic-bezier(.32,.72,0,1)}
+@keyframes tabIn{from{opacity:0;transform:translateX(var(--tab-dx,0))}to{opacity:1;transform:translateX(0)}}
+
+.pull-indicator{position:fixed;top:calc(10px + var(--safe-t));left:50%;transform:translateX(-50%) translateY(-50px);width:34px;height:34px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;color:var(--text);z-index:30;opacity:0;transition:opacity .15s ease}
+.pull-indicator.visible{opacity:1}
+.pull-indicator.spin svg{animation:pullSpin .7s linear infinite}
+@keyframes pullSpin{to{transform:rotate(360deg)}}
 .tab{flex:1;text-align:center;padding:9px 4px;font-size:13.5px;font-weight:700;color:var(--dim);cursor:pointer;border-radius:12px;border:none;background:none;font-family:inherit;transition:transform .12s ease}
 .tab.active{color:var(--on-ink);background:var(--ink)}
 .tab:active{transform:scale(.95)}
@@ -74,10 +83,14 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .swipe-wrap{position:relative;overflow:hidden;border-radius:16px}
 .swipe-wrap:last-child .txn{border-bottom:none}
 .swipe-delete-bg{position:absolute;inset:0;background:var(--danger);color:#fff;font-weight:700;font-size:12.5px;cursor:pointer;border-radius:inherit}
-.swipe-delete-icon{position:absolute;top:50%;right:calc((var(--swipe-w,84px) - 19px)/2);transform:translateY(-50%)}
+/* Fixed 19px flex box with no line-height leading — an inline span put the glyph on a
+   text baseline, so the descender gap pushed it off true vertical centre. */
+.swipe-delete-icon{position:absolute;top:50%;right:calc((var(--swipe-w,84px) - 19px)/2);transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:19px;height:19px;line-height:0}
 .swipe-content{position:relative;transition:transform .18s ease}
-.txn{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;background:var(--card);touch-action:pan-y;transition:opacity .1s ease}
-.txn:active{opacity:.55}
+.txn{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;background:var(--card);touch-action:pan-y;transition:background .1s ease}
+/* Must stay fully opaque: the red delete panel sits directly behind this row, so any
+   transparency on press bleeds it through and reads as a red highlight. */
+.txn:active{background:var(--chip)}
 .txn-left{display:flex;flex-direction:column;gap:2px;min-width:0}
 .txn-type{font-size:13px;font-weight:700}
 .txn-note{font-size:12.5px;color:var(--dim);word-break:break-word}
@@ -129,6 +142,7 @@ header h1{font-size:21px;letter-spacing:-.3px;margin:0;font-weight:800}
 .btn-secondary{background:var(--chip);color:var(--text)}
 .btn-danger{background:var(--card);color:var(--text);border:1.5px solid var(--line)}
 .btn-confirm{background:var(--danger);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
 .lock-note,.receipt-status{font-size:11px;color:var(--dim);margin-top:6px}
 .err{color:var(--danger);font-size:12.5px;font-weight:700;margin-bottom:10px}
 .err:empty{display:none}
@@ -200,10 +214,42 @@ body.dark .toast.success{background:#1C8B4D}
 .settle-btn{width:100%;padding:11px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:12px;transition:transform .12s ease,background .12s ease}
 .settle-btn:active{background:var(--chip);transform:scale(.97)}
 .settle-max{font-size:12px;font-weight:700;color:var(--dim);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline}
+
+/* ---- iOS-style toggle switch ---- */
+.ios-switch{width:51px;height:31px;border-radius:999px;background:var(--track);position:relative;border:none;padding:0;cursor:pointer;flex-shrink:0;transition:background .2s ease}
+.ios-switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.2);transition:transform .2s cubic-bezier(.32,.72,0,1)}
+.ios-switch.on{background:var(--ink)}
+.ios-switch.on::after{transform:translateX(20px)}
+
+/* ---- Show settled toggle row (above People list) ---- */
+.settled-row{display:none;align-items:center;justify-content:space-between;padding:0 4px 14px}
+.settled-row-label{font-size:13.5px;font-weight:700;color:var(--dim)}
+.person-card.is-settled{opacity:.55}
+
+/* ---- Face ID lock screen — deliberately above every other layer, including fatal. ---- */
+.lock-screen{position:fixed;inset:0;background:var(--bg);z-index:97;display:none;align-items:center;justify-content:center;padding:26px}
+.lock-screen.open{display:flex}
+.lock-card{max-width:300px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center}
+.lock-tile{width:88px;height:88px;border-radius:24px;background:var(--chip);color:var(--text);display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+@keyframes lockPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.06)}}
+.lock-tile.scanning{animation:lockPulse 1.1s ease-in-out infinite}
+.lock-title{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-bottom:6px}
+.lock-sub{font-size:13.5px;color:var(--dim);line-height:1.4;min-height:18px;margin-bottom:26px}
+.lock-sub.error{color:var(--danger);font-weight:600}
+.lock-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:999px;border:none;background:var(--ink);color:var(--on-ink);font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .12s ease}
+.lock-btn:active{transform:scale(.96)}
+.lock-btn:disabled{opacity:.5}
+.lock-link{margin-top:18px;background:none;border:none;font-size:12.5px;font-weight:600;color:var(--dim);cursor:pointer;font-family:inherit;text-decoration:underline;padding:6px}
+.lock-cant-panel{margin-top:8px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;width:100%;text-align:left}
+.lock-cant-text{font-size:12px;color:var(--dim);line-height:1.5;margin-bottom:10px}
 </style>
 </head>
 <body>
 <div class="app">
+
+<div class="pull-indicator" id="pullIndicator">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.5-7.1"/><polyline points="21 3 21 9 15 9"/></svg>
+</div>
 
 <header>
   <div>
@@ -232,7 +278,13 @@ body.dark .toast.success{background:#1C8B4D}
   <button class="tab" data-tab="history">History</button>
 </div>
 
-<div id="overviewTab"><div class="people" id="peopleList"></div></div>
+<div id="overviewTab">
+  <div class="settled-row" id="settledRow">
+    <span class="settled-row-label">Show settled</span>
+    <button type="button" class="ios-switch" id="settledToggle" role="switch" aria-checked="false" aria-label="Show settled people"></button>
+  </div>
+  <div class="people" id="peopleList"></div>
+</div>
 
 <div id="historyTab" hidden>
   <div class="filters">
@@ -410,6 +462,10 @@ body.dark .toast.success{background:#1C8B4D}
         <div class="type-opt" data-theme="dark">Dark</div>
       </div>
     </div>
+    <div class="row-action" id="faceIdRow">
+      <div><div class="ra-title">Face ID Lock</div><div class="ra-sub" id="faceIdSub">Require Face ID to open the app.</div></div>
+      <button type="button" class="ios-switch" id="faceIdToggle" role="switch" aria-checked="false" aria-label="Face ID Lock"></button>
+    </div>
     <div class="row-action">
       <div><div class="ra-title">Manage People</div><div class="ra-sub">Add, edit, or remove people.</div></div>
       <button class="ra-btn secondary" id="managePeopleBtn">Edit</button>
@@ -483,6 +539,21 @@ body.dark .toast.success{background:#1C8B4D}
   </div>
 </div>
 
+<div class="overlay" id="deleteAllOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2>Delete All Data</h2>
+    <div class="field-desc">This erases every person, transaction, and receipt on this device. It cannot be undone.</div>
+    <div class="field">
+      <label>Type DELETE to confirm</label>
+      <input type="text" id="deleteAllInput" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="DELETE">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="deleteAllCancelBtn">Cancel</button>
+      <button class="btn btn-confirm" id="deleteAllConfirmBtn" disabled>Delete Everything</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <div class="fatal" id="fatal">
@@ -505,6 +576,33 @@ body.dark .toast.success{background:#1C8B4D}
   <img id="lightboxImg" src="" alt="Receipt">
 </div>
 
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-tile" id="lockTile">
+      <svg width="46" height="46" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 20V14a4 4 0 0 1 4-4h6"/>
+        <path d="M44 10h6a4 4 0 0 1 4 4v6"/>
+        <path d="M10 44v6a4 4 0 0 0 4 4h6"/>
+        <path d="M54 44v6a4 4 0 0 1-4 4h-6"/>
+        <path d="M24 27v6"/>
+        <path d="M40 27v6"/>
+        <path d="M23 42q9 7 18 0"/>
+      </svg>
+    </div>
+    <div class="lock-title">Debt Tracker</div>
+    <div class="lock-sub" id="lockSub">Locked with Face ID</div>
+    <button type="button" class="lock-btn" id="lockRetryBtn">
+      <svg width="16" height="16" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20V14a4 4 0 0 1 4-4h6"/><path d="M44 10h6a4 4 0 0 1 4 4v6"/><path d="M10 44v6a4 4 0 0 0 4 4h6"/><path d="M54 44v6a4 4 0 0 1-4 4h-6"/></svg>
+      Unlock with Face ID
+    </button>
+    <button type="button" class="lock-link" id="lockCantBtn">Can't use Face ID?</button>
+    <div class="lock-cant-panel" id="lockCantPanel" style="display:none">
+      <div class="lock-cant-text">Turning this off removes the Face ID requirement. Your data isn't affected.</div>
+      <button type="button" class="btn btn-secondary" id="lockDisableBtn">Turn Off Face ID Lock</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (() => {
 "use strict";
@@ -514,6 +612,7 @@ const DB_NAME = "debtTracker", DB_VER = 1, S_META = "meta", S_RCPT = "receipts",
 const LS_KEY = "debtTrackerData_v2";                 // legacy v2 store, migrated once
 const LS_LEDGER = "debtTrackerLedger_v3", LS_RCPT = "debtTrackerReceipts_v3";
 const MIGRATED_KEY = "debtTrackerMigrated_v3", THEME_KEY = "debtTrackerTheme_v1";
+const SETTLED_KEY = "debtTrackerShowSettled_v1", FACE_LOCK_KEY = "debtTrackerFaceLock_v1";
 const DEFAULT_METHODS = ["Cash", "PayNow", "Card"];
 const TYPE_LABELS = {owed_to_me:"Owed to Me", i_owe:"I Owe"};
 const TYPE_HINTS = {owed_to_me:"This person owes you this amount.", i_owe:"You owe this person this amount."};
@@ -533,6 +632,7 @@ let currentTab = "overview";
 let openPersonId = null, editingTxnId = null, editingPersonId = null;
 let selectedType = null, txnDate = new Date(), amountCents = 0;
 let filterFrom = null, filterTo = null;
+let showSettled = false;
 
 /* Derived indexes — rebuilt once per data change, not per render. */
 let balanceOf = new Map(), txnsOf = new Map(), nameOf = new Map();
@@ -725,6 +825,7 @@ const Store = {
 };
 
 const lsGet = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+showSettled = lsGet(SETTLED_KEY) === "1";
 const blobToDataURL = b => new Promise(res => {
   const r = new FileReader();
   r.onload = () => res(r.result);
@@ -815,6 +916,124 @@ function syncThemeUI(){
   if(grid) [...grid.children].forEach(o => o.classList.toggle("selected", o.dataset.theme === mode));
 }
 
+/* ================= Face ID Lock =================
+   A local device gate, not encryption: WebAuthn's platform authenticator (Face ID /
+   Touch ID / Windows Hello) is used purely to prove the OS's biometric check passed
+   before the UI reveals anything. The credential id is kept per-device in localStorage
+   (never inside the ledger/backup) so it never travels with an export or import. */
+const b64uEncode = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const b64uDecode = str => {
+  const pad = "=".repeat((4 - str.length % 4) % 4);
+  const bin = atob((str + pad).replace(/-/g, "+").replace(/_/g, "/"));
+  const arr = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return arr.buffer;
+};
+function getFaceLock(){
+  try{
+    const v = JSON.parse(lsGet(FACE_LOCK_KEY) || "null");
+    return (v && v.enabled && v.credId) ? v : null;
+  }catch(e){ return null; }
+}
+function setFaceLock(v){
+  try{ v ? localStorage.setItem(FACE_LOCK_KEY, JSON.stringify(v)) : localStorage.removeItem(FACE_LOCK_KEY); }catch(e){}
+}
+async function faceIDSupported(){
+  if(!window.PublicKeyCredential || !navigator.credentials) return false;
+  try{ return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); }catch(e){ return false; }
+}
+async function enrollFaceID(){
+  const cred = await navigator.credentials.create({
+    publicKey:{
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rp:{name:"Debt Tracker"},
+      user:{id: crypto.getRandomValues(new Uint8Array(16)), name:"ledger", displayName:"Debt Tracker"},
+      pubKeyCredParams:[{type:"public-key", alg:-7}, {type:"public-key", alg:-257}],
+      authenticatorSelection:{authenticatorAttachment:"platform", userVerification:"required"},
+      timeout:60000, attestation:"none"
+    }
+  });
+  if(!cred) throw new Error("No credential returned");
+  setFaceLock({enabled:true, credId:b64uEncode(cred.rawId)});
+}
+async function verifyFaceID(lock){
+  await navigator.credentials.get({
+    publicKey:{
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      allowCredentials:[{id:b64uDecode(lock.credId), type:"public-key"}],
+      userVerification:"required",
+      timeout:60000
+    }
+  });
+}
+function syncFaceIDUI(){
+  const toggle = $("faceIdToggle");
+  if(!toggle) return;
+  const on = !!getFaceLock();
+  toggle.classList.toggle("on", on);
+  toggle.setAttribute("aria-checked", on ? "true" : "false");
+}
+on($("faceIdToggle"), "click", async () => {
+  const lock = getFaceLock();
+  if(lock){
+    setFaceLock(null);
+    syncFaceIDUI();
+    showOk("Face ID turned off.");
+    return;
+  }
+  if(!(await faceIDSupported())) return showError("Face ID isn't available on this device or browser.");
+  try{
+    await enrollFaceID();
+    syncFaceIDUI();
+    showOk("Face ID enabled.");
+  }catch(e){
+    showError("Couldn't set up Face ID. Try again.");
+  }
+});
+faceIDSupported().then(ok => { if(!ok && $("faceIdRow")) $("faceIdRow").style.display = "none"; });
+
+/* Gates the boot itself — resolves once unlocked (or immediately if no lock is set),
+   so nothing above it (state load, rendering) ever runs before Face ID passes. */
+function ensureUnlocked(){
+  return new Promise(resolve => {
+    const lock = getFaceLock();
+    if(!lock) return resolve();
+
+    const screen = $("lockScreen"), tile = $("lockTile"), sub = $("lockSub"),
+          retryBtn = $("lockRetryBtn"), cantBtn = $("lockCantBtn"),
+          cantPanel = $("lockCantPanel"), disableBtn = $("lockDisableBtn");
+    screen.classList.add("open");
+    syncLock();
+
+    let busy = false;
+    const finish = () => { screen.classList.remove("open"); syncLock(); resolve(); };
+    const attempt = async () => {
+      if(busy) return;
+      busy = true;
+      retryBtn.disabled = true;
+      tile.classList.add("scanning");
+      sub.classList.remove("error");
+      sub.textContent = "Locked with Face ID";
+      try{
+        await verifyFaceID(lock);
+        finish();
+        return;
+      }catch(e){
+        sub.classList.add("error");
+        sub.textContent = "Face ID didn't match — try again.";
+      }finally{
+        busy = false;
+        retryBtn.disabled = false;
+        tile.classList.remove("scanning");
+      }
+    };
+    retryBtn.onclick = attempt;
+    cantBtn.onclick = () => { cantPanel.style.display = cantPanel.style.display === "block" ? "none" : "block"; };
+    disableBtn.onclick = () => { setFaceLock(null); syncFaceIDUI(); finish(); };
+    attempt();
+  });
+}
+
 /* ================= Toast ================= */
 const TOAST_ICON = {
   success: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
@@ -887,12 +1106,20 @@ function renderSummary(){
 
 function renderPeople(){
   const list = $("peopleList");
+  const toggle = $("settledToggle");
+  if(toggle){ toggle.classList.toggle("on", showSettled); toggle.setAttribute("aria-checked", showSettled ? "true" : "false"); }
   if(!state.people.length){
     list.innerHTML = '<div class="empty"><div class="big">No one on the ledger yet</div><div>Tap + to record your first debt.</div></div>';
     return;
   }
-  /* A settled person (net zero, with history) drops off this list — Settings > Manage People still shows everyone. */
-  const visible = state.people.filter(p => balanceOf.get(p.id) !== 0 || !txnsOf.get(p.id).length);
+  /* A settled person (net zero, with history) drops off this list by default — the
+     "Show settled" toggle above brings them back in, muted, at the bottom. */
+  const active = state.people.filter(p => balanceOf.get(p.id) !== 0 || !txnsOf.get(p.id).length);
+  const settled = state.people.filter(p => balanceOf.get(p.id) === 0 && txnsOf.get(p.id).length);
+  const settledRow = $("settledRow");
+  if(settledRow) settledRow.style.display = settled.length ? "flex" : "none";
+
+  const visible = showSettled ? active.concat(settled) : active;
   if(!visible.length){
     list.innerHTML = '<div class="empty"><div class="big">All settled up</div><div>Everyone on your ledger is at net zero.</div></div>';
     return;
@@ -905,7 +1132,7 @@ function renderPeople(){
     const cls = bal > 0 ? "pos" : bal < 0 ? "neg" : "zero";
     const profile = [p.phone, p.note].filter(Boolean).map(esc).join(" · ");
 
-    let html = `<div class="person-card"><div class="person-row" data-act="person" data-id="${p.id}">`
+    let html = `<div class="person-card${bal === 0 && n ? " is-settled" : ""}"><div class="person-row" data-act="person" data-id="${p.id}">`
       + `<div><div class="person-name">${esc(p.name)}</div>`
       + `<div class="person-meta">${n} transaction${n === 1 ? "" : "s"}</div></div>`
       + `<div class="balance ${cls}">${bal === 0 ? "Settled" : money(bal)}</div></div>`;
@@ -982,10 +1209,11 @@ function refreshAll(){
 const overlay = $("overlay"), personOverlay = $("personOverlay"), confirmOverlay = $("confirmOverlay"),
       backupOverlay = $("backupOverlay"), settingsOverlay = $("settingsOverlay"),
       paymentTypesOverlay = $("paymentTypesOverlay"), managePeopleOverlay = $("managePeopleOverlay"),
-      wheelOverlay = $("wheelOverlay"), lightbox = $("lightbox"), settleOverlay = $("settleOverlay");
+      wheelOverlay = $("wheelOverlay"), lightbox = $("lightbox"), settleOverlay = $("settleOverlay"),
+      deleteAllOverlay = $("deleteAllOverlay");
 
 /* Scroll lock is derived from what's actually open — stacked sheets used to unlock the body early. */
-const syncLock = () => document.body.classList.toggle("locked", !!document.querySelector(".overlay.open, .lightbox.open"));
+const syncLock = () => document.body.classList.toggle("locked", !!document.querySelector(".overlay.open, .lightbox.open, .lock-screen.open"));
 const openOverlay = o => { o.classList.add("open"); syncLock(); };
 const closeOverlay = o => { o.classList.remove("open"); syncLock(); };
 const isOpen = o => o.classList.contains("open");
@@ -1017,14 +1245,15 @@ on($("confirmAltBtn"), "click", () => {
   if(a) a();
 });
 
-/* Tapping the backdrop closes that layer. */
-[[overlay, closeSheet], [personOverlay, closePersonSheet], [confirmOverlay, cancelConfirm],
+/* Tapping the backdrop closes that layer. Reused below to also wire swipe-to-dismiss
+   per sheet, so every sheet closes through its own proper cleanup (not just closeOverlay). */
+const SHEET_LAYERS = [[overlay, closeSheet], [personOverlay, closePersonSheet], [confirmOverlay, cancelConfirm],
  [wheelOverlay, closeWheel], [backupOverlay, () => closeOverlay(backupOverlay)],
  [settingsOverlay, () => closeOverlay(settingsOverlay)],
  [paymentTypesOverlay, () => closeOverlay(paymentTypesOverlay)],
  [managePeopleOverlay, () => closeOverlay(managePeopleOverlay)],
- [settleOverlay, closeSettleSheet]
-].forEach(([o, close]) => on(o, "click", e => { if(e.target === o) close(); }));
+ [settleOverlay, closeSettleSheet], [deleteAllOverlay, closeDeleteAll]];
+SHEET_LAYERS.forEach(([o, close]) => on(o, "click", e => { if(e.target === o) close(); }));
 
 /* ================= Scrolling wheel date picker =================
    Columns: Day · Month · Year · Hour(1-12) · Minute · AM/PM */
@@ -1688,6 +1917,57 @@ on(document, "touchend", () => {
   Object.assign(swipe, {content:null, wrap:null, icon:null, dragging:false, axis:null});
 }, {passive:true});
 
+/* ================= Swipe down to dismiss ================= */
+/* Drag from a sheet's handle strip, or from anywhere once the sheet's own scroll
+   is at the top, to dismiss it the way a native sheet does. Reuses each overlay's
+   real close function (via SHEET_LAYERS) so cleanup — like resetting a pending
+   confirm or a receipt draft — always still runs, never just a bare closeOverlay. */
+const SHEET_CLOSE = new Map(SHEET_LAYERS.map(([o, close]) => [o.querySelector(".sheet"), close]));
+const HANDLE_ZONE = 34;
+const sheetDrag = {el:null, close:null, startX:0, startY:0, dy:0, axis:null, dragging:false};
+
+on(document, "touchstart", e => {
+  const sheet = elOf(e.target)?.closest(".sheet");
+  if(!sheet || !SHEET_CLOSE.has(sheet)) return;
+  const t = e.target;
+  if(t.closest && (t.closest(".wcol") || t.closest("input") || t.closest("select") || t.closest("textarea"))) return;
+  const y = e.touches[0].clientY;
+  const inHandle = y - sheet.getBoundingClientRect().top < HANDLE_ZONE;
+  if(!inHandle && sheet.scrollTop > 0) return;
+  sheet.style.transition = "none";
+  Object.assign(sheetDrag, {
+    el:sheet, close:SHEET_CLOSE.get(sheet), startX:e.touches[0].clientX, startY:y, dy:0, axis:null, dragging:false
+  });
+}, {passive:true});
+
+on(document, "touchmove", e => {
+  if(!sheetDrag.el) return;
+  const dx = e.touches[0].clientX - sheetDrag.startX, dy = e.touches[0].clientY - sheetDrag.startY;
+  if(sheetDrag.axis === null){
+    if(Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+    sheetDrag.axis = (dy > 0 && dy > Math.abs(dx)) ? "y" : "abort";
+  }
+  if(sheetDrag.axis !== "y") return;
+  e.preventDefault();
+  sheetDrag.dragging = true;
+  sheetDrag.dy = Math.max(0, dy);
+  sheetDrag.el.style.transform = `translateY(${sheetDrag.dy}px)`;
+}, {passive:false});
+
+on(document, "touchend", () => {
+  if(!sheetDrag.el) return;
+  const {el, close, dy, dragging} = sheetDrag;
+  el.style.transition = "transform .22s cubic-bezier(.32,.72,0,1)";
+  if(dragging && dy > 110){
+    el.style.transform = "translateY(100%)";
+    setTimeout(() => { el.style.transition = ""; el.style.transform = ""; }, 220);
+    close();
+  }else{
+    el.style.transform = "translateY(0)";
+  }
+  Object.assign(sheetDrag, {el:null, close:null, dy:0, axis:null, dragging:false});
+}, {passive:true});
+
 /* ================= Delegated clicks ================= */
 on(document, "click", e => {
   const target = elOf(e.target);
@@ -1723,14 +2003,125 @@ on(document, "click", e => {
   }
 });
 
+on($("settledToggle"), "click", () => {
+  showSettled = !showSettled;
+  try{ localStorage.setItem(SETTLED_KEY, showSettled ? "1" : "0"); }catch(e){}
+  renderPeople();
+});
+
 /* ================= Tabs & filters ================= */
-document.querySelectorAll(".tab").forEach(tab => on(tab, "click", () => {
-  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === tab));
-  currentTab = tab.dataset.tab;
-  $("overviewTab").hidden = currentTab !== "overview";
-  $("historyTab").hidden = currentTab !== "history";
-  if(currentTab === "history") renderHistory(); else renderPeople();
-}));
+const TAB_NAMES = ["overview", "history"];
+function switchTab(name){
+  if(name === currentTab) return;
+  const dir = TAB_NAMES.indexOf(name) > TAB_NAMES.indexOf(currentTab) ? 1 : -1;
+  currentTab = name;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+  const showEl = name === "overview" ? $("overviewTab") : $("historyTab");
+  showEl.style.setProperty("--tab-dx", (dir * 16) + "px");
+  $("overviewTab").hidden = name !== "overview";
+  $("historyTab").hidden = name !== "history";
+  if(name === "history") renderHistory(); else renderPeople();
+}
+document.querySelectorAll(".tab").forEach(tab => on(tab, "click", () => switchTab(tab.dataset.tab)));
+
+/* Horizontal swipe anywhere in the body flips between tabs — mirrors the native
+   page-swipe gesture. Row deletes and the wheel picker already own horizontal
+   drags in their own areas, so this backs off entirely inside those, and inside
+   any open sheet, rather than fight them for the gesture. */
+const tabSwipe = {active:false, startX:0, startY:0, axis:null};
+on(document, "touchstart", e => {
+  tabSwipe.active = false;
+  if(document.querySelector(".overlay.open, .lock-screen.open")) return;
+  const t = elOf(e.target);
+  if(t && (t.closest(".swipe-wrap") || t.closest("input") || t.closest("select") || t.closest("textarea"))) return;
+  tabSwipe.active = true;
+  tabSwipe.startX = e.touches[0].clientX;
+  tabSwipe.startY = e.touches[0].clientY;
+  tabSwipe.axis = null;
+}, {passive:true});
+
+on(document, "touchmove", e => {
+  if(!tabSwipe.active) return;
+  const dx = e.touches[0].clientX - tabSwipe.startX, dy = e.touches[0].clientY - tabSwipe.startY;
+  if(tabSwipe.axis === null){
+    if(Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+    tabSwipe.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+  }
+  if(tabSwipe.axis !== "x") return;
+  e.preventDefault();
+  tabSwipe.dx = dx;
+}, {passive:false});
+
+on(document, "touchend", () => {
+  if(!tabSwipe.active || tabSwipe.axis !== "x") { tabSwipe.active = false; return; }
+  const dx = tabSwipe.dx || 0;
+  if(dx <= -60) switchTab("history");
+  else if(dx >= 60) switchTab("overview");
+  tabSwipe.active = false;
+}, {passive:true});
+
+/* ================= Pull to refresh ================= */
+/* Re-reads the ledger from storage — mainly reassurance that what's on screen
+   really is what's saved, the same job it does in any synced app. */
+const PULL_REVEAL = 50, PULL_TRIGGER = 70;
+const pull = {active:false, refreshing:false, startX:0, startY:0, axis:null, dy:0};
+const pullEl = $("pullIndicator");
+
+async function doPullRefresh(){
+  pull.refreshing = true;
+  pullEl.style.transform = "translateX(-50%) translateY(4px)";
+  pullEl.classList.add("visible", "spin");
+  const started = Date.now();
+  try{ state = normalize(await Store.loadLedger()); refreshAll(); }catch(e){}
+  const wait = Math.max(0, 500 - (Date.now() - started));
+  setTimeout(() => {
+    pullEl.classList.remove("visible", "spin");
+    pullEl.style.transform = "";
+    pull.refreshing = false;
+    toast("Refreshed.");
+  }, wait);
+}
+
+on(document, "touchstart", e => {
+  pull.active = false;
+  if(pull.refreshing || window.scrollY > 0) return;
+  if(document.querySelector(".overlay.open, .lock-screen.open")) return;
+  const t = elOf(e.target);
+  if(t && (t.closest(".swipe-wrap") || t.closest("input") || t.closest("select") || t.closest("textarea"))) return;
+  pull.active = true;
+  pull.startX = e.touches[0].clientX;
+  pull.startY = e.touches[0].clientY;
+  pull.axis = null;
+  pull.dy = 0;
+}, {passive:true});
+
+on(document, "touchmove", e => {
+  if(!pull.active || pull.refreshing) return;
+  const dx = e.touches[0].clientX - pull.startX, dy = e.touches[0].clientY - pull.startY;
+  if(pull.axis === null){
+    if(Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+    pull.axis = (dy > 0 && dy > Math.abs(dx)) ? "y" : "abort";
+  }
+  if(pull.axis !== "y") return;
+  if(window.scrollY > 0){ pull.active = false; pullEl.classList.remove("visible"); pullEl.style.transform = ""; return; }
+  e.preventDefault();
+  pull.dy = dy;
+  const y = clamp(dy * 0.6, 0, PULL_REVEAL) - PULL_REVEAL;
+  pullEl.classList.add("visible");
+  pullEl.style.transform = `translateX(-50%) translateY(${y}px) rotate(${(y + PULL_REVEAL) * 4}deg)`;
+}, {passive:false});
+
+on(document, "touchend", () => {
+  if(!pull.active) return;
+  pull.active = false;
+  if(pull.axis !== "y") return;
+  if(pull.dy >= PULL_TRIGGER){
+    doPullRefresh();
+  }else{
+    pullEl.classList.remove("visible");
+    pullEl.style.transform = "";
+  }
+}, {passive:true});
 
 ["fPerson", "fType"].forEach(id => on($(id), "change", renderHistory));
 on($("fSearch"), "input", renderHistory);
@@ -1816,6 +2207,7 @@ on($("backupBtn"), "click", () => openOverlay(backupOverlay));
 on($("closeBackupBtn"), "click", () => closeOverlay(backupOverlay));
 on($("settingsBtn"), "click", () => {
   syncThemeUI();
+  syncFaceIDUI();
   showStorageStat();
   openOverlay(settingsOverlay);
 });
@@ -1835,17 +2227,22 @@ async function showStorageStat(){
   $("storageStat").textContent = txt;
 }
 
-on($("deleteAllBtn"), "click", () => {
-  appConfirm("Delete ALL people, transactions, and receipts? This cannot be undone.", async () => {
-    commitTrash();
-    urlCache.forEach((u, id) => dropReceiptURL(id));
-    urlCache.clear();
-    state = blank();
-    openPersonId = editingTxnId = editingPersonId = null;
-    personOptSig = "";
-    try{ await Store.clear(); }catch(e){}
-    persist(); closeOverlay(settingsOverlay); refreshAll(); toast("All data deleted.");
-  });
+/* Deleting everything needs more friction than a tap — typing the word out loud
+   matches how most finance apps gate their single most destructive action. */
+function closeDeleteAll(){ closeOverlay(deleteAllOverlay); $("deleteAllInput").value = ""; $("deleteAllConfirmBtn").disabled = true; }
+on($("deleteAllBtn"), "click", () => { $("deleteAllInput").value = ""; $("deleteAllConfirmBtn").disabled = true; openOverlay(deleteAllOverlay); });
+on($("deleteAllCancelBtn"), "click", closeDeleteAll);
+on($("deleteAllInput"), "input", function(){ $("deleteAllConfirmBtn").disabled = this.value.trim().toUpperCase() !== "DELETE"; });
+on($("deleteAllConfirmBtn"), "click", async () => {
+  if($("deleteAllInput").value.trim().toUpperCase() !== "DELETE") return;
+  commitTrash();
+  urlCache.forEach((u, id) => dropReceiptURL(id));
+  urlCache.clear();
+  state = blank();
+  openPersonId = editingTxnId = editingPersonId = null;
+  personOptSig = "";
+  try{ await Store.clear(); }catch(e){}
+  persist(); closeDeleteAll(); closeOverlay(settingsOverlay); refreshAll(); toast("All data deleted.");
 });
 
 /* ================= Payment methods editor ================= */
@@ -2132,6 +2529,9 @@ async function sweepOrphanReceipts(){
 (async () => {
   try{
     loadTheme();
+    syncFaceIDUI();
+    await ensureUnlocked();
+
     setRcpt(null);
     setTxnDate(new Date());
     labelDateFilters();
